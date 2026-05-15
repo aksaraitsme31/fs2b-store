@@ -15,9 +15,18 @@ import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import MyOrders from "./pages/MyOrders";
 import Profile from "./pages/Profile";
+import Rekber from "./pages/Rekber";
+import RekberOrders from "./pages/RekberOrders";
+import RekberOrderDetail from "./pages/RekberOrderDetail";
+import RekberSaya from "./pages/RekberSaya";
+
+/* COMPONENTS */
+import Footer from "./components/Footer";
 
 function App() {
+
   return (
+
     <BrowserRouter>
 
       <Routes>
@@ -66,10 +75,36 @@ function App() {
           element={<Orders />}
         />
 
+        {/* REKBER */}
+        <Route
+          path="/rekber"
+          element={<Rekber />}
+        />
+
+        <Route
+          path="/rekber-orders"
+          element={<RekberOrders />}
+        />
+
+        <Route
+          path="/rekber/order/:id"
+          element={<RekberOrderDetail />}
+        />
+
+        <Route
+          path="/rekber-saya"
+          element={<RekberSaya />}
+        />
+
       </Routes>
 
+      {/* FOOTER */}
+      <Footer />
+
     </BrowserRouter>
+
   );
+
 }
 
 export default App;

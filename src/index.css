@@ -1,10 +1,14 @@
-html, body, #root {
+html,
+body,
+#root {
+
   margin: 0;
   padding: 0;
-  width: 100%;
-  min-height: 100vh;
-}
 
-body {
-  font-family: Arial, sans-serif;
+  width: 100%;
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
 }

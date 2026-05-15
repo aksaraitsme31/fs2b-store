@@ -1,3 +1,5 @@
+import Navbar from "../components/Navbar";
+
 import {
   useState,
   useEffect
@@ -6,6 +8,22 @@ import {
 import {
   useNavigate
 } from "react-router-dom";
+
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy
+} from "firebase/firestore";
+
+import {
+  db
+} from "../firebase/firebase";
 
 function Admin() {
 
@@ -19,12 +37,13 @@ function Admin() {
   const navigate =
     useNavigate();
 
-  /* PROTECT ADMIN */
+  /* ONLY OWNER ADMIN */
   if (
     !currentUser ||
-    currentUser.role !==
-      "admin"
+    currentUser.email !==
+    "thirtyone.zerozero@gmail.com"
   ) {
+
     return (
       <div className="auth-page">
 
@@ -50,7 +69,12 @@ function Admin() {
 
       </div>
     );
+
   }
+
+  /* =========================
+     PRODUCT STATE
+  ========================= */
 
   const [products, setProducts] =
     useState([]);
@@ -72,44 +96,182 @@ function Admin() {
     setSubCategory
   ] = useState("");
 
-  /* EDIT MODE */
   const [editId, setEditId] =
     useState(null);
 
+  /* =========================
+     REKBER STATE
+  ========================= */
+
+  const [
+    rekberOrders,
+    setRekberOrders
+  ] = useState([]);
+
+  const [
+    rekberMessages,
+    setRekberMessages
+  ] = useState([]);
+
+  const [
+    adminChatInputs,
+    setAdminChatInputs
+  ] = useState({});
+
+  const [previewMedia, setPreviewMedia] = useState(null);
+
+  /* =========================
+     LOAD PRODUCTS
+  ========================= */
+
+  const loadProducts =
+    async () => {
+
+      try {
+
+        const querySnapshot =
+          await getDocs(
+            collection(
+              db,
+              "products"
+            )
+          );
+
+        const data = [];
+
+        querySnapshot.forEach(
+          (item) => {
+
+            data.push({
+              id: item.id,
+              ...item.data()
+            });
+
+          }
+        );
+
+        setProducts(data);
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal mengambil produk"
+        );
+
+      }
+
+    };
+
   useEffect(() => {
 
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          "products"
-        )
-      ) || [];
-
-    setProducts(saved);
+    loadProducts();
 
   }, []);
 
-  /* HANDLE IMAGE */
+  /* =========================
+     LOAD REKBER REALTIME
+  ========================= */
+
+  useEffect(() => {
+
+    const q = query(
+      collection(db, "rekberOrders"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe =
+      onSnapshot(q, (snapshot) => {
+
+        const data =
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+
+        setRekberOrders(data);
+
+      });
+
+    return () => unsubscribe();
+
+  }, []);
+
+  /* =========================
+     LOAD CHAT REALTIME
+  ========================= */
+
+  useEffect(() => {
+
+    const q =
+      query(
+        collection(
+          db,
+          "rekberMessages"
+        ),
+        orderBy(
+          "createdAt",
+          "asc"
+        )
+      );
+
+    const unsubscribe =
+      onSnapshot(
+        q,
+        (snapshot) => {
+
+          const data =
+            snapshot.docs.map(
+              (doc) => ({
+                id: doc.id,
+                ...doc.data()
+              })
+            );
+
+          setRekberMessages(
+            data
+          );
+
+        }
+      );
+
+    return () => unsubscribe();
+
+  }, []);
+
+  /* =========================
+     HANDLE IMAGE
+  ========================= */
+
   const handleImage = (e) => {
 
     const file =
       e.target.files[0];
 
+    if (!file) return;
+
     const reader =
       new FileReader();
 
     reader.onloadend = () => {
-      setImage(reader.result);
+
+      setImage(
+        reader.result
+      );
+
     };
 
-    if (file) {
-      reader.readAsDataURL(
-        file
-      );
-    }
+    reader.readAsDataURL(
+      file
+    );
+
   };
 
-  /* EDIT PRODUCT */
+  /* =========================
+     EDIT PRODUCT
+  ========================= */
+
   const editProduct = (item) => {
 
     setEditId(item.id);
@@ -130,142 +292,443 @@ function Admin() {
       top: 0,
       behavior: "smooth"
     });
+
   };
 
-  /* ADD / UPDATE PRODUCT */
-  const addProduct = () => {
+  /* =========================
+     ADD / UPDATE PRODUCT
+  ========================= */
 
-    if (
-      !name ||
-      !price ||
-      !image ||
-      !category ||
-      !subCategory
-    ) {
-      alert(
-        "Lengkapi semua data produk"
-      );
+  const addProduct =
+    async () => {
 
-      return;
-    }
+      if (
+        !name ||
+        !price ||
+        !image ||
+        !category ||
+        !subCategory
+      ) {
 
-    /* UPDATE */
-    if (editId) {
-
-      const updated =
-        products.map((item) =>
-          item.id === editId
-            ? {
-                ...item,
-                name,
-                price,
-                image,
-                category,
-                subCategory
-              }
-            : item
+        alert(
+          "Lengkapi semua data produk"
         );
 
-      setProducts(updated);
+        return;
 
-      localStorage.setItem(
-        "products",
-        JSON.stringify(updated)
+      }
+
+      try {
+
+        if (editId) {
+
+          const productRef =
+            doc(
+              db,
+              "products",
+              editId
+            );
+
+          await updateDoc(
+            productRef,
+            {
+              name,
+              price,
+              image,
+              category,
+              subCategory
+            }
+          );
+
+          alert(
+            "Produk berhasil diupdate"
+          );
+
+          setEditId(null);
+
+        } else {
+
+          await addDoc(
+            collection(
+              db,
+              "products"
+            ),
+            {
+              name,
+              price,
+              image,
+              category,
+              subCategory
+            }
+          );
+
+          alert(
+            "Produk berhasil ditambahkan"
+          );
+
+        }
+
+        setName("");
+        setPrice("");
+        setImage("");
+        setCategory("");
+        setSubCategory("");
+
+        loadProducts();
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal menyimpan produk"
+        );
+
+      }
+
+    };
+
+  /* =========================
+     DELETE PRODUCT
+  ========================= */
+
+  const deleteProduct =
+    async (id) => {
+
+      const confirmDelete =
+        window.confirm(
+          "Yakin ingin menghapus produk?"
+        );
+
+      if (!confirmDelete)
+        return;
+
+      try {
+
+        await deleteDoc(
+          doc(
+            db,
+            "products",
+            id
+          )
+        );
+
+        alert(
+          "Produk berhasil dihapus"
+        );
+
+        loadProducts();
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal menghapus produk"
+        );
+
+      }
+
+    };
+
+  /* =========================
+     ADMIN Lock Chat
+  ========================= */
+
+  const toggleChatLock =
+    async (id, currentState) => {
+
+      try {
+
+        const rekberRef =
+          doc(
+            db,
+            "rekberOrders",
+            id
+          );
+
+        await updateDoc(
+          rekberRef,
+          {
+            chatLocked:
+              !currentState
+          }
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal update chat"
+        );
+
+      }
+
+    };
+
+  /* =========================
+     ADMIN CHAT UI
+  ========================= */
+
+  const sendAdminChat =
+    async (rekberId) => {
+
+      const message =
+        adminChatInputs[rekberId];
+
+      if (!message?.trim())
+        return;
+
+      await addDoc(
+        collection(
+          db,
+          "rekberMessages"
+        ),
+        {
+          rekberId,
+          sender: "ADMIN",
+          message,
+          createdAt: new Date()
+        }
       );
 
-      alert(
-        "Produk berhasil diupdate"
+      setAdminChatInputs({
+        ...adminChatInputs,
+        [rekberId]: ""
+      });
+
+    };
+
+  const renderAdminChat =
+    (rekberId) => {
+
+      const filteredMessages =
+        rekberMessages.filter(
+          (msg) =>
+            msg.rekberId ===
+            rekberId
+        );
+
+      return (
+
+        <>
+
+          <div className="chat-messages">
+
+            {filteredMessages.length === 0 ? (
+
+              <p>
+                Belum ada chat
+              </p>
+
+            ) : (
+
+              filteredMessages.map(
+                (msg) => (
+
+                  <div
+                    key={msg.id}
+                    className={
+                      msg.sender === "ADMIN"
+                        ? "my-chat"
+                        : "other-chat"
+                    }
+                  >
+
+                    <strong>
+
+                      {msg.sender === "ADMIN"
+                        ? "ADMIN"
+
+                        : msg.role
+                          ? `[${msg.role}] ${msg.username || msg.sender}`
+
+                          : msg.username || msg.sender}
+
+                    </strong>
+
+                    <p>
+                      {msg.message}
+                    </p>
+
+                    {/* IMAGE */}
+                    {msg.media &&
+                      msg.mediaType === "image" && (
+
+                        <img
+                          src={msg.media}
+                          alt="media"
+                          onClick={() =>
+                            setPreviewMedia({
+                              url: msg.media,
+                              type: "image"
+                            })
+                          }
+                          style={{
+                            width: "220px",
+                            marginTop: "10px",
+                            borderRadius: "12px",
+                            cursor: "pointer"
+                          }}
+                        />
+
+                      )}
+
+                    {/* VIDEO */}
+                    {msg.media &&
+                      msg.mediaType === "video" && (
+
+                        <video
+                          onClick={() =>
+                            setPreviewMedia({
+                              url: msg.media,
+                              type: "video"
+                            })
+                          }
+                          style={{
+                            width: "240px",
+                            marginTop: "10px",
+                            borderRadius: "12px",
+                            cursor: "pointer"
+                          }}
+                        >
+                          <source src={msg.media} />
+                        </video>
+
+                      )}
+
+                  </div>
+
+                )
+              )
+
+            )}
+
+          </div>
+
+          {previewMedia && (
+
+            <div
+              onClick={() =>
+                setPreviewMedia(null)
+              }
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.96)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 99999,
+                padding: "20px"
+              }}
+            >
+
+              <div
+                onClick={(e) =>
+                  e.stopPropagation()
+                }
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                  height: "100%"
+                }}
+              >
+
+                {previewMedia.type === "image" ? (
+
+                  <img
+                    src={previewMedia.url}
+                    alt="preview"
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      objectFit: "contain",
+                      borderRadius: "12px"
+                    }}
+                  />
+
+                ) : (
+
+                  <video
+                    controls
+                    autoPlay
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      objectFit: "contain",
+                      borderRadius: "12px"
+                    }}
+                  >
+                    <source src={previewMedia.url} />
+                  </video>
+
+                )}
+
+              </div>
+
+            </div>
+
+          )}
+
+          <div className="chat-input-area">
+
+            <input
+              type="text"
+              placeholder="Tulis pesan admin..."
+              value={
+                adminChatInputs[
+                rekberId
+                ] || ""
+              }
+              onChange={(e) =>
+                setAdminChatInputs({
+                  ...adminChatInputs,
+                  [rekberId]:
+                    e.target.value
+                })
+              }
+              onKeyDown={(e) => {
+
+                if (
+                  e.key === "Enter"
+                ) {
+
+                  sendAdminChat(
+                    rekberId
+                  );
+
+                }
+
+              }}
+            />
+
+            <button
+              onClick={() =>
+                sendAdminChat(
+                  rekberId
+                )
+              }
+            >
+              Kirim
+            </button>
+
+          </div>
+
+        </>
+
       );
 
-      setEditId(null);
-
-    } else {
-
-      /* ADD */
-      const newProduct = {
-        id: Date.now(),
-        name,
-        price,
-        image,
-        category,
-        subCategory
-      };
-
-      const updated = [
-        ...products,
-        newProduct
-      ];
-
-      setProducts(updated);
-
-      localStorage.setItem(
-        "products",
-        JSON.stringify(updated)
-      );
-
-      alert(
-        "Produk berhasil ditambahkan"
-      );
-    }
-
-    /* RESET FORM */
-    setName("");
-
-    setPrice("");
-
-    setImage("");
-
-    setCategory("");
-
-    setSubCategory("");
-  };
-
-  /* DELETE */
-  const deleteProduct = (id) => {
-
-    const confirmDelete =
-      window.confirm(
-        "Yakin ingin menghapus produk?"
-      );
-
-    if (!confirmDelete) return;
-
-    const updated =
-      products.filter(
-        (p) => p.id !== id
-      );
-
-    setProducts(updated);
-
-    localStorage.setItem(
-      "products",
-      JSON.stringify(updated)
-    );
-  };
+    };
 
   return (
+
     <div className="store">
 
-      {/* NAVBAR */}
-      <nav className="navbar">
-
-        <div className="logo">
-          FS2B OWNER PANEL
-        </div>
-
-        <div className="menu">
-
-          <a href="/">
-            Store
-          </a>
-
-          <a href="/orders">
-            Orders
-          </a>
-
-        </div>
-
-      </nav>
+      <Navbar />
 
       {/* CONTENT */}
       <section className="products-section">
@@ -350,17 +813,19 @@ function Admin() {
             }
           />
 
-          {/* PREVIEW IMAGE */}
           {image && (
+
             <img
               src={image}
               alt="Preview"
               style={{
                 width: "100%",
-                borderRadius: "16px",
+                borderRadius:
+                  "16px",
                 marginTop: "10px"
               }}
             />
+
           )}
 
           <button
@@ -377,6 +842,7 @@ function Admin() {
         <div className="product-grid">
 
           {products.map((item) => (
+
             <div
               className="card"
               key={item.id}
@@ -412,13 +878,16 @@ function Admin() {
                 style={{
                   display: "flex",
                   gap: "10px",
-                  marginTop: "auto"
+                  marginTop:
+                    "auto"
                 }}
               >
 
                 <button
                   onClick={() =>
-                    editProduct(item)
+                    editProduct(
+                      item
+                    )
                   }
                 >
                   Edit
@@ -437,14 +906,213 @@ function Admin() {
               </div>
 
             </div>
+
           ))}
 
         </div>
 
-      </section>
+        {/* REKBER MONITOR */}
+        <h2
+          style={{
+            marginTop: "80px"
+          }}
+        >
+          Monitoring Rekber
+        </h2>
 
-    </div>
+        <div
+          style={{
+            display: "grid",
+
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(420px, 1fr))",
+
+            gap: "25px",
+
+            marginTop: "30px",
+
+            alignItems: "start"
+          }}
+        >
+
+          {rekberOrders.map(
+            (item) => (
+
+              <div
+                key={item.id}
+                className="profile-section rekber-monitor-card"
+                style={{
+                  margin: 0,
+                  width: "100%",
+                  minHeight: "500px",
+
+                  display: "flex",
+                  flexDirection: "column",
+
+                  justifyContent: "space-between"
+                }}
+              >
+
+                <h3
+                  style={{
+                    fontSize: "24px",
+                    marginBottom: "18px",
+                    color: "#ffd700"
+                  }}
+                >
+                  {item.itemName}
+                </h3>
+
+                <p>
+                  <strong>Buyer:</strong>
+                  {" "}
+                  {item.buyerUsername}
+                </p>
+
+                <p>
+                  <strong>Seller:</strong>
+                  {" "}
+                  {item.sellerUsername}
+                </p>
+
+                <p>
+                  <strong>Status:</strong>
+                  {" "}
+                  <span
+                    className="status-text process"
+                  >
+                    {item.status}
+                  </span>
+                </p>
+
+                {item.status ===
+                  "Menunggu Verifikasi Pembayaran" && (
+
+                    <button
+                      onClick={async () => {
+
+                        await updateDoc(
+                          doc(
+                            db,
+                            "rekberOrders",
+                            item.id
+                          ),
+                          {
+                            status:
+                              "Menunggu Seller Mengirim Barang",
+
+                            paymentStatus:
+                              "Sudah Diverifikasi"
+                          }
+                        );
+
+                        alert(
+                          "Pembayaran berhasil diverifikasi"
+                        );
+
+                      }}
+                    >
+                      Verifikasi Pembayaran
+                    </button>
+
+                  )}
+
+                {item.status ===
+                  "Barang Sudah Diterima Buyer" && (
+
+                    <button
+                      onClick={async () => {
+
+                        await updateDoc(
+                          doc(
+                            db,
+                            "rekberOrders",
+                            item.id
+                          ),
+                          {
+                            status: "Done"
+                          }
+                        );
+
+                        alert(
+                          "Rekber selesai"
+                        );
+
+                      }}
+                    >
+                      Selesaikan Rekber
+                    </button>
+
+                  )}
+
+                <p>
+                  <strong>Harga:</strong>
+                  {" "}
+                  Rp{" "}
+                  {Number(
+                    item.dealPrice
+                  ).toLocaleString(
+                    "id-ID"
+                  )}
+                </p>
+
+                <div
+                  style={{
+                    marginTop: "20px"
+                  }}
+                >
+
+                  <h4
+                    style={{
+                      marginBottom: "14px",
+                      color: "#ffd700"
+                    }}
+                  >
+                    Monitoring Chat
+                  </h4>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginBottom: "15px"
+                    }}
+                  >
+
+                    <button
+                      onClick={() =>
+                        toggleChatLock(
+                          item.id,
+                          item.chatLocked
+                        )
+                      }
+                    >
+                      {item.chatLocked
+                        ? "Buka Chat"
+                        : "Kunci Chat"}
+                    </button>
+
+                  </div>
+
+                  {renderAdminChat(
+                    item.id
+                  )}
+
+                </div>
+
+              </div>
+
+            )
+          )}
+
+        </div>
+
+      </section >
+
+    </div >
+
   );
+
 }
 
 export default Admin;

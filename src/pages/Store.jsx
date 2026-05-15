@@ -1,40 +1,114 @@
+import Navbar from "../components/Navbar";
+
 import LiveChat from "../components/LiveChat";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import iconstore from "../assets/iconstore.png";
+
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
 import { formatPrice } from "../utils/formatPrice";
 
+import {
+  collection,
+  getDocs
+} from "firebase/firestore";
+
+import {
+  db
+} from "../firebase/firebase";
+
 function Store() {
+
   const [products, setProducts] =
     useState([]);
 
   const [currentUser, setCurrentUser] =
     useState(null);
 
+  /* PURPOSE */
+  const [
+    selectedPurpose,
+    setSelectedPurpose
+  ] = useState("");
+
+  /* GAME */
   const [selectedGame, setSelectedGame] =
     useState("");
 
+  /* SUB CATEGORY */
   const [
     selectedSubCategory,
     setSelectedSubCategory
   ] = useState("");
 
-  const navigate = useNavigate();
+  /* QUANTITY */
+  const [quantities, setQuantities] =
+    useState({});
 
+  const navigate =
+    useNavigate();
+
+  /* LOAD PRODUCTS */
   useEffect(() => {
-    const savedProducts =
-      JSON.parse(
-        localStorage.getItem("products")
-      ) || [];
 
-    const user =
-      JSON.parse(
-        localStorage.getItem("currentUser")
-      ) || null;
+    const fetchProducts =
+      async () => {
 
-    setProducts(savedProducts);
-    setCurrentUser(user);
+        try {
 
-    /* FIX MOBILE VIEWPORT */
+          const snapshot =
+            await getDocs(
+              collection(
+                db,
+                "products"
+              )
+            );
+
+          const data =
+            snapshot.docs.map(
+              (item) => ({
+                id: item.id,
+                ...item.data()
+              })
+            );
+
+          setProducts(data);
+
+        } catch (error) {
+
+          console.log(error);
+
+          alert(
+            "Gagal mengambil produk"
+          );
+
+        }
+
+        const user =
+          JSON.parse(
+            localStorage.getItem(
+              "currentUser"
+            )
+          ) || null;
+
+        setCurrentUser(user);
+
+      };
+
+    fetchProducts();
+
+  }, []);
+
+  /* MOBILE VIEWPORT */
+  useEffect(() => {
+
     const meta =
       document.createElement("meta");
 
@@ -48,41 +122,80 @@ function Store() {
     return () => {
       document.head.removeChild(meta);
     };
+
   }, []);
 
+  /* CHECKOUT */
   const checkout = (item) => {
+
     if (!currentUser) {
-      alert("Silakan login dulu");
+
+      alert(
+        "Silakan login dulu"
+      );
 
       navigate("/login");
 
       return;
+
     }
 
     navigate("/checkout", {
-      state: { product: item }
+      state: {
+        product: item,
+        quantity:
+          quantities[item.id] || 1
+      }
     });
+
   };
 
+  /* QUANTITY */
+  const increaseQty = (id) => {
+
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 1) + 1
+    }));
+
+  };
+
+  const decreaseQty = (id) => {
+
+    setQuantities((prev) => ({
+      ...prev,
+      [id]:
+        (prev[id] || 1) > 1
+          ? prev[id] - 1
+          : 1
+    }));
+
+  };
+
+  /* FILTER PRODUCTS */
   const filteredProducts =
     products.filter((item) => {
+
       const gameMatch =
         selectedGame &&
         item.category ===
-          selectedGame;
+        selectedGame;
 
       const subCategoryMatch =
         selectedSubCategory &&
         item.subCategory ===
-          selectedSubCategory;
+        selectedSubCategory;
 
       return (
         gameMatch &&
         subCategoryMatch
       );
+
     });
 
+  /* LOGOUT */
   const logout = () => {
+
     localStorage.removeItem(
       "currentUser"
     );
@@ -90,157 +203,17 @@ function Store() {
     navigate("/");
 
     window.location.reload();
+
   };
+
+  const isAdmin =
+    currentUser?.email ===
+    "thirtyone.zerozero@gmail.com";
 
   return (
     <div className="store">
 
-      {/* NAVBAR */}
-      <nav className="navbar">
-
-        <div className="logo">
-          FS2B STORE
-        </div>
-
-        <div className="menu">
-
-          <button
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            Home
-          </button>
-
-          {/* RIWAYAT KHUSUS USER */}
-          {currentUser?.role !==
-            "admin" && (
-            <button
-              onClick={() =>
-                navigate("/my-orders")
-              }
-            >
-              Riwayat
-            </button>
-          )}
-
-          {/* KHUSUS ADMIN */}
-          {currentUser?.role ===
-            "admin" && (
-            <>
-              <button
-                onClick={() =>
-                  navigate("/admin")
-                }
-              >
-                Admin Panel
-              </button>
-
-              <button
-                onClick={() =>
-                  navigate("/orders")
-                }
-              >
-                Semua Orders
-              </button>
-            </>
-          )}
-
-          {currentUser ? (
-            <div className="profile-dropdown">
-
-              <button className="profile-btn">
-                👤{" "}
-                {currentUser.username ||
-                  currentUser.name ||
-                  "Buyer"}{" "}
-                ▼
-              </button>
-
-              <div className="dropdown-content">
-
-                <button
-                  onClick={() =>
-                    navigate("/profile")
-                  }
-                >
-                  Profile
-                </button>
-
-                {/* RIWAYAT KHUSUS USER */}
-                {currentUser.role !==
-                  "admin" && (
-                  <button
-                    onClick={() =>
-                      navigate(
-                        "/my-orders"
-                      )
-                    }
-                  >
-                    Riwayat
-                  </button>
-                )}
-
-                {/* MENU ADMIN */}
-                {currentUser.role ===
-                  "admin" && (
-                  <>
-                    <button
-                      onClick={() =>
-                        navigate(
-                          "/admin"
-                        )
-                      }
-                    >
-                      Admin Panel
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        navigate(
-                          "/orders"
-                        )
-                      }
-                    >
-                      Kelola Orders
-                    </button>
-                  </>
-                )}
-
-                <button
-                  onClick={logout}
-                >
-                  Logout
-                </button>
-
-              </div>
-
-            </div>
-          ) : (
-            <>
-              <button
-                onClick={() =>
-                  navigate("/login")
-                }
-              >
-                Login
-              </button>
-
-              <button
-                onClick={() =>
-                  navigate(
-                    "/register"
-                  )
-                }
-              >
-                Register
-              </button>
-            </>
-          )}
-
-        </div>
-
-      </nav>
+      <Navbar />
 
       {/* HERO */}
       <section className="hero">
@@ -249,7 +222,6 @@ function Store() {
 
         <div className="hero-content">
 
-          {/* MASKOT KIRI */}
           <img
             src="/black-maskot.png"
             alt="Black Maskot"
@@ -257,7 +229,6 @@ function Store() {
             draggable="false"
           />
 
-          {/* HERO TEXT */}
           <div className="hero-text">
 
             <div className="welcome-top">
@@ -272,9 +243,11 @@ function Store() {
 
             </div>
 
-            <h1 className="hero-title">
-              FS2B
-            </h1>
+            <img
+              src={iconstore}
+              alt="FS2B"
+              className="hero-logo"
+            />
 
             <h2 className="hero-subtitle">
               STORE
@@ -286,76 +259,8 @@ function Store() {
               FAVORITMU
             </p>
 
-            {/* FEATURES */}
-            <div className="hero-features">
-
-              <div className="feature-box">
-
-                <div className="feature-icon">
-                  ⚡
-                </div>
-
-                <div className="feature-text">
-
-                  <h4>
-                    PROSES CEPAT
-                  </h4>
-
-                  <p>
-                    Anti drama
-                  </p>
-
-                </div>
-
-              </div>
-
-              <div className="feature-box">
-
-                <div className="feature-icon">
-                  🛡️
-                </div>
-
-                <div className="feature-text">
-
-                  <h4>
-                    AMAN &
-                    TERPERCAYA
-                  </h4>
-
-                  <p>
-                    100% aman anti
-                    scam
-                  </p>
-
-                </div>
-
-              </div>
-
-              <div className="feature-box">
-
-                <div className="feature-icon">
-                  🎧
-                </div>
-
-                <div className="feature-text">
-
-                  <h4>
-                    24/7 SUPPORT
-                  </h4>
-
-                  <p>
-                    Siap membantu
-                  </p>
-
-                </div>
-
-              </div>
-
-            </div>
-
           </div>
 
-          {/* MASKOT KANAN */}
           <img
             src="/white-maskot.png"
             alt="White Maskot"
@@ -371,98 +276,158 @@ function Store() {
       <section className="products-section">
 
         <h2>
-          Produk Tersedia
+          Produk & Layanan
         </h2>
 
-        {/* GAME */}
+        {/* PURPOSE */}
         <div className="game-wrapper">
 
-          <h3 className="category-title">
-            Pilih Game
-          </h3>
+          <div className="title-wrapper">
+            <h3 className="category-title">
+              Pilih Keperluan
+            </h3>
+          </div>
 
           <div className="category-filter">
 
             <button
               onClick={() => {
-                setSelectedGame(
-                  "FISH IT (Roblox)"
+
+                setSelectedPurpose(
+                  "STORE"
                 );
 
-                setSelectedSubCategory(
-                  ""
-                );
+                setSelectedGame("");
+
+                setSelectedSubCategory("");
+
               }}
             >
-              FISH IT (Roblox)
+              Beli Item Game
+            </button>
+
+            <button
+              onClick={() =>
+                navigate("/rekber")
+              }
+            >
+              Rekber
             </button>
 
           </div>
 
         </div>
 
-        {/* SUB CATEGORY */}
-        {selectedGame ===
-          "FISH IT (Roblox)" && (
-          <div className="game-wrapper">
+        {/* GAME */}
+        {selectedPurpose ===
+          "STORE" && (
 
-            <h3 className="category-title">
-              Pilih Kategori Item
-            </h3>
+            <div className="game-wrapper">
 
-            <div className="category-filter">
+              <div className="title-wrapper">
+                <h3 className="category-title">
+                  Pilih Game
+                </h3>
+              </div>
 
-              <button
-                onClick={() =>
-                  setSelectedSubCategory(
-                    "Skin Rod"
-                  )
-                }
-              >
-                Skin Rod
-              </button>
+              <div className="category-filter">
 
-              <button
-                onClick={() =>
-                  setSelectedSubCategory(
-                    "Stuff"
-                  )
-                }
-              >
-                Stuff
-              </button>
+                <button
+                  onClick={() => {
 
-              <button
-                onClick={() =>
-                  setSelectedSubCategory(
-                    "Jasa Joki"
-                  )
-                }
-              >
-                Jasa Joki
-              </button>
+                    setSelectedGame(
+                      "FISH IT (Roblox)"
+                    );
+
+                    setSelectedSubCategory(
+                      ""
+                    );
+
+                  }}
+                >
+                  FISH IT (Roblox)
+                </button>
+
+              </div>
 
             </div>
 
-          </div>
-        )}
+          )}
+
+        {/* SUB CATEGORY */}
+        {selectedGame ===
+          "FISH IT (Roblox)" && (
+
+            <div className="game-wrapper">
+
+              <div className="title-wrapper">
+                <h3 className="category-title">
+                  Pilih Kategori Item
+                </h3>
+              </div>
+
+              <div className="category-filter">
+
+                <button
+                  onClick={() =>
+                    setSelectedSubCategory(
+                      "Skin Rod"
+                    )
+                  }
+                >
+                  Skin Rod
+                </button>
+
+                <button
+                  onClick={() =>
+                    setSelectedSubCategory(
+                      "Stuff"
+                    )
+                  }
+                >
+                  Stuff
+                </button>
+
+                <button
+                  onClick={() =>
+                    setSelectedSubCategory(
+                      "Jasa Joki"
+                    )
+                  }
+                >
+                  Jasa Joki
+                </button>
+
+              </div>
+
+            </div>
+
+          )}
 
         {/* PRODUCT LIST */}
         <div className="product-grid">
 
           {!selectedSubCategory ? (
+
             <div className="empty-products">
+
               Pilih kategori item
               terlebih dahulu
+
             </div>
+
           ) : filteredProducts.length ===
             0 ? (
+
             <div className="empty-products">
               Belum ada item
             </div>
+
           ) : (
+
             filteredProducts.map(
               (item) => (
+
                 <div
                   className="card"
                   key={item.id}
@@ -479,9 +444,7 @@ function Store() {
                   </h3>
 
                   <p>
-                    {
-                      item.subCategory
-                    }
+                    {item.subCategory}
                   </p>
 
                   <p>
@@ -490,29 +453,64 @@ function Store() {
                     )}
                   </p>
 
+                  {/* QUANTITY */}
+                  <div className="qty-box">
+
+                    <button
+                      className="qty-btn"
+                      onClick={() =>
+                        decreaseQty(item.id)
+                      }
+                    >
+                      -
+                    </button>
+
+                    <span className="qty-number">
+                      {quantities[item.id] || 1}
+                    </span>
+
+                    <button
+                      className="qty-btn"
+                      onClick={() =>
+                        increaseQty(item.id)
+                      }
+                    >
+                      +
+                    </button>
+
+                  </div>
+
+                  <p className="total-price">
+
+                    Total:
+
+                    {" "}
+
+                    {formatPrice(
+                      item.price *
+                      (quantities[item.id] || 1)
+                    )}
+
+                  </p>
+
                   <button
                     onClick={() =>
-                      checkout(
-                        item
-                      )
+                      checkout(item)
                     }
                   >
                     Checkout
                   </button>
 
                 </div>
+
               )
             )
+
           )}
 
         </div>
 
       </section>
-
-      {/* FOOTER */}
-      <footer>
-        © 2026 FS2B STORE
-      </footer>
 
       <LiveChat />
 

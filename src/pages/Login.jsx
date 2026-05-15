@@ -1,57 +1,126 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
+import {
+  signInWithEmailAndPassword
+} from "firebase/auth";
+
+import {
+  auth
+} from "../firebase/firebase";
 
 function Login() {
-  const [username, setUsername] =
+
+  const [email, setEmail] =
     useState("");
 
   const [password, setPassword] =
     useState("");
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  const handleLogin = () => {
-    const users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
+  const handleLogin =
+    async () => {
 
-    const user = users.find(
-      (u) =>
-        u.username === username &&
-        u.password === password
-    );
+      if (
+        !email ||
+        !password
+      ) {
 
-    if (user) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-      );
+        alert(
+          "Isi semua data"
+        );
 
-      alert("Login berhasil");
-      navigate("/");
-    } else {
-      alert(
-        "Username atau password salah"
-      );
-    }
-  };
+        return;
+
+      }
+
+      try {
+
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        /* CEK ADMIN */
+        const isAdmin =
+          email ===
+          "thirtyone.zerozero@gmail.com";
+
+        /* SIMPAN USER */
+        const userData = {
+
+          email,
+
+          username:
+            email.split("@")[0],
+
+          role: isAdmin
+            ? "admin"
+            : "buyer"
+
+        };
+
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify(
+            userData
+          )
+        );
+
+        alert(
+          "Login berhasil"
+        );
+
+        navigate("/");
+
+      } catch (error) {
+
+        if (
+          error.code ===
+          "auth/invalid-credential"
+        ) {
+
+          alert(
+            "Email atau password salah"
+          );
+
+        } else {
+
+          alert(
+            "Login gagal"
+          );
+
+        }
+
+      }
+
+    };
 
   return (
     <div className="auth-page">
+
       <div className="auth-box">
 
-        <h1>Welcome Back</h1>
+        <h1>
+          Welcome Back
+        </h1>
 
         <p className="auth-subtitle">
           Login ke FS2B STORE
         </p>
 
         <input
-          type="text"
-          placeholder="Username"
+          type="email"
+          placeholder="Email"
+          value={email}
           onChange={(e) =>
-            setUsername(
+            setEmail(
               e.target.value
             )
           }
@@ -60,6 +129,7 @@ function Login() {
         <input
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) =>
             setPassword(
               e.target.value
@@ -74,7 +144,9 @@ function Login() {
         </button>
 
         <p className="auth-link">
+
           Belum punya akun?
+
           <span
             onClick={() =>
               navigate(
@@ -84,9 +156,11 @@ function Login() {
           >
             Register
           </span>
+
         </p>
 
       </div>
+
     </div>
   );
 }

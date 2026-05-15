@@ -1,3 +1,5 @@
+import Navbar from "../components/Navbar";
+
 import {
   useEffect,
   useState
@@ -7,149 +9,192 @@ import {
   useNavigate
 } from "react-router-dom";
 
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc
+} from "firebase/firestore";
+
+import {
+  db
+} from "../firebase/firebase";
+
 function Orders() {
 
   const [orders, setOrders] =
     useState([]);
 
+  const [previewImage, setPreviewImage] =
+    useState(null);
+
   const navigate =
     useNavigate();
 
-  /* PROTECT ADMIN */
-  useEffect(() => {
+  const currentUser =
+    JSON.parse(
+      localStorage.getItem(
+        "currentUser"
+      )
+    );
 
-    const currentUser =
-      JSON.parse(
-        localStorage.getItem(
-          "currentUser"
-        )
-      );
+  /* ONLY OWNER ADMIN */
+  useEffect(() => {
 
     if (
       !currentUser ||
-      currentUser.role !==
-        "admin"
+      currentUser.email !==
+      "thirtyone.zerozero@gmail.com"
     ) {
 
       navigate("/");
+
       return;
 
     }
 
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          "orders"
-        )
-      ) || [];
-
-    /* ORDER TERBARU DI ATAS */
-    const sortedOrders =
-      saved.sort(
-        (a, b) =>
-          b.id - a.id
-      );
-
-    setOrders(sortedOrders);
+    loadOrders();
 
   }, []);
 
-  const processOrder = (id) => {
+  /* LOAD ORDERS */
+  const loadOrders =
+    async () => {
 
-    const updated =
-      orders.map((order) => {
+      try {
 
-        if (order.id === id) {
+        const snapshot =
+          await getDocs(
+            collection(
+              db,
+              "orders"
+            )
+          );
 
-          /* MENUNGGU -> DIPROSES */
-          if (
-            order.status ===
-            "Menunggu Verifikasi"
-          ) {
+        const data =
+          snapshot.docs.map(
+            (item) => ({
+              id: item.id,
+              ...item.data()
+            })
+          );
 
-            return {
-              ...order,
-              status: "Diproses"
-            };
+        /* ORDER TERBARU DI ATAS */
+        data.sort(
+          (a, b) =>
+            b.createdAt - a.createdAt
+        );
 
+        setOrders(data);
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal mengambil orders"
+        );
+
+      }
+
+    };
+
+  /* UPDATE STATUS */
+  const processOrder =
+    async (id, status) => {
+
+      let newStatus =
+        status;
+
+      if (
+        status ===
+        "Menunggu Verifikasi"
+      ) {
+
+        newStatus =
+          "Diproses";
+
+      } else if (
+        status ===
+        "Diproses"
+      ) {
+
+        newStatus =
+          "Selesai";
+
+      }
+
+      try {
+
+        await updateDoc(
+          doc(
+            db,
+            "orders",
+            id
+          ),
+          {
+            status: newStatus
           }
+        );
 
-          /* DIPROSES -> SELESAI */
-          if (
-            order.status ===
-            "Diproses"
-          ) {
+        loadOrders();
 
-            return {
-              ...order,
-              status: "Selesai"
-            };
+      } catch (error) {
 
-          }
+        console.log(error);
 
-        }
+        alert(
+          "Gagal update status"
+        );
 
-        return order;
+      }
 
-      });
+    };
 
-    setOrders(updated);
+  /* DELETE ORDER */
+  const deleteOrder =
+    async (id) => {
 
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(updated)
-    );
+      const confirmDelete =
+        window.confirm(
+          "Hapus pesanan ini?"
+        );
 
-  };
+      if (!confirmDelete)
+        return;
 
-  const deleteOrder = (id) => {
+      try {
 
-    const confirmDelete =
-      window.confirm(
-        "Hapus pesanan ini?"
-      );
+        await deleteDoc(
+          doc(
+            db,
+            "orders",
+            id
+          )
+        );
 
-    if (!confirmDelete)
-      return;
+        loadOrders();
 
-    const updated =
-      orders.filter(
-        (order) =>
-          order.id !== id
-      );
+      } catch (error) {
 
-    setOrders(updated);
+        console.log(error);
 
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(updated)
-    );
+        alert(
+          "Gagal menghapus order"
+        );
 
-  };
+      }
+
+    };
 
   return (
+
     <div className="store">
 
-      <nav className="navbar">
+      <Navbar />
 
-        <div className="logo">
-          FS2B ORDER PANEL
-        </div>
-
-        <div className="menu">
-
-          <a href="/admin">
-            Admin
-          </a>
-
-          <a href="/">
-            Store
-          </a>
-
-        </div>
-
-      </nav>
-
+      {/* CONTENT */}
       <section className="products-section">
 
         <h2>
@@ -183,6 +228,8 @@ function Orders() {
                 </h3>
 
                 <p>
+                  Harga Satuan:
+                  {" "}
                   Rp{" "}
                   {Number(
                     order.price
@@ -192,9 +239,38 @@ function Orders() {
                 </p>
 
                 <p>
+                  Jumlah:
+                  {" "}
+                  {order.quantity || 1}
+                </p>
+
+                <p>
+                  <strong>
+                    Total:
+                  </strong>
+                  {" "}
+                  Rp{" "}
+                  {Number(
+                    order.totalPrice ||
+                    (
+                      order.price *
+                      (order.quantity || 1)
+                    )
+                  ).toLocaleString(
+                    "id-ID"
+                  )}
+                </p>
+
+                <p>
                   Buyer:
                   {" "}
                   {order.username}
+                </p>
+
+                <p>
+                  Email:
+                  {" "}
+                  {order.email}
                 </p>
 
                 <p>
@@ -219,56 +295,62 @@ function Orders() {
                   {order.status}
                 </p>
 
-                {/* PESAN KHUSUS FISH IT */}
+                {/* PESAN KHUSUS */}
                 {order.category ===
                   "FISH IT (Roblox)" &&
                   order.status ===
-                    "Diproses" && (
+                  "Diproses" && (
 
-                  <div
-                    style={{
-                      marginTop: "15px",
-                      padding: "14px",
-                      borderRadius: "14px",
-                      background:
-                        "rgba(255,215,0,0.08)",
-                      border:
-                        "1px solid rgba(255,215,0,0.2)",
-                      color: "#ffd700",
-                      fontSize: "14px",
-                      lineHeight: "1.6"
-                    }}
-                  >
+                    <div
+                      style={{
+                        marginTop:
+                          "15px",
+                        padding: "14px",
+                        borderRadius:
+                          "14px",
+                        background:
+                          "rgba(255,215,0,0.08)",
+                        border:
+                          "1px solid rgba(255,215,0,0.2)",
+                        color:
+                          "#ffd700",
+                        fontSize:
+                          "14px",
+                        lineHeight:
+                          "1.6"
+                      }}
+                    >
 
-                    <strong>
-                      Instruksi Buyer
-                    </strong>
+                      <strong>
+                        Instruksi Buyer
+                      </strong>
 
-                    <br />
+                      <br />
 
-                    Silahkan add
-                    {" "}
-                    <strong>
-                      @tapulimut
-                    </strong>
-                    {" "}
-                    di Roblox.
+                      Silahkan add
+                      {" "}
+                      <strong>
+                        @tapulimut
+                      </strong>
+                      {" "}
+                      di Roblox.
 
-                    <br />
+                      <br />
 
-                    Jika sudah,
-                    langsung join ke
-                    virtual server
-                    untuk proses
-                    pengiriman item.
+                      Jika sudah,
+                      langsung join ke
+                      virtual server
+                      untuk proses
+                      pengiriman item.
 
-                  </div>
+                    </div>
 
-                )}
+                  )}
 
                 <h4
                   style={{
-                    marginTop: "15px"
+                    marginTop:
+                      "15px"
                   }}
                 >
                   Bukti Transfer
@@ -277,32 +359,36 @@ function Orders() {
                 <img
                   src={order.proof}
                   alt="Bukti Transfer"
+                  onClick={() =>
+                    setPreviewImage(order.proof)
+                  }
                   style={{
                     width: "100%",
-                    borderRadius:
-                      "12px",
-                    marginTop: "10px"
+                    borderRadius: "12px",
+                    marginTop: "10px",
+                    cursor: "pointer"
                   }}
                 />
 
                 {order.status !==
                   "Selesai" && (
 
-                  <button
-                    onClick={() =>
-                      processOrder(
-                        order.id
-                      )
-                    }
-                    style={{
-                      marginTop:
-                        "15px"
-                    }}
-                  >
-                    Update Status
-                  </button>
+                    <button
+                      onClick={() =>
+                        processOrder(
+                          order.id,
+                          order.status
+                        )
+                      }
+                      style={{
+                        marginTop:
+                          "15px"
+                      }}
+                    >
+                      Update Status
+                    </button>
 
-                )}
+                  )}
 
                 <button
                   onClick={() =>
@@ -311,10 +397,12 @@ function Orders() {
                     )
                   }
                   style={{
-                    marginTop: "10px",
+                    marginTop:
+                      "10px",
                     background:
                       "linear-gradient(135deg,#ff4d4d,#b91c1c)",
-                    color: "white"
+                    color:
+                      "white"
                   }}
                 >
                   Hapus Order
@@ -329,6 +417,45 @@ function Orders() {
         </div>
 
       </section>
+
+          {previewImage && (
+
+        <div
+          onClick={() =>
+            setPreviewImage(null)
+          }
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.95)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            padding: "10px",
+            overflow: "auto"
+          }}
+        >
+
+          <img
+            src={previewImage}
+            alt="fullscreen"
+            style={{
+              width: "auto",
+              height: "auto",
+              maxWidth: "100%",
+              maxHeight: "100vh",
+              objectFit: "contain",
+              borderRadius: "16px"
+            }}
+          />
+
+        </div>
+
+      )}
 
     </div>
   );

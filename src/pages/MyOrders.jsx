@@ -1,4 +1,18 @@
-import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  collection,
+  getDocs
+} from "firebase/firestore";
+
+import {
+  db
+} from "../firebase/firebase";
 
 function MyOrders() {
 
@@ -10,62 +24,80 @@ function MyOrders() {
     setSelectedOrder
   ] = useState(null);
 
+  /* LOAD USER ORDERS */
   useEffect(() => {
 
-    const currentUser =
-      JSON.parse(
-        localStorage.getItem(
-          "currentUser"
-        )
-      );
+    const loadOrders =
+      async () => {
 
-    if (!currentUser)
-      return;
+        const currentUser =
+          JSON.parse(
+            localStorage.getItem(
+              "currentUser"
+            )
+          );
 
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          "orders"
-        )
-      ) || [];
+        if (!currentUser)
+          return;
 
-    const userOrders =
-      saved.filter(
-        (order) =>
-          order.username ===
-          currentUser.username
-      );
+        try {
 
-    /* ORDER TERBARU DI ATAS */
-    setOrders(
-      userOrders.reverse()
-    );
+          const snapshot =
+            await getDocs(
+              collection(
+                db,
+                "orders"
+              )
+            );
+
+          const data =
+            snapshot.docs.map(
+              (item) => ({
+                id: item.id,
+                ...item.data()
+              })
+            );
+
+          /* FILTER EMAIL USER */
+          const userOrders =
+            data.filter(
+              (order) =>
+                order.email ===
+                currentUser.email
+            );
+
+          /* TERBARU DI ATAS */
+          userOrders.sort(
+            (a, b) =>
+              b.createdAt -
+              a.createdAt
+          );
+
+          setOrders(
+            userOrders
+          );
+
+        } catch (error) {
+
+          console.log(error);
+
+          alert(
+            "Gagal mengambil transaksi"
+          );
+
+        }
+
+      };
+
+    loadOrders();
 
   }, []);
 
   return (
+
     <div className="store">
 
-      {/* NAVBAR */}
-      <nav className="navbar">
-
-        <div className="logo">
-          FS2B RIWAYAT
-        </div>
-
-        <div className="menu">
-
-          <a href="/">
-            Home
-          </a>
-
-          <a href="/profile">
-            Profile
-          </a>
-
-        </div>
-
-      </nav>
+      <Navbar />
 
       {/* CONTENT */}
       <section className="products-section">
@@ -84,80 +116,122 @@ function MyOrders() {
 
           ) : (
 
-            orders.map((order) => (
+            orders.map(
+              (order) => (
 
-              <div
-                className="card"
-                key={order.id}
-              >
+                <div
+                  className="card"
+                  key={order.id}
+                >
 
-                <img
-                  src={order.image}
-                  alt={order.product}
-                />
+                  <img
+                    src={order.image}
+                    alt={order.product}
+                  />
 
-                <h3>
-                  {order.product}
-                </h3>
+                  <h3>
+                    {order.product}
+                  </h3>
 
-                <p>
-                  Rp{" "}
-                  {Number(
-                    order.price
-                  ).toLocaleString(
-                    "id-ID"
-                  )}
-                </p>
+                  <p>
 
-                <p>
-                  Username Game:
-                  {" "}
-                  {
-                    order.gameUsername
-                  }
-                </p>
+                    Harga:
+                    {" "}
 
-                <p>
-                  Tanggal:
-                  {" "}
-                  {order.date}
-                </p>
+                    Rp{" "}
 
-                <p>
-                  Status:
-                  {" "}
+                    {Number(
+                      order.price
+                    ).toLocaleString(
+                      "id-ID"
+                    )}
 
-                  <span
-                    className={`status-text ${
-                      order.status ===
-                      "Selesai"
+                  </p>
+
+                  <p>
+
+                    Jumlah:
+                    {" "}
+
+                    {order.quantity || 1}
+
+                  </p>
+
+                  <p>
+
+                    Total:
+                    {" "}
+
+                    Rp{" "}
+
+                    {Number(
+                      order.totalPrice ||
+                      (
+                        order.price *
+                        (order.quantity || 1)
+                      )
+                    ).toLocaleString(
+                      "id-ID"
+                    )}
+
+                  </p>
+
+                  <p>
+
+                    Username Game:
+                    {" "}
+
+                    {
+                      order.gameUsername
+                    }
+
+                  </p>
+
+                  <p>
+
+                    Tanggal:
+                    {" "}
+
+                    {order.date}
+
+                  </p>
+
+                  <p>
+
+                    Status:
+                    {" "}
+
+                    <span
+                      className={`status-text ${order.status ===
+                        "Selesai"
                         ? "success"
                         : order.status ===
                           "Diproses"
-                        ? "process"
-                        : "pending"
-                    }`}
+                          ? "process"
+                          : "pending"
+                        }`}
+                    >
+
+                      {order.status}
+
+                    </span>
+
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      setSelectedOrder(
+                        order
+                      )
+                    }
                   >
+                    Lihat Detail
+                  </button>
 
-                    {order.status}
+                </div>
 
-                  </span>
-
-                </p>
-
-                <button
-                  onClick={() =>
-                    setSelectedOrder(
-                      order
-                    )
-                  }
-                >
-                  Lihat Detail
-                </button>
-
-              </div>
-
-            ))
+              )
+            )
 
           )}
 
@@ -165,7 +239,7 @@ function MyOrders() {
 
       </section>
 
-      {/* MODAL DETAIL */}
+      {/* MODAL */}
       {selectedOrder && (
 
         <div className="modal-overlay">
@@ -187,107 +261,173 @@ function MyOrders() {
             />
 
             <p>
+
               <strong>
                 Item:
               </strong>
+
               {" "}
+
               {
                 selectedOrder.product
               }
+
             </p>
 
             <p>
+
               <strong>
-                Harga:
+                Harga Satuan:
               </strong>
+
               {" "}
+
               Rp{" "}
+
               {Number(
                 selectedOrder.price
               ).toLocaleString(
                 "id-ID"
               )}
+
             </p>
 
             <p>
+
+              <strong>
+                Jumlah:
+              </strong>
+
+              {" "}
+
+              {selectedOrder.quantity || 1}
+
+            </p>
+
+            <p>
+
+              <strong>
+                Total:
+              </strong>
+
+              {" "}
+
+              Rp{" "}
+
+              {Number(
+                selectedOrder.totalPrice ||
+                (
+                  selectedOrder.price *
+                  (selectedOrder.quantity || 1)
+                )
+              ).toLocaleString(
+                "id-ID"
+              )}
+
+            </p>
+
+            <p>
+
               <strong>
                 Username Game:
               </strong>
+
               {" "}
+
               {
                 selectedOrder.gameUsername
               }
+
             </p>
 
             <p>
+
               <strong>
                 Tanggal:
               </strong>
+
               {" "}
+
               {
                 selectedOrder.date
               }
+
             </p>
 
             <p>
+
               <strong>
                 Status:
               </strong>
+
               {" "}
+
               {
                 selectedOrder.status
               }
+
             </p>
 
-            {/* PESAN KHUSUS FISH IT */}
+            {/* PESAN KHUSUS */}
             {selectedOrder.status ===
               "Diproses" &&
               selectedOrder.category ===
-                "FISH IT (Roblox)" && (
+              "FISH IT (Roblox)" && (
 
-              <div
-                style={{
-                  marginTop: "15px",
-                  padding: "15px",
-                  borderRadius: "14px",
-                  background:
-                    "rgba(255,215,0,0.08)",
-                  border:
-                    "1px solid rgba(255,215,0,0.2)",
-                  textAlign: "left",
-                  lineHeight: "1.7"
-                }}
-              >
-
-                <p>
-                  ⚡ Silahkan add
-                  {" "}
-                  <strong>
-                    @tapulimut
-                  </strong>
-                  {" "}
-                  di Roblox
-                </p>
-
-                <p
+                <div
                   style={{
-                    marginTop: "8px"
+                    marginTop:
+                      "15px",
+                    padding:
+                      "15px",
+                    borderRadius:
+                      "14px",
+                    background:
+                      "rgba(255,215,0,0.08)",
+                    border:
+                      "1px solid rgba(255,215,0,0.2)",
+                    textAlign:
+                      "left",
+                    lineHeight:
+                      "1.7"
                   }}
                 >
-                  🎮 Jika sudah,
-                  langsung join ke
-                  virtual server
-                  untuk proses
-                  pengiriman item
-                </p>
 
-              </div>
+                  <p>
 
-            )}
+                    ⚡ Silahkan add
+                    {" "}
+                    <strong>
+                      @tapulimut
+                    </strong>
+                    {" "}
+                    di Roblox
+
+                  </p>
+
+                  <p
+                    style={{
+                      marginTop:
+                        "8px"
+                    }}
+                  >
+
+                    🎮 Jika sudah,
+                    langsung join ke
+                    virtual server
+                    untuk proses
+                    pengiriman item
+
+                  </p>
+
+                </div>
+
+              )}
 
             <h3
               style={{
-                marginTop: "20px"
+                marginTop:
+                  "20px"
               }}
             >
               Bukti Transfer
@@ -308,7 +448,8 @@ function MyOrders() {
                 )
               }
               style={{
-                marginTop: "20px"
+                marginTop:
+                  "20px"
               }}
             >
               Tutup
