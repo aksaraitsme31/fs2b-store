@@ -30,17 +30,11 @@ function Navbar() {
                 onClick={() => navigate("/")}
                 style={{ cursor: "pointer" }}
             >
-
                 <img
                     src={iconstore}
-                    alt="FS2B"
+                    alt="FS2B STORE"
                     className="logo-image"
                 />
-
-                <span className="logo-text">
-                    STORE
-                </span>
-
             </div>
 
             <div className="menu">

@@ -245,13 +245,9 @@ function Store() {
 
             <img
               src={iconstore}
-              alt="FS2B"
-              className="hero-logo"
+              alt="FS2B STORE"
+              className="hero-store-logo"
             />
-
-            <h2 className="hero-subtitle">
-              STORE
-            </h2>
 
             <p className="hero-desc">
               SOLUSI TERBAIK UNTUK
