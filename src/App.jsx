@@ -19,6 +19,7 @@ import Rekber from "./pages/Rekber";
 import RekberOrders from "./pages/RekberOrders";
 import RekberOrderDetail from "./pages/RekberOrderDetail";
 import RekberSaya from "./pages/RekberSaya";
+import TentangKami from "./pages/TentangKami";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -35,6 +36,12 @@ function App() {
         <Route
           path="/"
           element={<Store />}
+        />
+
+        {/* TENTANG KAMI */}
+        <Route
+          path="/tentang-kami"
+          element={<TentangKami />}
         />
 
         {/* AUTH */}
