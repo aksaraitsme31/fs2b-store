@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Livechat from "../components/Livechat";
+import LiveChat from "../components/LiveChat";
 
 import { motion } from "framer-motion";
 
@@ -430,7 +430,7 @@ export default function TentangKami() {
 
       </div>
 
-      <Livechat />
+      <LiveChat />
 
     </>
 
