@@ -22,25 +22,21 @@ import {
 } from "firebase/firestore";
 
 import {
-  db
+  db,
+  auth
 } from "../firebase/firebase";
 
 function Admin() {
 
-  const currentUser =
-    JSON.parse(
-      localStorage.getItem(
-        "currentUser"
-      )
-    );
+  const firebaseUser = auth.currentUser;
 
   const navigate =
     useNavigate();
 
   /* ONLY OWNER ADMIN */
   if (
-    !currentUser ||
-    currentUser.email !==
+    !firebaseUser ||
+    firebaseUser.email !==
     "thirtyone.zerozero@gmail.com"
   ) {
 

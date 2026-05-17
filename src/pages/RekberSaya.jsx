@@ -9,10 +9,14 @@ import {
     addDoc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    where
 } from "firebase/firestore";
 
-import { db } from "../firebase/firebase";
+import {
+    db,
+    auth
+} from "../firebase/firebase";
 
 function RekberSaya() {
 
@@ -37,8 +41,19 @@ function RekberSaya() {
     /* LOAD REKBER */
     useEffect(() => {
 
-        const unsubscribe = onSnapshot(
+        if (!currentUser) return;
+
+        const buyerQuery = query(
             collection(db, "rekberOrders"),
+            where(
+                "buyerId",
+                "==",
+                auth.currentUser.uid
+            )
+        );
+
+        const unsubscribeBuyer = onSnapshot(
+            buyerQuery,
             (snapshot) => {
 
                 const data = snapshot.docs.map((doc) => ({
@@ -47,31 +62,49 @@ function RekberSaya() {
                 }));
 
                 setUserRekber(
-                    [...data]
-                        .filter(
-                            (item) =>
-                                item.buyerUsername === currentUser?.username
-                        )
-                        .sort(
-                            (a, b) => b.createdAt - a.createdAt
-                        )
-                );
-
-                setSellerRekber(
-                    [...data]
-                        .filter(
-                            (item) =>
-                                item.sellerUsername === currentUser?.username
-                        )
-                        .sort(
-                            (a, b) => b.createdAt - a.createdAt
-                        )
+                    data.sort(
+                        (a, b) =>
+                            b.createdAt - a.createdAt
+                    )
                 );
 
             }
         );
 
-        return () => unsubscribe();
+        const sellerQuery = query(
+            collection(db, "rekberOrders"),
+            where(
+                "sellerUsername",
+                "==",
+                currentUser.username
+            )
+        );
+
+        const unsubscribeSeller = onSnapshot(
+            sellerQuery,
+            (snapshot) => {
+
+                const data = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                setSellerRekber(
+                    data.sort(
+                        (a, b) =>
+                            b.createdAt - a.createdAt
+                    )
+                );
+
+            }
+        );
+
+        return () => {
+
+            unsubscribeBuyer();
+            unsubscribeSeller();
+
+        };
 
     }, []);
 

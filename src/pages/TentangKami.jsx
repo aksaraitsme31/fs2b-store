@@ -259,7 +259,7 @@ export default function TentangKami() {
             <p>
               FS2B STORE dibangun dengan tujuan
               menciptakan tempat transaksi gaming
-              yang lebih aman, nyaman, dan minim penipuan.
+              yang lebih aman, nyaman, dan terhindar dari penipuan.
             </p>
 
           </div>

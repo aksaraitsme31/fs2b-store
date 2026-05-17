@@ -3,7 +3,8 @@ import "./App.css";
 import {
   BrowserRouter,
   Routes,
-  Route
+  Route,
+  Navigate
 } from "react-router-dom";
 
 /* PAGES */
@@ -25,6 +26,13 @@ import TentangKami from "./pages/TentangKami";
 import Footer from "./components/Footer";
 
 function App() {
+
+  const currentUser =
+    JSON.parse(
+      localStorage.getItem(
+        "currentUser"
+      )
+    );
 
   return (
 
@@ -74,12 +82,20 @@ function App() {
         {/* ADMIN */}
         <Route
           path="/admin"
-          element={<Admin />}
+          element={
+            currentUser?.role === "admin"
+              ? <Admin />
+              : <Navigate to="/" />
+          }
         />
 
         <Route
           path="/orders"
-          element={<Orders />}
+          element={
+            currentUser?.role === "admin"
+              ? <Orders />
+              : <Navigate to="/" />
+          }
         />
 
         {/* REKBER */}

@@ -16,7 +16,8 @@ import {
 } from "firebase/firestore";
 
 import {
-    db
+    db,
+    auth
 } from "../firebase/firebase";
 
 function Rekber() {
@@ -98,6 +99,9 @@ function Rekber() {
     const createRekber =
         async () => {
 
+            const firebaseUser =
+                auth.currentUser;
+
             if (
                 !buyerUsername ||
                 !sellerUsername ||
@@ -117,6 +121,9 @@ function Rekber() {
             try {
 
                 const newRekber = {
+
+                    buyerId:
+                        firebaseUser.uid,
 
                     buyerUsername,
 
