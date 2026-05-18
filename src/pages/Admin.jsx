@@ -1025,7 +1025,10 @@ function Admin() {
                   <strong>Status:</strong>
                   {" "}
                   <span
-                    className="status-text process"
+                    className={`status-text ${item.status === "Done"
+                        ? "success"
+                        : "process"
+                      }`}
                   >
                     {item.status}
                   </span>
