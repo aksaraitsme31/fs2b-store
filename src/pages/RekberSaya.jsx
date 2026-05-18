@@ -12,7 +12,6 @@ import {
     doc,
     updateDoc,
     addDoc,
-    serverTimestamp,
     query,
     orderBy,
     where
@@ -30,9 +29,6 @@ function RekberSaya() {
                 "currentUser"
             )
         );
-
-    const chatEndRef =
-        useRef(null);
 
     const fileInputRefs =
         useRef({});
@@ -95,8 +91,8 @@ function RekberSaya() {
                     setUserRekber(
                         data.sort(
                             (a, b) =>
-                                b.createdAt -
-                                a.createdAt
+                                b.createdAt?.toDate?.() -
+                                a.createdAt?.toDate?.()
                         )
                     );
 
@@ -131,8 +127,8 @@ function RekberSaya() {
                     setSellerRekber(
                         data.sort(
                             (a, b) =>
-                                b.createdAt -
-                                a.createdAt
+                                b.createdAt?.toDate?.() -
+                                a.createdAt?.toDate?.()
                         )
                     );
 
@@ -151,10 +147,34 @@ function RekberSaya() {
     /* LOAD CHAT */
     useEffect(() => {
 
+        if (
+            userRekber.length === 0 &&
+            sellerRekber.length === 0
+        ) return;
+
+        const rekberIds = [
+
+            ...userRekber.map(
+                (item) => item.id
+            ),
+
+            ...sellerRekber.map(
+                (item) => item.id
+            )
+
+        ];
+
+        if (rekberIds.length === 0) return;
+
         const q = query(
             collection(
                 db,
                 "rekberMessages"
+            ),
+            where(
+                "rekberId",
+                "in",
+                rekberIds.slice(0, 10)
             ),
             orderBy(
                 "createdAt",
@@ -182,16 +202,7 @@ function RekberSaya() {
 
         return () => unsubscribe();
 
-    }, []);
-
-    /* AUTO SCROLL CHAT */
-    useEffect(() => {
-
-        chatEndRef.current?.scrollIntoView({
-            behavior: "smooth"
-        });
-
-    }, [rekberMessages]);
+    }, [userRekber, sellerRekber]);
 
     /* SELLER KIRIM */
     const sendItemRekber =
@@ -301,6 +312,34 @@ function RekberSaya() {
 
                         rekberId,
 
+                        buyerId:
+
+                            userRekber.find(
+                                (item) =>
+                                    item.id === rekberId
+                            )?.buyerId
+
+                            ||
+
+                            sellerRekber.find(
+                                (item) =>
+                                    item.id === rekberId
+                            )?.buyerId,
+
+                        sellerId:
+
+                            userRekber.find(
+                                (item) =>
+                                    item.id === rekberId
+                            )?.sellerId
+
+                            ||
+
+                            sellerRekber.find(
+                                (item) =>
+                                    item.id === rekberId
+                            )?.sellerId,
+
                         sender:
                             currentUser.username,
 
@@ -333,7 +372,7 @@ function RekberSaya() {
                             mediaType,
 
                         createdAt:
-                            serverTimestamp()
+                            new Date()
 
                     }
                 );
@@ -516,8 +555,6 @@ function RekberSaya() {
 
                         )}
 
-                        <div ref={chatEndRef} />
-
                     </div>
 
                     <div
@@ -671,7 +708,10 @@ function RekberSaya() {
 
                             <div
                                 className="history-card"
-                                key={item.id}
+                                key={
+                                    item.id +
+                                    item.status
+                                }
                             >
 
                                 <div className="history-info">
@@ -756,7 +796,10 @@ function RekberSaya() {
 
                             <div
                                 className="history-card"
-                                key={item.id}
+                                key={
+                                    item.id +
+                                    item.status
+                                }
                             >
 
                                 <div className="history-info">

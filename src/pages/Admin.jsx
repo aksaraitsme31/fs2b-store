@@ -16,7 +16,6 @@ import {
 import {
   collection,
   addDoc,
-  getDocs,
   deleteDoc,
   doc,
   updateDoc,
@@ -115,49 +114,26 @@ function Admin() {
      LOAD PRODUCTS
   ========================= */
 
-  const loadProducts =
-    async () => {
+  useEffect(() => {
 
-      try {
+    const q = query(
+      collection(db, "products")
+    );
 
-        const querySnapshot =
-          await getDocs(
-            collection(
-              db,
-              "products"
-            )
-          );
+    const unsubscribe =
+      onSnapshot(q, (snapshot) => {
 
-        const data = [];
-
-        querySnapshot.forEach(
-          (item) => {
-
-            data.push({
-              id: item.id,
-              ...item.data()
-            });
-
-          }
-        );
+        const data =
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }));
 
         setProducts(data);
 
-      } catch (error) {
+      });
 
-        console.log(error);
-
-        alert(
-          "Gagal mengambil produk"
-        );
-
-      }
-
-    };
-
-  useEffect(() => {
-
-    loadProducts();
+    return () => unsubscribe();
 
   }, []);
 
@@ -365,8 +341,6 @@ function Admin() {
         setCategory("");
         setSubCategory("");
 
-        loadProducts();
-
       } catch (error) {
 
         console.log(error);
@@ -407,8 +381,6 @@ function Admin() {
         alert(
           "Produk berhasil dihapus"
         );
-
-        loadProducts();
 
       } catch (error) {
 
@@ -1026,8 +998,8 @@ function Admin() {
                   {" "}
                   <span
                     className={`status-text ${item.status === "Done"
-                        ? "success"
-                        : "process"
+                      ? "success"
+                      : "process"
                       }`}
                   >
                     {item.status}

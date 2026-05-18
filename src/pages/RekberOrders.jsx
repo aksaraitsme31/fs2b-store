@@ -34,6 +34,8 @@ function RekberOrders() {
     /* LOAD REKBER REALTIME */
     useEffect(() => {
 
+        if (!currentUser?.uid) return;
+
         let q;
 
         if (
@@ -93,7 +95,7 @@ function RekberOrders() {
 
         return () => unsubscribe();
 
-    }, []);
+    }, [currentUser]);
 
     /* VERIFIKASI PEMBAYARAN */
     const approveRekber =
@@ -236,20 +238,20 @@ function RekberOrders() {
 
                                         <span
                                             className={`status-text ${item.status ===
-                                                "Barang Sudah Diterima Buyer" ||
-
-                                                item.status ===
-                                                "Done"
-                                                ? "success"
-
-                                                : item.status ===
-                                                    "Menunggu Seller Mengirim Barang" ||
+                                                    "Barang Sudah Diterima Buyer" ||
 
                                                     item.status ===
-                                                    "Seller Sudah Mengirim Barang"
-                                                    ? "process"
+                                                    "Done"
+                                                    ? "success"
 
-                                                    : "pending"
+                                                    : item.status ===
+                                                        "Menunggu Seller Mengirim Barang" ||
+
+                                                        item.status ===
+                                                        "Seller Sudah Mengirim Barang"
+                                                        ? "process"
+
+                                                        : "pending"
                                                 }`}
                                         >
                                             {item.status}
@@ -289,6 +291,7 @@ function RekberOrders() {
         </div>
 
     );
+
 }
 
 export default RekberOrders;
