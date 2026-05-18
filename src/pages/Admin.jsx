@@ -10,6 +10,10 @@ import {
 } from "react-router-dom";
 
 import {
+  onAuthStateChanged
+} from "firebase/auth";
+
+import {
   collection,
   addDoc,
   getDocs,
@@ -28,45 +32,36 @@ import {
 
 function Admin() {
 
-  const firebaseUser = auth.currentUser;
-
   const navigate =
     useNavigate();
 
-  /* ONLY OWNER ADMIN */
-  if (
-    !firebaseUser ||
-    firebaseUser.email !==
-    "thirtyone.zerozero@gmail.com"
-  ) {
+  const [
+    firebaseUser,
+    setFirebaseUser
+  ] = useState(null);
 
-    return (
-      <div className="auth-page">
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
-        <div className="auth-box">
+  useEffect(() => {
 
-          <h1>
-            Akses Ditolak
-          </h1>
+    const unsubscribe =
+      onAuthStateChanged(
+        auth,
+        (user) => {
 
-          <p className="auth-subtitle">
-            Halaman ini khusus admin
-          </p>
+          setFirebaseUser(user);
 
-          <button
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            Kembali ke Store
-          </button>
+          setLoading(false);
 
-        </div>
+        }
+      );
 
-      </div>
-    );
+    return () => unsubscribe();
 
-  }
+  }, []);
 
   /* =========================
      PRODUCT STATE
@@ -719,6 +714,61 @@ function Admin() {
       );
 
     };
+
+  if (loading) {
+
+    return (
+
+      <div className="auth-page">
+
+        <div className="auth-box">
+
+          <h1>
+            Loading...
+          </h1>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
+
+  /* ONLY OWNER ADMIN */
+  if (
+    !firebaseUser ||
+    firebaseUser.email !==
+    "thirtyone.zerozero@gmail.com"
+  ) {
+
+    return (
+      <div className="auth-page">
+
+        <div className="auth-box">
+
+          <h1>
+            Akses Ditolak
+          </h1>
+
+          <p className="auth-subtitle">
+            Halaman ini khusus admin
+          </p>
+
+          <button
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            Kembali ke Store
+          </button>
+
+        </div>
+
+      </div>
+    );
+
+  }
 
   return (
 

@@ -9,7 +9,13 @@ import {
 } from "firebase/auth";
 
 import {
-  auth
+  doc,
+  getDoc
+} from "firebase/firestore";
+
+import {
+  auth,
+  db
 } from "../firebase/firebase";
 
 function Login() {
@@ -41,28 +47,42 @@ function Login() {
 
       try {
 
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+        const userCredential =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+        const firebaseUser =
+          userCredential.user;
+
+        const userDoc =
+          await getDoc(
+            doc(
+              db,
+              "users",
+              firebaseUser.uid
+            )
+          );
+
+        const userDataFirestore =
+          userDoc.data();
 
         /* CEK ADMIN */
-        const isAdmin =
-          email ===
-          "thirtyone.zerozero@gmail.com";
-
-        /* SIMPAN USER */
         const userData = {
 
-          email,
+          uid:
+            firebaseUser.uid,
+
+          email:
+            firebaseUser.email,
 
           username:
-            email.split("@")[0],
+            userDataFirestore.username,
 
-          role: isAdmin
-            ? "admin"
-            : "buyer"
+          role:
+            userDataFirestore.role || "buyer"
 
         };
 
@@ -81,22 +101,9 @@ function Login() {
 
       } catch (error) {
 
-        if (
-          error.code ===
-          "auth/invalid-credential"
-        ) {
+        console.log(error);
 
-          alert(
-            "Email atau password salah"
-          );
-
-        } else {
-
-          alert(
-            "Login gagal"
-          );
-
-        }
+        alert(error.message);
 
       }
 

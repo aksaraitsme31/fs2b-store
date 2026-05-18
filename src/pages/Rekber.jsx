@@ -12,7 +12,10 @@ import {
 
 import {
     collection,
-    addDoc
+    addDoc,
+    query,
+    where,
+    getDocs
 } from "firebase/firestore";
 
 import {
@@ -120,12 +123,40 @@ function Rekber() {
 
             try {
 
+                const userQuery = query(
+                    collection(db, "users"),
+                    where(
+                        "username",
+                        "==",
+                        sellerUsername
+                    )
+                );
+
+                const userSnapshot =
+                    await getDocs(userQuery);
+
+                if (userSnapshot.empty) {
+
+                    alert("Seller tidak ditemukan");
+
+                    return;
+
+                }
+
+                const sellerData =
+                    userSnapshot.docs[0].data();
+
+                const sellerId =
+                    sellerData.uid;
+
                 const newRekber = {
 
                     buyerId:
                         firebaseUser.uid,
 
                     buyerUsername,
+
+                    sellerId,
 
                     sellerUsername,
 

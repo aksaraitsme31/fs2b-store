@@ -9,7 +9,8 @@ import {
     doc,
     updateDoc,
     query,
-    orderBy
+    orderBy,
+    where
 } from "firebase/firestore";
 
 import {
@@ -23,13 +24,52 @@ function RekberOrders() {
         setRekberOrders
     ] = useState([]);
 
+    const currentUser =
+        JSON.parse(
+            localStorage.getItem(
+                "currentUser"
+            )
+        );
+
     /* LOAD REKBER REALTIME */
     useEffect(() => {
 
-        const q = query(
-            collection(db, "rekberOrders"),
-            orderBy("createdAt", "desc")
-        );
+        let q;
+
+        if (
+            currentUser.role === "admin"
+        ) {
+
+            q = query(
+                collection(
+                    db,
+                    "rekberOrders"
+                ),
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
+            );
+
+        } else {
+
+            q = query(
+                collection(
+                    db,
+                    "rekberOrders"
+                ),
+                where(
+                    "sellerId",
+                    "==",
+                    currentUser.uid
+                ),
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
+            );
+
+        }
 
         const unsubscribe =
             onSnapshot(
