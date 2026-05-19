@@ -4,6 +4,11 @@ import LiveChat from "../components/LiveChat";
 
 import { motion } from "framer-motion";
 
+import {
+  FaTiktok,
+  FaInstagram,
+  FaFacebookF
+} from "react-icons/fa6";
 
 import {
   ShieldCheck,
@@ -267,6 +272,7 @@ export default function TentangKami() {
           <div className="founder-grid">
 
             {/* FOUNDER CARD*/}
+
             <motion.div
               className="founder-card"
               initial={{ opacity: 0, y: 40 }}
@@ -294,7 +300,7 @@ export default function TentangKami() {
                 </span>
 
                 <h3>
-                  Athfal Kurniawan S (TAPULIMUT)
+                  Athfal Kurniawan S (TAPUL)
                 </h3>
 
                 <p>
@@ -324,6 +330,35 @@ export default function TentangKami() {
                   <span>
                     Purwokerto, Banyumas, Jawa Tengah
                   </span>
+
+                </div>
+
+                {/* SOCIAL */}
+                <div className="founder-social">
+
+                  <a
+                    href="https://tiktok.com/@tapulimut"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaTiktok />
+                  </a>
+
+                  <a
+                    href="https://instagram.com/aksaraitsme"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaInstagram />
+                  </a>
+
+                  <a
+                    href="https://facebook.com/share/18U7nCsAmk/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaFacebookF />
+                  </a>
 
                 </div>
 
@@ -397,6 +432,7 @@ export default function TentangKami() {
                   selama proses transaksi berlangsung.
                 </p>
 
+                {/* LOCATION */}
                 <div className="profile-location">
 
                   <svg
@@ -417,6 +453,27 @@ export default function TentangKami() {
                   <span>
                     Purwokerto, Banyumas, Jawa Tengah
                   </span>
+
+                </div>
+
+                {/* SOCIAL */}
+                <div className="founder-social">
+
+                  <a
+                    href="https://tiktok.com/@peyy_130"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaTiktok />
+                  </a>
+
+                  <a
+                    href="https://instagram.com/lynxpey"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaInstagram />
+                  </a>
 
                 </div>
 

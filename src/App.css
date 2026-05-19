@@ -2832,6 +2832,71 @@ html,
   opacity: 0.9;
 }
 
+/* =========================================
+   FOUNDER SOCIAL
+========================================= */
+
+.founder-social {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  margin-top: 24px;
+
+}
+
+.founder-social a {
+
+  width: 46px;
+
+  height: 46px;
+
+  border-radius: 16px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background:
+    rgba(255,255,255,0.06);
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  color: white;
+
+  font-size: 18px;
+
+  backdrop-filter: blur(10px);
+
+  transition: 0.3s ease;
+
+}
+
+.founder-social a:hover {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffd700,
+      #d4af37
+    );
+
+  color: #111;
+
+  transform:
+    translateY(-5px);
+
+  box-shadow:
+    0 0 20px rgba(255,215,0,0.35);
+
+}
+
 .profile-location svg {
   flex-shrink: 0;
 }

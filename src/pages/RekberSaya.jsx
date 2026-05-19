@@ -19,17 +19,14 @@ import {
 } from "firebase/firestore";
 
 import {
-    db
+    db,
+    auth
 } from "../firebase/firebase";
 
 function RekberSaya() {
 
     const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "currentUser"
-            )
-        );
+    auth.currentUser;
 
     const fileInputRefs =
         useRef({});
@@ -300,13 +297,13 @@ function RekberSaya() {
                         rekberId,
 
                         sender:
-                            currentUser.username,
+                            currentUser.displayName,
 
                         username:
-                            currentUser.username,
+                            currentUser.displayName,
 
                         role:
-                            currentUser.username ===
+                            currentUser.displayName ===
                                 (
                                     userRekber.find(
                                         (item) =>
@@ -453,7 +450,7 @@ function RekberSaya() {
                                     <div
                                         key={msg.id}
                                         className={
-                                            msg.sender === currentUser.username
+                                            msg.sender === currentUser.displayName
                                                 ? "my-chat"
                                                 : "other-chat"
                                         }

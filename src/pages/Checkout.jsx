@@ -135,11 +135,6 @@ function Checkout() {
           ),
           {
 
-            environment:
-              window.location.hostname === "localhost"
-                ? "localhost"
-                : "production",
-
             product:
               product.name,
 
