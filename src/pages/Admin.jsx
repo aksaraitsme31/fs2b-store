@@ -21,7 +21,8 @@ import {
   updateDoc,
   onSnapshot,
   query,
-  orderBy
+  orderBy,
+  serverTimestamp
 } from "firebase/firestore";
 
 import {
@@ -452,7 +453,7 @@ function Admin() {
           rekberId,
           sender: "ADMIN",
           message,
-          createdAt: new Date()
+          createdAt: serverTimestamp()
         }
       );
 
@@ -570,7 +571,7 @@ function Admin() {
 
           </div>
 
-          {previewMedia && (
+          {previewMedia !== null && (
 
             <div
               onClick={() =>
@@ -584,7 +585,8 @@ function Admin() {
                 justifyContent: "center",
                 alignItems: "center",
                 zIndex: 99999,
-                padding: "20px"
+                padding: "20px",
+                pointerEvents: "auto"
               }}
             >
 
@@ -594,6 +596,7 @@ function Admin() {
                 }
                 style={{
                   display: "flex",
+                  pointerEvents: "auto",
                   justifyContent: "center",
                   alignItems: "center",
                   width: "100%",

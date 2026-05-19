@@ -9,17 +9,29 @@ import {
   useState
 } from "react";
 
+import {
+  onAuthStateChanged,
+  signOut,
+  updateProfile,
+  updateEmail,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential
+} from "firebase/auth";
+
+import {
+  auth
+} from "../firebase/firebase";
+
 function Profile() {
 
   const navigate =
     useNavigate();
 
-  const currentUser =
-    JSON.parse(
-      localStorage.getItem(
-        "currentUser"
-      )
-    );
+  const [
+    currentUser,
+    setCurrentUser
+  ] = useState(null);
 
   const [
     newUsername,
@@ -52,150 +64,143 @@ function Profile() {
 
   useEffect(() => {
 
-    if (!currentUser) {
+    const unsubscribe =
+      onAuthStateChanged(auth, (user) => {
 
-      navigate("/login");
+        if (!user) {
 
-    }
+          navigate("/login");
+
+        } else {
+
+          setCurrentUser(user);
+
+          setNewUsername(
+            user.displayName || ""
+          );
+
+          setNewEmail(
+            user.email || ""
+          );
+
+        }
+
+      });
+
+    return () => unsubscribe();
 
   }, []);
 
-  const logout = () => {
+  const logout = async () => {
 
-    localStorage.removeItem(
-      "currentUser"
-    );
+    await signOut(auth);
 
     navigate("/login");
 
-    window.location.reload();
-
   };
 
-  const updateProfile = () => {
+  const handleUpdateProfile =
+    async () => {
 
-    try {
+      try {
 
-      const updatedUser = {
+        await updateProfile(
+          auth.currentUser,
+          {
+            displayName:
+              newUsername
+          }
+        );
 
-        ...currentUser,
+        await auth.currentUser.reload();
 
-        username:
-          newUsername,
+        setCurrentUser(
+          auth.currentUser
+        );
 
-        email:
-          newEmail
+        if (
+          newEmail !==
+          auth.currentUser.email
+        ) {
 
-      };
+          await updateEmail(
+            auth.currentUser,
+            newEmail
+          );
 
-      localStorage.setItem(
-        "currentUser",
+        }
 
-        JSON.stringify(
-          updatedUser
-        )
-      );
+        alert(
+          "Profile berhasil diupdate"
+        );
 
-      alert(
-        "Profile berhasil diupdate"
-      );
+      } catch (error) {
 
-      window.location.reload();
+        console.log(error);
 
-    } catch (error) {
+        alert(
+          "Gagal update profile"
+        );
 
-      console.log(error);
+      }
 
-      alert(
-        "Gagal update profile"
-      );
+    };
 
-    }
+  const changePassword =
+    async () => {
 
-  };
+      try {
 
-  const changePassword = () => {
+        if (
+          newPassword !==
+          confirmPassword
+        ) {
 
-    if (
-      oldPassword !==
-      currentUser.password
-    ) {
+          alert(
+            "Konfirmasi password tidak cocok"
+          );
 
-      alert(
-        "Password lama salah"
-      );
+          return;
 
-      return;
+        }
 
-    }
+        const credential =
+          EmailAuthProvider.credential(
+            currentUser.email,
+            oldPassword
+          );
 
-    if (
-      newPassword !==
-      confirmPassword
-    ) {
+        await reauthenticateWithCredential(
+          currentUser,
+          credential
+        );
 
-      alert(
-        "Konfirmasi password tidak cocok"
-      );
-
-      return;
-
-    }
-
-    if (
-      newPassword.length < 6
-    ) {
-
-      alert(
-        "Password minimal 6 karakter"
-      );
-
-      return;
-
-    }
-
-    try {
-
-      const updatedUser = {
-
-        ...currentUser,
-
-        password:
+        await updatePassword(
+          currentUser,
           newPassword
+        );
 
-      };
+        alert(
+          "Password berhasil diubah"
+        );
 
-      localStorage.setItem(
+        setOldPassword("");
 
-        "currentUser",
+        setNewPassword("");
 
-        JSON.stringify(
-          updatedUser
-        )
+        setConfirmPassword("");
 
-      );
+      } catch (error) {
 
-      alert(
-        "Password berhasil diubah"
-      );
+        console.log(error);
 
-      setOldPassword("");
+        alert(
+          "Gagal mengubah password"
+        );
 
-      setNewPassword("");
+      }
 
-      setConfirmPassword("");
-
-    } catch (error) {
-
-      console.log(error);
-
-      alert(
-        "Gagal mengubah password"
-      );
-
-    }
-
-  };
+    };
 
   return (
 
@@ -216,7 +221,7 @@ function Profile() {
 
             {" "}
 
-            {currentUser?.username}
+            {currentUser?.displayName}
 
           </p>
 
@@ -267,7 +272,7 @@ function Profile() {
 
           <button
             onClick={
-              updateProfile
+              handleUpdateProfile
             }
           >
             Update Profile

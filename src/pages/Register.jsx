@@ -5,7 +5,8 @@ import {
 } from "react-router-dom";
 
 import {
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  updateProfile
 } from "firebase/auth";
 
 import {
@@ -60,6 +61,10 @@ function Register() {
 
         const user =
           userCredential.user;
+
+        await updateProfile(user, {
+          displayName: username
+        });
 
         await setDoc(
           doc(

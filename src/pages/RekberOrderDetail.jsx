@@ -10,8 +10,8 @@ import {
 
 import {
     doc,
-    getDoc,
-    updateDoc
+    updateDoc,
+    onSnapshot
 } from "firebase/firestore";
 
 import {
@@ -36,47 +36,36 @@ function RekberOrderDetail() {
         setPaymentProof
     ] = useState(null);
 
-    /* LOAD ORDER */
+    /* LOAD ORDER REALTIME */
     useEffect(() => {
 
-        const loadOrder =
-            async () => {
+        const docRef =
+            doc(
+                db,
+                "rekberOrders",
+                id
+            );
 
-                try {
-
-                    const docRef =
-                        doc(
-                            db,
-                            "rekberOrders",
-                            id
-                        );
-
-                    const snapshot =
-                        await getDoc(
-                            docRef
-                        );
+        const unsubscribe =
+            onSnapshot(
+                docRef,
+                (snapshot) => {
 
                     if (
                         snapshot.exists()
                     ) {
 
                         setOrder({
-                            id:
-                                snapshot.id,
+                            id: snapshot.id,
                             ...snapshot.data()
                         });
 
                     }
 
-                } catch (error) {
-
-                    console.log(error);
-
                 }
+            );
 
-            };
-
-        loadOrder();
+        return () => unsubscribe();
 
     }, [id]);
 

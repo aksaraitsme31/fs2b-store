@@ -1,5 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+
+import {
+    onAuthStateChanged,
+    signOut
+} from "firebase/auth";
+
+import {
+    auth
+} from "../firebase/firebase";
+
 import iconstore from "../assets/iconstore.png";
 
 function Navbar() {
@@ -8,30 +19,29 @@ function Navbar() {
 
     const [showDropdown, setShowDropdown] = useState(false);
 
-    let currentUser = null;
+    const [currentUser, setCurrentUser] = useState(null);
 
-    try {
+    useEffect(() => {
 
-        currentUser = JSON.parse(
-            localStorage.getItem("currentUser")
-        );
+        const unsubscribe =
+            onAuthStateChanged(auth, (user) => {
 
-    } catch (error) {
+                setCurrentUser(user);
 
-        currentUser = null;
+            });
 
-    }
+        return () => unsubscribe();
+
+    }, []);
 
     const isAdmin =
         currentUser?.email === "thirtyone.zerozero@gmail.com";
 
-    const logout = () => {
+    const logout = async () => {
 
-        localStorage.removeItem("currentUser");
+        await signOut(auth);
 
         navigate("/");
-
-        window.location.reload();
 
     };
 
@@ -121,7 +131,7 @@ function Navbar() {
                                 setShowDropdown(!showDropdown)
                             }
                         >
-                            👤 {currentUser.username} ▼
+                            👤 {currentUser.displayName || currentUser.email} ▼
                         </button>
 
                         {showDropdown && (

@@ -1,4 +1,13 @@
 import "./App.css";
+import { useState, useEffect } from "react";
+
+import {
+  onAuthStateChanged
+} from "firebase/auth";
+
+import {
+  auth
+} from "./firebase/firebase";
 
 import {
   BrowserRouter,
@@ -27,12 +36,20 @@ import Footer from "./components/Footer";
 
 function App() {
 
-  const currentUser =
-    JSON.parse(
-      localStorage.getItem(
-        "currentUser"
-      )
-    );
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+
+    const unsubscribe =
+      onAuthStateChanged(auth, (user) => {
+
+        setCurrentUser(user);
+
+      });
+
+    return () => unsubscribe();
+
+  }, []);
 
   return (
 
@@ -83,7 +100,7 @@ function App() {
         <Route
           path="/admin"
           element={
-            currentUser?.role === "admin"
+            currentUser?.email === "thirtyone.zerozero@gmail.com"
               ? <Admin />
               : <Navigate to="/" />
           }
@@ -92,7 +109,7 @@ function App() {
         <Route
           path="/orders"
           element={
-            currentUser?.role === "admin"
+            currentUser?.email === "thirtyone.zerozero@gmail.com"
               ? <Orders />
               : <Navigate to="/" />
           }

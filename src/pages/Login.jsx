@@ -9,13 +9,7 @@ import {
 } from "firebase/auth";
 
 import {
-  doc,
-  getDoc
-} from "firebase/firestore";
-
-import {
-  auth,
-  db
+  auth
 } from "../firebase/firebase";
 
 function Login() {
@@ -54,44 +48,8 @@ function Login() {
             password
           );
 
-        const firebaseUser =
-          userCredential.user;
-
-        const userDoc =
-          await getDoc(
-            doc(
-              db,
-              "users",
-              firebaseUser.uid
-            )
-          );
-
-        const userDataFirestore =
-          userDoc.data();
-
         /* CEK ADMIN */
-        const userData = {
 
-          uid:
-            firebaseUser.uid,
-
-          email:
-            firebaseUser.email,
-
-          username:
-            userDataFirestore.username,
-
-          role:
-            userDataFirestore.role || "buyer"
-
-        };
-
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify(
-            userData
-          )
-        );
 
         alert(
           "Login berhasil"

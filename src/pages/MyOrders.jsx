@@ -7,11 +7,14 @@ import {
 
 import {
   collection,
-  getDocs
+  query,
+  where,
+  onSnapshot
 } from "firebase/firestore";
 
 import {
-  db
+  db,
+  auth
 } from "../firebase/firebase";
 
 function MyOrders() {
@@ -24,33 +27,30 @@ function MyOrders() {
     setSelectedOrder
   ] = useState(null);
 
-  /* LOAD USER ORDERS */
+  /* LOAD USER ORDERS REALTIME */
   useEffect(() => {
 
-    const loadOrders =
-      async () => {
+    const currentUser =
+      auth.currentUser;
 
-        const currentUser =
-          JSON.parse(
-            localStorage.getItem(
-              "currentUser"
-            )
-          );
+    if (!currentUser)
+      return;
 
-        if (!currentUser)
-          return;
+    const q = query(
+      collection(db, "orders"),
+      where(
+        "email",
+        "==",
+        currentUser.email
+      )
+    );
 
-        try {
+    const unsubscribe =
+      onSnapshot(
+        q,
+        (snapshot) => {
 
-          const snapshot =
-            await getDocs(
-              collection(
-                db,
-                "orders"
-              )
-            );
-
-          const data =
+          const userOrders =
             snapshot.docs.map(
               (item) => ({
                 id: item.id,
@@ -58,26 +58,23 @@ function MyOrders() {
               })
             );
 
-          /* FILTER EMAIL USER */
-          const userOrders =
-            data.filter(
-              (order) =>
-                order.email ===
-                currentUser.email
-            );
-
           /* TERBARU DI ATAS */
-          userOrders.sort(
-            (a, b) =>
-              b.createdAt -
-              a.createdAt
-          );
+          userOrders.sort((a, b) => {
 
-          setOrders(
-            userOrders
-          );
+            const timeA =
+              a.createdAt?.seconds || 0;
 
-        } catch (error) {
+            const timeB =
+              b.createdAt?.seconds || 0;
+
+            return timeB - timeA;
+
+          });
+
+          setOrders(userOrders);
+
+        },
+        (error) => {
 
           console.log(error);
 
@@ -86,10 +83,9 @@ function MyOrders() {
           );
 
         }
+      );
 
-      };
-
-    loadOrders();
+    return () => unsubscribe();
 
   }, []);
 

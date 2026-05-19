@@ -21,7 +21,8 @@ import {
 } from "firebase/firestore";
 
 import {
-  db
+  db,
+  auth
 } from "../firebase/firebase";
 
 function Store() {
@@ -29,8 +30,8 @@ function Store() {
   const [products, setProducts] =
     useState([]);
 
-  const [currentUser, setCurrentUser] =
-    useState(null);
+  const currentUser =
+    auth.currentUser;
 
   /* PURPOSE */
   const [
@@ -90,15 +91,6 @@ function Store() {
           );
 
         }
-
-        const user =
-          JSON.parse(
-            localStorage.getItem(
-              "currentUser"
-            )
-          ) || null;
-
-        setCurrentUser(user);
 
       };
 
@@ -194,21 +186,6 @@ function Store() {
     });
 
   /* LOGOUT */
-  const logout = () => {
-
-    localStorage.removeItem(
-      "currentUser"
-    );
-
-    navigate("/");
-
-    window.location.reload();
-
-  };
-
-  const isAdmin =
-    currentUser?.email ===
-    "thirtyone.zerozero@gmail.com";
 
   return (
     <div className="store">
@@ -501,7 +478,7 @@ function Store() {
 
               )
             )
-            
+
           )}
 
         </div>

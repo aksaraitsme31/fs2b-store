@@ -6,11 +6,13 @@ import { useState } from "react";
 
 import {
   collection,
-  addDoc
+  addDoc,
+  serverTimestamp
 } from "firebase/firestore";
 
 import {
-  db
+  db,
+  auth
 } from "../firebase/firebase";
 
 import qrisImage from "../assets/qris.jpeg";
@@ -27,7 +29,9 @@ function Checkout() {
     state?.quantity || 1;
 
   const totalPrice =
-    product.price * quantity;
+    product
+      ? product.price * quantity
+      : 0;
 
   const [
     gameUsername,
@@ -97,11 +101,7 @@ function Checkout() {
     async () => {
 
       const currentUser =
-        JSON.parse(
-          localStorage.getItem(
-            "currentUser"
-          )
-        );
+        auth.currentUser;
 
       if (!currentUser) {
 
@@ -157,7 +157,7 @@ function Checkout() {
               product.category,
 
             username:
-              currentUser.username,
+              currentUser.displayName,
 
             email:
               currentUser.email,
@@ -182,7 +182,7 @@ function Checkout() {
               ),
 
             createdAt:
-              Date.now()
+              serverTimestamp()
 
           }
         );

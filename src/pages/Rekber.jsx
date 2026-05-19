@@ -15,7 +15,8 @@ import {
     addDoc,
     query,
     where,
-    getDocs
+    getDocs,
+    serverTimestamp
 } from "firebase/firestore";
 
 import {
@@ -29,16 +30,12 @@ function Rekber() {
         useNavigate();
 
     const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "currentUser"
-            )
-        );
+        auth.currentUser;
 
     const [
         buyerUsername
     ] = useState(
-        currentUser?.username || ""
+        currentUser?.displayName || ""
     );
 
     const [
@@ -105,6 +102,16 @@ function Rekber() {
             const firebaseUser =
                 auth.currentUser;
 
+            if (!firebaseUser) {
+
+                alert("Silakan login dulu");
+
+                navigate("/login");
+
+                return;
+
+            }
+
             if (
                 !buyerUsername ||
                 !sellerUsername ||
@@ -128,7 +135,7 @@ function Rekber() {
                     where(
                         "username",
                         "==",
-                        sellerUsername
+                        sellerUsername.trim()
                     )
                 );
 
@@ -145,6 +152,8 @@ function Rekber() {
 
                 const sellerData =
                     userSnapshot.docs[0].data();
+
+                console.log(sellerData);
 
                 const sellerId =
                     sellerData.uid;
@@ -185,7 +194,7 @@ function Rekber() {
                     chatLocked: false,
 
                     createdAt:
-                        Date.now()
+                        serverTimestamp()
 
                 };
 

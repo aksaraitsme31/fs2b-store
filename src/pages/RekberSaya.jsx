@@ -12,6 +12,7 @@ import {
     doc,
     updateDoc,
     addDoc,
+    serverTimestamp,
     query,
     orderBy,
     where
@@ -91,8 +92,16 @@ function RekberSaya() {
                     setUserRekber(
                         data.sort(
                             (a, b) =>
-                                b.createdAt?.toDate?.() -
-                                a.createdAt?.toDate?.()
+                                (
+                                    b.createdAt?.seconds ||
+                                    b.createdAt ||
+                                    0
+                                ) -
+                                (
+                                    a.createdAt?.seconds ||
+                                    a.createdAt ||
+                                    0
+                                )
                         )
                     );
 
@@ -127,8 +136,16 @@ function RekberSaya() {
                     setSellerRekber(
                         data.sort(
                             (a, b) =>
-                                b.createdAt?.toDate?.() -
-                                a.createdAt?.toDate?.()
+                                (
+                                    b.createdAt?.seconds ||
+                                    b.createdAt ||
+                                    0
+                                ) -
+                                (
+                                    a.createdAt?.seconds ||
+                                    a.createdAt ||
+                                    0
+                                )
                         )
                     );
 
@@ -147,39 +164,9 @@ function RekberSaya() {
     /* LOAD CHAT */
     useEffect(() => {
 
-        if (
-            userRekber.length === 0 &&
-            sellerRekber.length === 0
-        ) return;
-
-        const rekberIds = [
-
-            ...userRekber.map(
-                (item) => item.id
-            ),
-
-            ...sellerRekber.map(
-                (item) => item.id
-            )
-
-        ];
-
-        if (rekberIds.length === 0) return;
-
         const q = query(
-            collection(
-                db,
-                "rekberMessages"
-            ),
-            where(
-                "rekberId",
-                "in",
-                rekberIds.slice(0, 10)
-            ),
-            orderBy(
-                "createdAt",
-                "asc"
-            )
+            collection(db, "rekberMessages"),
+            orderBy("createdAt", "asc")
         );
 
         const unsubscribe =
@@ -202,7 +189,7 @@ function RekberSaya() {
 
         return () => unsubscribe();
 
-    }, [userRekber, sellerRekber]);
+    }, []);
 
     /* SELLER KIRIM */
     const sendItemRekber =
@@ -312,34 +299,6 @@ function RekberSaya() {
 
                         rekberId,
 
-                        buyerId:
-
-                            userRekber.find(
-                                (item) =>
-                                    item.id === rekberId
-                            )?.buyerId
-
-                            ||
-
-                            sellerRekber.find(
-                                (item) =>
-                                    item.id === rekberId
-                            )?.buyerId,
-
-                        sellerId:
-
-                            userRekber.find(
-                                (item) =>
-                                    item.id === rekberId
-                            )?.sellerId
-
-                            ||
-
-                            sellerRekber.find(
-                                (item) =>
-                                    item.id === rekberId
-                            )?.sellerId,
-
                         sender:
                             currentUser.username,
 
@@ -372,7 +331,7 @@ function RekberSaya() {
                             mediaType,
 
                         createdAt:
-                            new Date()
+                            serverTimestamp()
 
                     }
                 );

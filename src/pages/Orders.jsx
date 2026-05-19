@@ -11,14 +11,15 @@ import {
 
 import {
   collection,
-  getDocs,
+  onSnapshot,
   updateDoc,
   deleteDoc,
   doc
 } from "firebase/firestore";
 
 import {
-  db
+  db,
+  auth
 } from "../firebase/firebase";
 
 function Orders() {
@@ -33,11 +34,7 @@ function Orders() {
     useNavigate();
 
   const currentUser =
-    JSON.parse(
-      localStorage.getItem(
-        "currentUser"
-      )
-    );
+    auth.currentUser;
 
   /* ONLY OWNER ADMIN */
   useEffect(() => {
@@ -54,51 +51,49 @@ function Orders() {
 
     }
 
-    loadOrders();
+    const unsubscribe =
+      onSnapshot(
+        collection(db, "orders"),
+        (snapshot) => {
+
+          const data =
+            snapshot.docs.map(
+              (item) => ({
+                id: item.id,
+                ...item.data()
+              })
+            );
+
+          /* ORDER TERBARU DI ATAS */
+          data.sort((a, b) => {
+
+            const timeA =
+              a.createdAt?.seconds || 0;
+
+            const timeB =
+              b.createdAt?.seconds || 0;
+
+            return timeB - timeA;
+
+          });
+
+          setOrders(data);
+
+        },
+        (error) => {
+
+          console.log(error);
+
+          alert(
+            "Gagal mengambil orders"
+          );
+
+        }
+      );
+
+    return () => unsubscribe();
 
   }, []);
-
-  /* LOAD ORDERS */
-  const loadOrders =
-    async () => {
-
-      try {
-
-        const snapshot =
-          await getDocs(
-            collection(
-              db,
-              "orders"
-            )
-          );
-
-        const data =
-          snapshot.docs.map(
-            (item) => ({
-              id: item.id,
-              ...item.data()
-            })
-          );
-
-        /* ORDER TERBARU DI ATAS */
-        data.sort(
-          (a, b) =>
-            b.createdAt - a.createdAt
-        );
-
-        setOrders(data);
-
-      } catch (error) {
-
-        console.log(error);
-
-        alert(
-          "Gagal mengambil orders"
-        );
-
-      }
-
-    };
 
   /* UPDATE STATUS */
   const processOrder =
@@ -138,8 +133,6 @@ function Orders() {
           }
         );
 
-        loadOrders();
-
       } catch (error) {
 
         console.log(error);
@@ -173,8 +166,6 @@ function Orders() {
             id
           )
         );
-
-        loadOrders();
 
       } catch (error) {
 
@@ -418,7 +409,7 @@ function Orders() {
 
       </section>
 
-          {previewImage && (
+      {previewImage && (
 
         <div
           onClick={() =>

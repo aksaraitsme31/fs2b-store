@@ -14,8 +14,13 @@ import {
 } from "firebase/firestore";
 
 import {
-    db
+    db,
+    auth
 } from "../firebase/firebase";
+
+import {
+    onAuthStateChanged
+} from "firebase/auth";
 
 function RekberOrders() {
 
@@ -24,12 +29,25 @@ function RekberOrders() {
         setRekberOrders
     ] = useState([]);
 
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "currentUser"
-            )
-        );
+    const [
+        currentUser,
+        setCurrentUser
+    ] = useState(null);
+
+    useEffect(() => {
+
+        const unsubscribe =
+            onAuthStateChanged(auth, (user) => {
+
+                setCurrentUser(user);
+
+            });
+
+        return () => unsubscribe();
+
+    }, []);
+
+    console.log(currentUser);
 
     /* LOAD REKBER REALTIME */
     useEffect(() => {
@@ -39,17 +57,14 @@ function RekberOrders() {
         let q;
 
         if (
-            currentUser.role === "admin"
+            currentUser.email ===
+            "thirtyone.zerozero@gmail.com"
         ) {
 
             q = query(
                 collection(
                     db,
                     "rekberOrders"
-                ),
-                orderBy(
-                    "createdAt",
-                    "desc"
                 )
             );
 
@@ -64,10 +79,6 @@ function RekberOrders() {
                     "sellerId",
                     "==",
                     currentUser.uid
-                ),
-                orderBy(
-                    "createdAt",
-                    "desc"
                 )
             );
 
@@ -86,7 +97,19 @@ function RekberOrders() {
                             })
                         );
 
-                    console.log(data);
+                    data.sort(
+                        (a, b) =>
+                            (
+                                b.createdAt?.seconds ||
+                                b.createdAt ||
+                                0
+                            ) -
+                            (
+                                a.createdAt?.seconds ||
+                                a.createdAt ||
+                                0
+                            )
+                    );
 
                     setRekberOrders(data);
 
@@ -238,20 +261,20 @@ function RekberOrders() {
 
                                         <span
                                             className={`status-text ${item.status ===
-                                                    "Barang Sudah Diterima Buyer" ||
+                                                "Barang Sudah Diterima Buyer" ||
+
+                                                item.status ===
+                                                "Done"
+                                                ? "success"
+
+                                                : item.status ===
+                                                    "Menunggu Seller Mengirim Barang" ||
 
                                                     item.status ===
-                                                    "Done"
-                                                    ? "success"
+                                                    "Seller Sudah Mengirim Barang"
+                                                    ? "process"
 
-                                                    : item.status ===
-                                                        "Menunggu Seller Mengirim Barang" ||
-
-                                                        item.status ===
-                                                        "Seller Sudah Mengirim Barang"
-                                                        ? "process"
-
-                                                        : "pending"
+                                                    : "pending"
                                                 }`}
                                         >
                                             {item.status}
