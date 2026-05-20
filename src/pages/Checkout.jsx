@@ -128,12 +128,17 @@ function Checkout() {
 
       try {
 
+        const transactionId =
+          `fs2bstore-${Date.now()}`;
+
         await addDoc(
           collection(
             db,
             "orders"
           ),
           {
+
+            transactionId,
 
             product:
               product.name,

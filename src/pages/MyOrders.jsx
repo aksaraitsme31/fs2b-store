@@ -129,6 +129,18 @@ function MyOrders() {
                     {order.product}
                   </h3>
 
+                  <p
+                    style={{
+                      color: "#ffd700",
+                      fontWeight: "700",
+                      marginTop: "5px"
+                    }}
+                  >
+                    ID:
+                    {" "}
+                    {order.transactionId}
+                  </p>
+
                   <p>
 
                     Harga:
@@ -266,6 +278,20 @@ function MyOrders() {
 
               {
                 selectedOrder.product
+              }
+
+            </p>
+
+            <p>
+
+              <strong>
+                ID Transaksi:
+              </strong>
+
+              {" "}
+
+              {
+                selectedOrder.transactionId
               }
 
             </p>
