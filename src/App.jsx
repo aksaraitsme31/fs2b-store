@@ -30,6 +30,7 @@ import RekberOrders from "./pages/RekberOrders";
 import RekberOrderDetail from "./pages/RekberOrderDetail";
 import RekberSaya from "./pages/RekberSaya";
 import TentangKami from "./pages/TentangKami";
+import TrackOrder from "./pages/TrackOrder";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -94,6 +95,11 @@ function App() {
         <Route
           path="/my-orders"
           element={<MyOrders />}
+        />
+
+        <Route
+          path="/track-order"
+          element={<TrackOrder />}
         />
 
         {/* ADMIN */}
