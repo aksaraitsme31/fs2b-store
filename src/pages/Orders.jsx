@@ -218,6 +218,18 @@ function Orders() {
                   {order.product}
                 </h3>
 
+                <p
+                  style={{
+                    color: "#ffd700",
+                    fontWeight: "700",
+                    marginTop: "5px"
+                  }}
+                >
+                  ID:
+                  {" "}
+                  {order.transactionId}
+                </p>
+
                 <p>
                   Harga Satuan:
                   {" "}
