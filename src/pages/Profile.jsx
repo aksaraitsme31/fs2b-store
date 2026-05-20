@@ -20,7 +20,17 @@ import {
 } from "firebase/auth";
 
 import {
-  auth
+  doc,
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs
+} from "firebase/firestore";
+
+import {
+  auth,
+  db
 } from "../firebase/firebase";
 
 function Profile() {
@@ -104,11 +114,42 @@ function Profile() {
 
       try {
 
+        /* CHECK USERNAME */
+        const usernameQuery = query(
+          collection(db, "users"),
+          where("username", "==", newUsername)
+        );
+
+        const usernameSnapshot =
+          await getDocs(usernameQuery);
+
+        const usernameUsedByOtherUser =
+          usernameSnapshot.docs.find(
+            (doc) =>
+              doc.data().uid !== currentUser.uid
+          );
+
+        if (usernameUsedByOtherUser) {
+
+          alert("Username sudah digunakan");
+
+          return;
+
+        }
+
         await updateProfile(
           auth.currentUser,
           {
             displayName:
               newUsername
+          }
+        );
+
+        await updateDoc(
+          doc(db, "users", currentUser.uid),
+          {
+            username: newUsername,
+            email: newEmail
           }
         );
 

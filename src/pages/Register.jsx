@@ -11,7 +11,11 @@ import {
 
 import {
   doc,
-  setDoc
+  setDoc,
+  getDocs,
+  query,
+  where,
+  collection
 } from "firebase/firestore";
 
 import {
@@ -51,6 +55,23 @@ function Register() {
       }
 
       try {
+
+        /* CHECK USERNAME */
+        const usernameQuery = query(
+          collection(db, "users"),
+          where("username", "==", username)
+        );
+
+        const usernameSnapshot =
+          await getDocs(usernameQuery);
+
+        if (!usernameSnapshot.empty) {
+
+          alert("Username sudah digunakan");
+
+          return;
+
+        }
 
         const userCredential =
           await createUserWithEmailAndPassword(
