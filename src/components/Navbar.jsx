@@ -72,6 +72,15 @@ function Navbar() {
                     Home
                 </button>
 
+                {/* TRACK ORDER */}
+                <button
+                    onClick={() =>
+                        navigate("/track-order")
+                    }
+                >
+                    Track Transaksi
+                </button>
+
                 {/* BUYER */}
                 {currentUser && !isAdmin && (
 
