@@ -137,6 +137,7 @@ function Profile() {
 
         }
 
+        /* UPDATE USERNAME AUTH */
         await updateProfile(
           auth.currentUser,
           {
@@ -145,6 +146,20 @@ function Profile() {
           }
         );
 
+        /* UPDATE EMAIL AUTH */
+        if (
+          newEmail !==
+          auth.currentUser.email
+        ) {
+
+          await updateEmail(
+            auth.currentUser,
+            newEmail
+          );
+
+        }
+
+        /* UPDATE FIRESTORE */
         await updateDoc(
           doc(db, "users", currentUser.uid),
           {
@@ -159,18 +174,6 @@ function Profile() {
           auth.currentUser
         );
 
-        if (
-          newEmail !==
-          auth.currentUser.email
-        ) {
-
-          await updateEmail(
-            auth.currentUser,
-            newEmail
-          );
-
-        }
-
         alert(
           "Profile berhasil diupdate"
         );
@@ -179,9 +182,22 @@ function Profile() {
 
         console.log(error);
 
-        alert(
-          "Gagal update profile"
-        );
+        if (
+          error.code ===
+          "auth/requires-recent-login"
+        ) {
+
+          alert(
+            "Silahkan login ulang terlebih dahulu untuk mengubah email"
+          );
+
+        } else {
+
+          alert(
+            "Gagal update profile"
+          );
+
+        }
 
       }
 
