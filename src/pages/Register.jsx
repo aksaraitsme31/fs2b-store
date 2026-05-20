@@ -59,7 +59,11 @@ function Register() {
         /* CHECK USERNAME */
         const usernameQuery = query(
           collection(db, "users"),
-          where("username", "==", username)
+          where(
+            "username",
+            "==",
+            username.toLowerCase()
+          )
         );
 
         const usernameSnapshot =
@@ -95,7 +99,8 @@ function Register() {
           ),
           {
             uid: user.uid,
-            username,
+            username:
+              username.toLowerCase(),
             email
           }
         );
