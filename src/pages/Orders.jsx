@@ -133,6 +133,75 @@ function Orders() {
           }
         );
 
+        /* KIRIM DISCORD */
+        if (newStatus === "Selesai") {
+
+          const orderData =
+            orders.find(
+              (item) => item.id === id
+            );
+
+          if (orderData) {
+
+            await fetch("/api/discord", {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body: JSON.stringify({
+
+                embeds: [
+                  {
+
+                    title:
+                      "🛒 ORDER BARU FS2B STORE",
+
+                    description: `
+━━━━━━━━━━━━━━━
+
+🆔 **ID Transaksi**
+\`${orderData.transactionId}\`
+
+📦 **Produk**
+${orderData.product}
+
+👤 **Buyer**
+${orderData.username}
+
+💰 **Total Pembayaran**
+Rp ${Number(orderData.totalPrice).toLocaleString("id-ID")}
+
+📅 **Tanggal**
+${orderData.date}
+
+✅ **Status : TRANSAKSI SELESAI 😉**
+
+━━━━━━━━━━━━━━━
+`.trim(),
+
+                    color: 0x22c55e,
+
+                    footer: {
+                      text:
+                        "FS2B STORE • Automatic Order System"
+                    },
+
+                    timestamp:
+                      new Date().toISOString()
+
+                  }
+                ]
+
+              }),
+            });
+
+          }
+
+        }
+
       } catch (error) {
 
         console.log(error);
