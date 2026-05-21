@@ -123,7 +123,7 @@ function TrackOrder() {
                 <div className="auth-box">
 
                     <h1>
-                        Track Transaksi
+                        Lacak Transaksi
                     </h1>
 
                     <input

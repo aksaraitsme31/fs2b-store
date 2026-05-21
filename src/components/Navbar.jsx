@@ -78,7 +78,7 @@ function Navbar() {
                         navigate("/track-order")
                     }
                 >
-                    Track Transaksi
+                    Pelacak Transaksi
                 </button>
 
                 {/* BUYER */}
