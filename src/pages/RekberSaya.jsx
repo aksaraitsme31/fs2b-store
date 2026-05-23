@@ -1,5 +1,7 @@
 import Navbar from "../components/Navbar";
 
+import { FiCopy } from "react-icons/fi";
+
 import {
     useEffect,
     useState,
@@ -706,17 +708,52 @@ function RekberSaya() {
                                         {item.itemName}
                                     </h3>
 
-                                    <div className="rekber-info-row">
-                                        <span className="label">
-                                            ID Transaksi
-                                        </span>
-
-                                        <span className="value gold">
-                                            {item.transactionId}
-                                        </span>
-                                    </div>
-
                                     <div className="rekber-info-box">
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                ID Transaksi
+                                            </span>
+
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "flex-end",
+                                                    gap: "0px"
+                                                }}
+                                            >
+
+                                                <button
+                                                    className="copy-btn"
+                                                    onClick={() => {
+
+                                                        navigator.clipboard.writeText(
+                                                            item.transactionId || item.id
+                                                        );
+
+                                                        alert("ID transaksi disalin");
+
+                                                    }}
+                                                >
+                                                    <FiCopy />
+                                                </button>
+
+                                                <span
+                                                    className="value"
+                                                    style={{
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        maxWidth: "220px"
+                                                    }}
+                                                >
+                                                    {item.transactionId}
+                                                </span>
+
+                                            </div>
+
+                                        </div>
 
                                         <div className="rekber-info-row">
                                             <span className="label">
@@ -841,17 +878,52 @@ function RekberSaya() {
                                         {item.itemName}
                                     </h3>
 
-                                    <div className="rekber-info-row">
-                                        <span className="label">
-                                            ID Transaksi
-                                        </span>
-
-                                        <span className="value gold">
-                                            {item.transactionId}
-                                        </span>
-                                    </div>
-
                                     <div className="rekber-info-box">
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                ID Transaksi
+                                            </span>
+
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "flex-end",
+                                                    gap: "0px"
+                                                }}
+                                            >
+
+                                                <button
+                                                    className="copy-btn"
+                                                    onClick={() => {
+
+                                                        navigator.clipboard.writeText(
+                                                            item.transactionId || item.id
+                                                        );
+
+                                                        alert("ID transaksi disalin");
+
+                                                    }}
+                                                >
+                                                    <FiCopy />
+                                                </button>
+
+                                                <span
+                                                    className="value"
+                                                    style={{
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        maxWidth: "220px"
+                                                    }}
+                                                >
+                                                    {item.transactionId}
+                                                </span>
+
+                                            </div>
+
+                                        </div>
 
                                         <div className="rekber-info-row">
                                             <span className="label">

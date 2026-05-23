@@ -423,6 +423,24 @@ function Admin() {
 
     };
 
+  const copyTransactionId = async (id) => {
+
+    try {
+
+      await navigator.clipboard.writeText(id);
+
+      alert("ID transaksi berhasil disalin");
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Gagal menyalin ID");
+
+    }
+
+  };
+
   /* =========================
      ADMIN Lock Chat
   ========================= */
@@ -1058,9 +1076,36 @@ function Admin() {
                       ID Transaksi
                     </span>
 
-                    <span className="value gold">
-                      {item.transactionId}
-                    </span>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px"
+                      }}
+                    >
+
+                      <span className="value gold">
+                        {item.transactionId}
+                      </span>
+
+                      <button
+                        onClick={() =>
+                          copyTransactionId(
+                            item.transactionId
+                          )
+                        }
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          padding: 0
+                        }}
+                      >
+                        📋
+                      </button>
+
+                    </div>
 
                   </div>
 
@@ -1273,12 +1318,18 @@ function Admin() {
                                             item.totalPayment || 0
                                           ).toLocaleString("id-ID")}`,
                                         inline: true
-                                      }
+                                      },
+
+                                      {
+                                        name: "Status",
+                                        value: "✅ TRANSAKSI SELESAI 😉",
+                                        inline: false
+                                      },
 
                                     ],
 
                                     footer: {
-                                      text: "FS2B STORE • Rekber System"
+                                      text: "FS2B STORE • Automatic Rekber System"
                                     },
 
                                     timestamp:

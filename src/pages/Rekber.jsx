@@ -158,15 +158,12 @@ function Rekber() {
                 const sellerId =
                     sellerData.uid;
 
+                const transactionId =
+                    `FS2B-RKB-${Date.now()}`;
+
                 const newRekber = {
 
-                    transactionId:
-                        `FS2B-RKB-${Date.now()
-                        }-${Math.random()
-                            .toString(36)
-                            .substring(2, 8)
-                            .toUpperCase()
-                        }`,
+                    transactionId,
 
                     buyerId:
                         firebaseUser.uid,
@@ -202,7 +199,13 @@ function Rekber() {
                     chatLocked: false,
 
                     createdAt:
-                        serverTimestamp()
+                        serverTimestamp(),
+
+                    date:
+                        new Date().toLocaleDateString("id-ID"),
+
+                    time:
+                        new Date().toLocaleTimeString("id-ID")
 
                 };
 

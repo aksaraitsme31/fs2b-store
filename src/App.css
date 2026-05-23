@@ -3564,3 +3564,153 @@ html,
   }
 
 }
+
+/* TRACK ORDER REKBER PREMIUM */
+.rekber-track-card {
+
+  margin-top: 15px;
+
+  padding: 22px;
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22,22,22,0.95),
+      rgba(12,12,12,0.96)
+    );
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 0 20px rgba(0,0,0,0.35),
+    0 0 10px rgba(255,215,0,0.08);
+}
+
+.rekber-track-row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid rgba(255,255,255,0.06);
+}
+
+.rekber-track-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+
+  color: #9ca3af;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+.value {
+
+  color: white;
+
+  font-weight: 700;
+
+  text-align: right;
+}
+
+.transaction-id {
+
+  color: #c084fc;
+
+  font-size: 14px;
+}
+
+.price {
+
+  color: #22c55e;
+
+  font-size: 18px;
+}
+
+.status-badge {
+
+  margin-top: 22px;
+
+  width: fit-content;
+
+  padding:
+    12px 18px;
+
+  border-radius: 999px;
+
+  font-weight: 800;
+
+  font-size: 14px;
+
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+
+  background:
+    rgba(250,204,21,0.12);
+
+  color: #facc15;
+
+  border:
+    1px solid rgba(250,204,21,0.35);
+}
+
+.status-badge.process {
+
+  background:
+    rgba(59,130,246,0.12);
+
+  color: #60a5fa;
+
+  border:
+    1px solid rgba(59,130,246,0.35);
+}
+
+.status-badge.success {
+
+  background:
+    rgba(34,197,94,0.12);
+
+  color: #4ade80;
+
+  border:
+    1px solid rgba(34,197,94,0.35);
+}
+
+/* Tombol Copy */
+
+.copy-btn {
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+
+  height: 22px;
+
+  padding: 0 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  position: relative;
+  top: -10px;
+}

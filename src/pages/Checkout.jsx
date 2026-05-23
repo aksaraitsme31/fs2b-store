@@ -170,20 +170,27 @@ function Checkout() {
             status:
               "Menunggu Verifikasi",
 
+            createdAt:
+              serverTimestamp(),
+
             date:
-              new Date().toLocaleString(
+              new Date().toLocaleDateString(
                 "id-ID",
                 {
                   day: "numeric",
                   month: "long",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit"
+                  year: "numeric"
                 }
               ),
 
-            createdAt:
-              serverTimestamp()
+            time:
+              new Date().toLocaleTimeString(
+                "id-ID",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                }
+              )
 
           }
         );
