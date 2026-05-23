@@ -2976,3 +2976,591 @@ html,
   }
 
 }
+
+/* =========================
+   REKBER FLOW / RULES CARD
+========================= */
+
+.rekber-flow-card {
+  width: 100%;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0d0d0d 0%,
+      #090909 100%
+    );
+
+  border: 1px solid rgba(245, 197, 66, 0.18);
+
+  border-radius: 28px;
+
+  padding: 28px;
+
+  margin-bottom: 30px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 0 0 1px rgba(245, 197, 66, 0.05),
+    0 15px 40px rgba(0, 0, 0, 0.55),
+    0 0 30px rgba(245, 197, 66, 0.06);
+
+  backdrop-filter: blur(12px);
+}
+
+/* =========================
+   GOLD GLOW
+========================= */
+
+.rekber-flow-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: -140px;
+  right: -120px;
+
+  width: 280px;
+  height: 280px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 197, 66, 0.18) 0%,
+      transparent 70%
+    );
+
+  filter: blur(70px);
+
+  pointer-events: none;
+}
+
+.rekber-flow-card::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: -120px;
+  left: -120px;
+
+  width: 240px;
+  height: 240px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 197, 66, 0.08) 0%,
+      transparent 70%
+    );
+
+  filter: blur(70px);
+
+  pointer-events: none;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.rekber-flow-card h2 {
+  color: #f5c542;
+
+  font-size: 30px;
+
+  font-weight: 800;
+
+  margin-bottom: 24px;
+
+  text-align: center;
+
+  letter-spacing: 0.5px;
+
+  line-height: 1.4;
+
+  position: relative;
+
+  z-index: 2;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 10px rgba(245, 197, 66, 0.25),
+    0 0 20px rgba(245, 197, 66, 0.12);
+}
+
+/* =========================
+   SCROLL AREA
+========================= */
+
+.rekber-rules-scroll {
+  max-height: 650px;
+
+  overflow-y: auto;
+
+  padding-right: 12px;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+.rekber-rules-scroll::-webkit-scrollbar {
+  width: 7px;
+}
+
+.rekber-rules-scroll::-webkit-scrollbar-track {
+  background: #0a0a0a;
+
+  border-radius: 20px;
+}
+
+.rekber-rules-scroll::-webkit-scrollbar-thumb {
+  background: #f5c542;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 0 12px rgba(245, 197, 66, 0.45);
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.rekber-rules-scroll p {
+  color: #e5e5e5;
+
+  font-size: 15px;
+
+  line-height: 1.9;
+
+  margin-bottom: 16px;
+
+  word-break: break-word;
+}
+
+/* =========================
+   H3
+========================= */
+
+.rekber-rules-scroll h3 {
+  color: #f5c542;
+
+  font-size: 22px;
+
+  font-weight: 800;
+
+  margin-top: 34px;
+  margin-bottom: 18px;
+
+  letter-spacing: 0.3px;
+
+  line-height: 1.5;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 12px rgba(245, 197, 66, 0.2);
+}
+
+/* =========================
+   GOLD LINE
+========================= */
+
+.gold-line {
+  border: none;
+
+  height: 1px;
+
+  width: 100%;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      rgba(245, 197, 66, 0.95),
+      transparent
+    );
+
+  margin: 22px 0;
+
+  box-shadow:
+    0 0 10px rgba(245, 197, 66, 0.35),
+    0 0 18px rgba(245, 197, 66, 0.18);
+}
+
+/* =========================
+   FLOW STATUS
+========================= */
+
+.flow-status {
+  text-align: center;
+
+  color: #f5c542;
+
+  font-weight: 700;
+
+  line-height: 2.1;
+
+  font-size: 16px;
+
+  margin-top: 15px;
+
+  text-shadow:
+    0 0 10px rgba(245, 197, 66, 0.18);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  .rekber-flow-card {
+    padding: 20px;
+
+    border-radius: 22px;
+
+    margin-bottom: 24px;
+  }
+
+  .rekber-flow-card h2 {
+    font-size: 22px;
+
+    line-height: 1.4;
+
+    margin-bottom: 20px;
+  }
+
+  .rekber-rules-scroll {
+    max-height: 520px;
+
+    padding-right: 8px;
+  }
+
+  .rekber-rules-scroll h3 {
+    font-size: 17px;
+
+    line-height: 1.5;
+
+    margin-top: 28px;
+  }
+
+  .rekber-rules-scroll p {
+    font-size: 14px;
+
+    line-height: 1.8;
+  }
+
+  .flow-status {
+    font-size: 14px;
+
+    line-height: 2;
+  }
+
+}
+
+/* ========================================
+   REKBER FORM HEADER PREMIUM
+======================================== */
+
+.rekber-form-header {
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 35px 25px;
+
+  margin-bottom: 35px;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 15, 15, 0.95),
+      rgba(5, 5, 5, 0.98)
+    );
+
+  border: 1px solid rgba(245, 197, 66, 0.18);
+
+  box-shadow:
+    0 0 40px rgba(245, 197, 66, 0.08),
+    inset 0 0 30px rgba(255, 255, 255, 0.02);
+}
+
+/* GOLD GLOW */
+
+.rekber-form-glow {
+
+  position: absolute;
+
+  top: -120px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 300px;
+
+  height: 300px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 197, 66, 0.22),
+      transparent 70%
+    );
+
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+/* TITLE */
+
+.rekber-form-title {
+
+  position: relative;
+
+  z-index: 2;
+
+  color: #f5c542;
+
+  font-size: 32px;
+
+  font-weight: 800;
+
+  text-align: center;
+
+  letter-spacing: 1px;
+
+  margin-bottom: 12px;
+
+  text-shadow:
+    0 0 20px rgba(245, 197, 66, 0.35);
+}
+
+/* SUBTITLE */
+
+.rekber-form-subtitle {
+
+  position: relative;
+
+  z-index: 2;
+
+  color: rgba(255,255,255,0.7);
+
+  font-size: 15px;
+
+  text-align: center;
+
+  line-height: 1.7;
+
+  max-width: 500px;
+
+  margin: auto;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .rekber-form-header {
+
+    padding: 28px 20px;
+
+    border-radius: 20px;
+  }
+
+  .rekber-form-title {
+
+    font-size: 24px;
+
+    line-height: 1.4;
+  }
+
+  .rekber-form-subtitle {
+
+    font-size: 14px;
+
+    line-height: 1.6;
+  }
+
+  .rekber-form-glow {
+
+    width: 220px;
+
+    height: 220px;
+  }
+
+}
+
+/* =========================
+   PREMIUM REKBER INFO ADMIN
+========================= */
+
+.rekber-info-box {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-top: 18px;
+  margin-bottom: 20px;
+}
+
+.rekber-info-row {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 15px 18px;
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.02)
+    );
+
+  border:
+    1px solid rgba(255,215,0,0.08);
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.02),
+    0 10px 25px rgba(0,0,0,0.25);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.rekber-info-row:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    rgba(255,215,0,0.18);
+
+  box-shadow:
+    0 0 20px rgba(255,215,0,0.08);
+}
+
+.rekber-info-row .label {
+  color: #9a9a9a;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.3px;
+}
+
+.rekber-info-row .value {
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+/* TOTAL BAYAR */
+
+.rekber-info-row .gold {
+  color: #ffd700;
+
+  text-shadow:
+    0 0 10px rgba(255,215,0,0.25);
+}
+
+/* FEE REKBER */
+
+.rekber-info-row .green {
+  color: #00ff9d;
+
+  text-shadow:
+    0 0 10px rgba(0,255,157,0.18);
+}
+
+/* RILIS SELLER */
+
+.rekber-info-row .red {
+  color: #ff4d4d;
+
+  text-shadow:
+    0 0 10px rgba(255,77,77,0.20);
+}
+
+/* STATUS */
+
+.status-value.success {
+  color: #00ff9d;
+
+  text-shadow:
+    0 0 10px rgba(0,255,157,0.18);
+}
+
+.status-value.process {
+  color: #ffd700;
+
+  text-shadow:
+    0 0 10px rgba(255,215,0,0.18);
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .rekber-info-row {
+    padding: 13px 14px;
+
+    border-radius: 14px;
+
+    gap: 12px;
+  }
+
+  .rekber-info-row .label {
+    font-size: 13px;
+  }
+
+  .rekber-info-row .value {
+    font-size: 14px;
+  }
+
+}
+
+/* SELLER RELEASE */
+.rekber-info-row .green {
+  color: #00ff9d;
+
+  text-shadow:
+    0 0 10px rgba(0,255,157,0.18);
+}
+
+@media (max-width: 768px) {
+
+  .rekber-info-row .value,
+  .rekber-info-row .green {
+
+    font-size: 13px;
+  }
+
+}

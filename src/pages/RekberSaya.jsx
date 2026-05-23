@@ -26,7 +26,7 @@ import {
 function RekberSaya() {
 
     const currentUser =
-    auth.currentUser;
+        auth.currentUser;
 
     const fileInputRefs =
         useRef({});
@@ -161,8 +161,15 @@ function RekberSaya() {
     /* LOAD CHAT */
     useEffect(() => {
 
+        if (!currentUser?.uid) return;
+
         const q = query(
             collection(db, "rekberMessages"),
+            where(
+                "participants",
+                "array-contains",
+                currentUser.uid
+            ),
             orderBy("createdAt", "asc")
         );
 
@@ -186,7 +193,7 @@ function RekberSaya() {
 
         return () => unsubscribe();
 
-    }, []);
+    }, [currentUser]);
 
     /* SELLER KIRIM */
     const sendItemRekber =
@@ -287,6 +294,26 @@ function RekberSaya() {
 
                 }
 
+                const rekberData =
+                    userRekber.find(
+                        (item) => item.id === rekberId
+                    ) ||
+
+                    sellerRekber.find(
+                        (item) => item.id === rekberId
+                    );
+
+                const buyerId =
+                    rekberData?.buyerId;
+
+                const sellerId =
+                    rekberData?.sellerId;
+
+                const adminIds = [
+                    "STTuFyMpReO8dNpxpqF3cZQeqji2",
+                    "Cqvqy3v7sxSyuOYTg6qs6vr017N2"
+                ];
+
                 await addDoc(
                     collection(
                         db,
@@ -296,6 +323,19 @@ function RekberSaya() {
 
                         rekberId,
 
+                        buyerId,
+
+                        sellerId,
+
+                        participants: [
+                            buyerId,
+                            sellerId,
+                            ...adminIds
+                        ],
+
+                        senderId:
+                            currentUser.uid,
+
                         sender:
                             currentUser.displayName,
 
@@ -304,17 +344,7 @@ function RekberSaya() {
 
                         role:
                             currentUser.displayName ===
-                                (
-                                    userRekber.find(
-                                        (item) =>
-                                            item.id === rekberId
-                                    )?.buyerUsername ||
-
-                                    sellerRekber.find(
-                                        (item) =>
-                                            item.id === rekberId
-                                    )?.buyerUsername
-                                )
+                                rekberData?.buyerUsername
                                 ? "BUYER"
                                 : "SELLER",
 
@@ -676,42 +706,89 @@ function RekberSaya() {
                                         {item.itemName}
                                     </h3>
 
-                                    <p>
-                                        Seller:
-                                        {" "}
-                                        {item.sellerUsername}
-                                    </p>
-
-                                    <p>
-                                        Game:
-                                        {" "}
-                                        {item.game}
-                                    </p>
-
-                                    <p>
-                                        Harga:
-                                        {" "}
-                                        Rp{" "}
-                                        {Number(
-                                            item.dealPrice
-                                        ).toLocaleString(
-                                            "id-ID"
-                                        )}
-                                    </p>
-
-                                    <p>
-
-                                        Status:
-
-                                        <span
-                                            className={`status-text ${getStatusClass(
-                                                item.status
-                                            )}`}
-                                        >
-                                            {item.status}
+                                    <div className="rekber-info-row">
+                                        <span className="label">
+                                            ID Transaksi
                                         </span>
 
-                                    </p>
+                                        <span className="value gold">
+                                            {item.transactionId}
+                                        </span>
+                                    </div>
+
+                                    <div className="rekber-info-box">
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Seller
+                                            </span>
+
+                                            <span className="value">
+                                                {item.sellerUsername}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Game
+                                            </span>
+
+                                            <span className="value">
+                                                {item.game}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Harga
+                                            </span>
+
+                                            <span className="value">
+                                                Rp{" "}
+                                                {Number(
+                                                    item.dealPrice
+                                                ).toLocaleString("id-ID")}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Fee
+                                            </span>
+
+                                            <span className="value">
+                                                {item.feeType}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Rilis Seller
+                                            </span>
+
+                                            <span className="value">
+                                                Rp{" "}
+                                                {Number(
+                                                    item.sellerReceive || 0
+                                                ).toLocaleString("id-ID")}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Status
+                                            </span>
+
+                                            <span
+                                                className={`value status-value ${getStatusClass(
+                                                    item.status
+                                                )}`}
+                                            >
+                                                {item.status}
+                                            </span>
+                                        </div>
+
+                                    </div>
 
                                     {item.status ===
                                         "Seller Sudah Mengirim Barang" && (
@@ -764,42 +841,89 @@ function RekberSaya() {
                                         {item.itemName}
                                     </h3>
 
-                                    <p>
-                                        Buyer:
-                                        {" "}
-                                        {item.buyerUsername}
-                                    </p>
-
-                                    <p>
-                                        Game:
-                                        {" "}
-                                        {item.game}
-                                    </p>
-
-                                    <p>
-                                        Harga:
-                                        {" "}
-                                        Rp{" "}
-                                        {Number(
-                                            item.dealPrice
-                                        ).toLocaleString(
-                                            "id-ID"
-                                        )}
-                                    </p>
-
-                                    <p>
-
-                                        Status:
-
-                                        <span
-                                            className={`status-text ${getStatusClass(
-                                                item.status
-                                            )}`}
-                                        >
-                                            {item.status}
+                                    <div className="rekber-info-row">
+                                        <span className="label">
+                                            ID Transaksi
                                         </span>
 
-                                    </p>
+                                        <span className="value gold">
+                                            {item.transactionId}
+                                        </span>
+                                    </div>
+
+                                    <div className="rekber-info-box">
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Buyer
+                                            </span>
+
+                                            <span className="value">
+                                                {item.buyerUsername}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Game
+                                            </span>
+
+                                            <span className="value">
+                                                {item.game}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Harga
+                                            </span>
+
+                                            <span className="value">
+                                                Rp{" "}
+                                                {Number(
+                                                    item.dealPrice
+                                                ).toLocaleString("id-ID")}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Fee
+                                            </span>
+
+                                            <span className="value">
+                                                {item.feeType}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Rilis Seller
+                                            </span>
+
+                                            <span className="value green">
+                                                Rp{" "}
+                                                {Number(
+                                                    item.sellerReceive || 0
+                                                ).toLocaleString("id-ID")}
+                                            </span>
+                                        </div>
+
+                                        <div className="rekber-info-row">
+                                            <span className="label">
+                                                Status
+                                            </span>
+
+                                            <span
+                                                className={`value status-value ${getStatusClass(
+                                                    item.status
+                                                )}`}
+                                            >
+                                                {item.status}
+                                            </span>
+                                        </div>
+
+                                    </div>
 
                                     {item.status ===
                                         "Menunggu Seller Mengirim Barang" && (

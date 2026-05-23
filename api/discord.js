@@ -9,7 +9,15 @@ export default async function handler(req, res) {
   try {
 
     const webhookUrl =
+      req.body.webhookUrl ||
+
       process.env.DISCORD_WEBHOOK_URL;
+
+    const payload = {
+      ...req.body
+    };
+
+    delete payload.webhookUrl;
 
     const response = await fetch(
       webhookUrl,
@@ -21,7 +29,7 @@ export default async function handler(req, res) {
             "application/json",
         },
 
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(payload),
       }
     );
 

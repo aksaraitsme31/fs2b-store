@@ -14,7 +14,8 @@ import {
   onSnapshot,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  getDoc
 } from "firebase/firestore";
 
 import {
@@ -33,16 +34,57 @@ function Orders() {
   const navigate =
     useNavigate();
 
-  const currentUser =
-    auth.currentUser;
+  const [currentUser, setCurrentUser] =
+    useState(null);
+
+  const [authLoading, setAuthLoading] =
+    useState(true);
+
+  const [userRole, setUserRole] =
+    useState("");
+
+  /* CEK LOGIN USER */
+  useEffect(() => {
+
+    const unsubscribe =
+      auth.onAuthStateChanged(async (user) => {
+
+        setCurrentUser(user);
+
+        if (user) {
+
+          const userRef =
+            doc(db, "users", user.uid);
+
+          const userSnap =
+            await getDoc(userRef);
+
+          if (userSnap.exists()) {
+
+            setUserRole(
+              userSnap.data().role || ""
+            );
+
+          }
+
+        }
+
+        setAuthLoading(false);
+
+      });
+
+    return () => unsubscribe();
+
+  }, []);
 
   /* ONLY OWNER ADMIN */
   useEffect(() => {
 
+    if (authLoading) return;
+
     if (
       !currentUser ||
-      currentUser.email !==
-      "thirtyone.zerozero@gmail.com"
+      userRole !== "admin"
     ) {
 
       navigate("/");
@@ -93,7 +135,12 @@ function Orders() {
 
     return () => unsubscribe();
 
-  }, []);
+  }, [
+    currentUser,
+    userRole,
+    authLoading,
+    navigate
+  ]);
 
   /* UPDATE STATUS */
   const processOrder =
@@ -247,6 +294,26 @@ ${orderData.date}
       }
 
     };
+
+  if (authLoading) {
+
+    return (
+
+      <div className="auth-page">
+
+        <div className="auth-box">
+
+          <h1>
+            Loading...
+          </h1>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
 
   return (
 

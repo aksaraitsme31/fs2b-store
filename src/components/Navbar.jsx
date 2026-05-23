@@ -8,10 +8,16 @@ import {
 } from "firebase/auth";
 
 import {
-    auth
+    doc,
+    getDoc
+} from "firebase/firestore";
+
+import {
+    auth,
+    db
 } from "../firebase/firebase";
 
-import iconstore from "../assets/iconstore.png";
+import iconicstore from "../assets/iconicstore.png";
 
 function Navbar() {
 
@@ -21,12 +27,32 @@ function Navbar() {
 
     const [currentUser, setCurrentUser] = useState(null);
 
+    const [userRole, setUserRole] = useState("");
+
     useEffect(() => {
 
         const unsubscribe =
-            onAuthStateChanged(auth, (user) => {
+            onAuthStateChanged(auth, async (user) => {
 
                 setCurrentUser(user);
+
+                if (user) {
+
+                    const userRef =
+                        doc(db, "users", user.uid);
+
+                    const userSnap =
+                        await getDoc(userRef);
+
+                    if (userSnap.exists()) {
+
+                        setUserRole(
+                            userSnap.data().role || ""
+                        );
+
+                    }
+
+                }
 
             });
 
@@ -35,7 +61,7 @@ function Navbar() {
     }, []);
 
     const isAdmin =
-        currentUser?.email === "thirtyone.zerozero@gmail.com";
+        userRole === "admin";
 
     const logout = async () => {
 
@@ -57,7 +83,7 @@ function Navbar() {
             >
 
                 <img
-                    src={iconstore}
+                    src={iconicstore}
                     alt="FS2B STORE"
                     className="logo-image"
                 />

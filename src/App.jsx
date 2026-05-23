@@ -6,7 +6,13 @@ import {
 } from "firebase/auth";
 
 import {
-  auth
+  doc,
+  getDoc
+} from "firebase/firestore";
+
+import {
+  auth,
+  db
 } from "./firebase/firebase";
 
 import {
@@ -39,12 +45,36 @@ function App() {
 
   const [currentUser, setCurrentUser] = useState(null);
 
+  const [userRole, setUserRole] = useState("");
+
   useEffect(() => {
 
     const unsubscribe =
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
 
         setCurrentUser(user);
+
+        if (user) {
+
+          const userRef =
+            doc(db, "users", user.uid);
+
+          const userSnap =
+            await getDoc(userRef);
+
+          if (userSnap.exists()) {
+
+            setUserRole(
+              userSnap.data().role || ""
+            );
+
+          }
+
+        } else {
+
+          setUserRole("");
+
+        }
 
       });
 
@@ -106,7 +136,7 @@ function App() {
         <Route
           path="/admin"
           element={
-            currentUser?.email === "thirtyone.zerozero@gmail.com"
+            userRole === "admin"
               ? <Admin />
               : <Navigate to="/" />
           }
@@ -115,7 +145,7 @@ function App() {
         <Route
           path="/orders"
           element={
-            currentUser?.email === "thirtyone.zerozero@gmail.com"
+            userRole === "admin"
               ? <Orders />
               : <Navigate to="/" />
           }

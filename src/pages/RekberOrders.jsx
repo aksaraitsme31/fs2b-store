@@ -9,8 +9,8 @@ import {
     doc,
     updateDoc,
     query,
-    orderBy,
-    where
+    where,
+    getDoc
 } from "firebase/firestore";
 
 import {
@@ -54,69 +54,110 @@ function RekberOrders() {
 
         if (!currentUser?.uid) return;
 
-        let q;
+        let unsubscribe;
 
-        if (
-            currentUser.email ===
-            "thirtyone.zerozero@gmail.com"
-        ) {
+        const loadRekber =
+            async () => {
 
-            q = query(
-                collection(
-                    db,
-                    "rekberOrders"
-                )
-            );
+                try {
 
-        } else {
-
-            q = query(
-                collection(
-                    db,
-                    "rekberOrders"
-                ),
-                where(
-                    "sellerId",
-                    "==",
-                    currentUser.uid
-                )
-            );
-
-        }
-
-        const unsubscribe =
-            onSnapshot(
-                q,
-                (snapshot) => {
-
-                    const data =
-                        snapshot.docs.map(
-                            (doc) => ({
-                                id: doc.id,
-                                ...doc.data()
-                            })
+                    const userRef =
+                        doc(
+                            db,
+                            "users",
+                            currentUser.uid
                         );
 
-                    data.sort(
-                        (a, b) =>
-                            (
-                                b.createdAt?.seconds ||
-                                b.createdAt ||
-                                0
-                            ) -
-                            (
-                                a.createdAt?.seconds ||
-                                a.createdAt ||
-                                0
-                            )
-                    );
+                    const userSnap =
+                        await getDoc(userRef);
 
-                    setRekberOrders(data);
+                    const role =
+                        userSnap.exists()
+                            ? userSnap.data().role
+                            : "";
+
+                    let q;
+
+                    /* ADMIN = LIHAT SEMUA */
+                    if (role === "admin") {
+
+                        q = query(
+                            collection(
+                                db,
+                                "rekberOrders"
+                            )
+                        );
+
+                    }
+
+                    /* USER / SELLER */
+                    else {
+
+                        q = query(
+                            collection(
+                                db,
+                                "rekberOrders"
+                            ),
+                            where(
+                                "sellerId",
+                                "==",
+                                currentUser.uid
+                            )
+                        );
+
+                    }
+
+                    unsubscribe =
+                        onSnapshot(
+                            q,
+                            (snapshot) => {
+
+                                const data =
+                                    snapshot.docs.map(
+                                        (doc) => ({
+                                            id: doc.id,
+                                            ...doc.data()
+                                        })
+                                    );
+
+                                data.sort(
+                                    (a, b) =>
+                                        (
+                                            b.createdAt?.seconds ||
+                                            b.createdAt ||
+                                            0
+                                        ) -
+                                        (
+                                            a.createdAt?.seconds ||
+                                            a.createdAt ||
+                                            0
+                                        )
+                                );
+
+                                setRekberOrders(data);
+
+                            }
+                        );
+
+                } catch (error) {
+
+                    console.log(error);
 
                 }
-            );
 
-        return () => unsubscribe();
+            };
+
+        loadRekber();
+
+        return () => {
+
+            if (unsubscribe) {
+
+                unsubscribe();
+
+            }
+
+        };
 
     }, [currentUser]);
 

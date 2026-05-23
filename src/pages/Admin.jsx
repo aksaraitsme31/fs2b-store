@@ -18,6 +18,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  getDoc,
   updateDoc,
   onSnapshot,
   query,
@@ -41,6 +42,11 @@ function Admin() {
   ] = useState(null);
 
   const [
+    userRole,
+    setUserRole
+  ] = useState("");
+
+  const [
     loading,
     setLoading
   ] = useState(true);
@@ -50,9 +56,31 @@ function Admin() {
     const unsubscribe =
       onAuthStateChanged(
         auth,
-        (user) => {
+        async (user) => {
 
           setFirebaseUser(user);
+
+          if (user) {
+
+            const userRef =
+              doc(
+                db,
+                "users",
+                user.uid
+              );
+
+            const userSnap =
+              await getDoc(userRef);
+
+            if (userSnap.exists()) {
+
+              setUserRole(
+                userSnap.data().role || ""
+              );
+
+            }
+
+          }
 
           setLoading(false);
 
@@ -444,16 +472,55 @@ function Admin() {
       if (!message?.trim())
         return;
 
+      const rekberData =
+        rekberOrders.find(
+          (item) =>
+            item.id === rekberId
+        );
+
+      if (!rekberData)
+        return;
+
+      const adminIds = [
+        "STTuFyMpReO8dNpxpqF3cZQeqji2",
+        "Cqvqy3v7sxSyuOYTg6qs6vr017N2"
+      ];
+
       await addDoc(
         collection(
           db,
           "rekberMessages"
         ),
         {
+
           rekberId,
+
+          buyerId:
+            rekberData.buyerId,
+
+          sellerId:
+            rekberData.sellerId,
+
+          participants: [
+            rekberData.buyerId,
+            rekberData.sellerId,
+            ...adminIds
+          ],
+
+          senderId:
+            firebaseUser.uid,
+
           sender: "ADMIN",
+
+          username: "ADMIN",
+
+          role: "ADMIN",
+
           message,
-          createdAt: serverTimestamp()
+
+          createdAt:
+            serverTimestamp()
+
         }
       );
 
@@ -713,8 +780,7 @@ function Admin() {
   /* ONLY OWNER ADMIN */
   if (
     !firebaseUser ||
-    firebaseUser.email !==
-    "thirtyone.zerozero@gmail.com"
+    userRole !== "admin"
   ) {
 
     return (
@@ -984,30 +1050,110 @@ function Admin() {
                   {item.itemName}
                 </h3>
 
-                <p>
-                  <strong>Buyer:</strong>
-                  {" "}
-                  {item.buyerUsername}
-                </p>
+                <div className="rekber-info-box">
 
-                <p>
-                  <strong>Seller:</strong>
-                  {" "}
-                  {item.sellerUsername}
-                </p>
+                  <div className="rekber-info-row">
 
-                <p>
-                  <strong>Status:</strong>
-                  {" "}
-                  <span
-                    className={`status-text ${item.status === "Done"
-                      ? "success"
-                      : "process"
-                      }`}
-                  >
-                    {item.status}
-                  </span>
-                </p>
+                    <span className="label">
+                      ID Transaksi
+                    </span>
+
+                    <span className="value gold">
+                      {item.transactionId}
+                    </span>
+
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Buyer
+                    </span>
+
+                    <span className="value">
+                      {item.buyerUsername}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Seller
+                    </span>
+
+                    <span className="value">
+                      {item.sellerUsername}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Status
+                    </span>
+
+                    <span
+                      className={`value status-value ${item.status === "Done"
+                        ? "success"
+                        : "process"
+                        }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Harga
+                    </span>
+
+                    <span className="value">
+                      Rp{" "}
+                      {Number(item.dealPrice).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Fee
+                    </span>
+
+                    <span className="value">
+                      {item.feeType}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Fee Rekber
+                    </span>
+
+                    <span className="value green">
+                      Rp{" "}
+                      {Number(item.fee || 0).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Total Bayar
+                    </span>
+
+                    <span className="value gold">
+                      Rp{" "}
+                      {Number(item.totalPayment || 0).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+
+                  <div className="rekber-info-row">
+                    <span className="label">
+                      Rilis Seller
+                    </span>
+
+                    <span className="value red">
+                      Rp{" "}
+                      {Number(item.sellerReceive || 0).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+
+                </div>
 
                 {item.status ===
                   "Menunggu Verifikasi Pembayaran" && (
@@ -1058,6 +1204,100 @@ function Admin() {
                           }
                         );
 
+                        /* DISCORD WEBHOOK */
+                        try {
+
+                          await fetch(
+                            "/api/discord",
+                            {
+                              method: "POST",
+
+                              headers: {
+                                "Content-Type":
+                                  "application/json"
+                              },
+
+                              body: JSON.stringify({
+
+                                webhookUrl:
+                                  import.meta.env
+                                    .VITE_DISCORD_WEBHOOK_REKBER,
+
+                                embeds: [
+                                  {
+
+                                    title:
+                                      "✅ Rekber Selesai",
+
+                                    description:
+                                      `Transaksi rekber telah selesai.`,
+
+                                    color: 0x00ff9d,
+
+                                    fields: [
+
+                                      {
+                                        name: "ID Transaksi",
+                                        value: item.transactionId || "-",
+                                        inline: false
+                                      },
+
+                                      {
+                                        name: "Buyer",
+                                        value: item.buyerUsername || "-",
+                                        inline: true
+                                      },
+
+                                      {
+                                        name: "Seller",
+                                        value: item.sellerUsername || "-",
+                                        inline: true
+                                      },
+
+                                      {
+                                        name: "Item",
+                                        value: item.itemName || "-",
+                                        inline: false
+                                      },
+
+                                      {
+                                        name: "Game",
+                                        value: item.game || "-",
+                                        inline: true
+                                      },
+
+                                      {
+                                        name: "Total",
+                                        value:
+                                          `Rp ${Number(
+                                            item.totalPayment || 0
+                                          ).toLocaleString("id-ID")}`,
+                                        inline: true
+                                      }
+
+                                    ],
+
+                                    footer: {
+                                      text: "FS2B STORE • Rekber System"
+                                    },
+
+                                    timestamp:
+                                      new Date().toISOString()
+
+                                  }
+                                ]
+
+                              })
+
+                            }
+                          );
+
+                        } catch (error) {
+
+                          console.log(error);
+
+                        }
+
                         alert(
                           "Rekber selesai"
                         );
@@ -1068,17 +1308,6 @@ function Admin() {
                     </button>
 
                   )}
-
-                <p>
-                  <strong>Harga:</strong>
-                  {" "}
-                  Rp{" "}
-                  {Number(
-                    item.dealPrice
-                  ).toLocaleString(
-                    "id-ID"
-                  )}
-                </p>
 
                 <div
                   style={{

@@ -113,22 +113,9 @@ function Register() {
 
       } catch (error) {
 
-        if (
-          error.code ===
-          "auth/email-already-in-use"
-        ) {
+        console.log("REGISTER ERROR:", error);
 
-          alert(
-            "Email sudah digunakan"
-          );
-
-        } else {
-
-          alert(
-            "Registrasi gagal"
-          );
-
-        }
+        alert(error.code);
 
       }
 
