@@ -5,7 +5,10 @@ import {
 } from "react-router-dom";
 
 import {
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  reload,
+  signOut
 } from "firebase/auth";
 
 import {
@@ -48,8 +51,26 @@ function Login() {
             password
           );
 
-        /* CEK ADMIN */
+        const user =
+          userCredential.user;
 
+        /* REFRESH STATUS EMAIL */
+        await reload(user);
+
+        /* CEK VERIFIKASI EMAIL */
+        if (!user.emailVerified) {
+
+          await sendEmailVerification(user);
+
+          alert(
+            "Email belum diverifikasi. Link verifikasi baru telah dikirim ke email Anda."
+          );
+
+          await signOut(auth);
+
+          return;
+
+        }
 
         alert(
           "Login berhasil"

@@ -6,7 +6,8 @@ import {
 
 import {
   createUserWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  sendEmailVerification
 } from "firebase/auth";
 
 import {
@@ -91,6 +92,9 @@ function Register() {
           displayName: username
         });
 
+        /* VERIFIKASI EMAIL */
+        await sendEmailVerification(user);
+
         await setDoc(
           doc(
             db,
@@ -106,7 +110,7 @@ function Register() {
         );
 
         alert(
-          "Registrasi berhasil"
+          "Registrasi berhasil. Silakan cek email untuk verifikasi akun."
         );
 
         navigate("/login");

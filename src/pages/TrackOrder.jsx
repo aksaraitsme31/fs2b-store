@@ -5,6 +5,12 @@ import {
 } from "react";
 
 import {
+    CheckCircle,
+    Clock3,
+    PackageCheck
+} from "lucide-react";
+
+import {
     collection,
     query,
     where,
@@ -757,7 +763,7 @@ function TrackOrder() {
                                                                 "0 0 20px rgba(250,204,21,0.35)"
                                                         }}
                                                     >
-                                                        1
+                                                        <Clock3 size={28} />
                                                     </div>
 
                                                     <p
@@ -820,7 +826,7 @@ function TrackOrder() {
                                                                 "0 0 20px rgba(59,130,246,0.35)"
                                                         }}
                                                     >
-                                                        2
+                                                        <PackageCheck size={28} />
                                                     </div>
 
                                                     <p
@@ -881,7 +887,7 @@ function TrackOrder() {
                                                                 "0 0 20px rgba(34,197,94,0.35)"
                                                         }}
                                                     >
-                                                        3
+                                                        <CheckCircle size={28} />
                                                     </div>
 
                                                     <p

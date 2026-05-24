@@ -953,6 +953,10 @@ function Admin() {
               key={item.id}
             >
 
+              <div className="product-badge">
+                {item.subCategory}
+              </div>
+
               <img
                 src={item.image}
                 alt={item.name}
