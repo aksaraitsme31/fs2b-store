@@ -130,11 +130,17 @@ function Footer() {
                         Cara Rekber
                     </button>
 
-                    <button>
+                    <button
+                        onClick={() =>
+                            navigate("/privacy-policy")
+                        }
+                    >
                         Kebijakan Privasi
                     </button>
 
-                    <button>
+                    <button
+                        onClick={() => navigate("/faq")}
+                    >
                         FAQ
                     </button>
 

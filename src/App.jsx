@@ -37,6 +37,8 @@ import RekberOrderDetail from "./pages/RekberOrderDetail";
 import RekberSaya from "./pages/RekberSaya";
 import TentangKami from "./pages/TentangKami";
 import TrackOrder from "./pages/TrackOrder";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import FAQ from "./pages/FAQ";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -130,6 +132,16 @@ function App() {
         <Route
           path="/track-order"
           element={<TrackOrder />}
+        />
+
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicy />}
+        />
+
+        <Route
+          path="/faq"
+          element={<FAQ />}
         />
 
         {/* ADMIN */}
