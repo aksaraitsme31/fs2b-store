@@ -27,6 +27,13 @@ import {
 } from "firebase/firestore";
 
 import {
+  getDatabase,
+  ref,
+  set,
+  onDisconnect,
+} from "firebase/database";
+
+import {
   db,
   auth
 } from "../firebase/firebase";
@@ -90,6 +97,39 @@ function Admin() {
     return () => unsubscribe();
 
   }, []);
+
+  useEffect(() => {
+
+    if (
+      !firebaseUser ||
+      userRole !== "admin"
+    ) return;
+
+    const realtimeDb =
+      getDatabase();
+
+    const adminStatusRef =
+      ref(
+        realtimeDb,
+        "status/admin"
+      );
+
+    // ADMIN ONLINE
+    set(adminStatusRef, {
+      online: true,
+      lastSeen: Date.now(),
+    });
+
+    // AUTO OFFLINE
+    onDisconnect(adminStatusRef).set({
+      online: false,
+      lastSeen: Date.now(),
+    });
+
+  }, [
+    firebaseUser,
+    userRole
+  ]);
 
   /* =========================
      PRODUCT STATE
@@ -1287,7 +1327,12 @@ function Admin() {
 
                                       {
                                         name: "ID Transaksi",
-                                        value: item.transactionId || "-",
+                                        value:
+                                          item.transactionId
+                                            ? item.transactionId.slice(0, 10) +
+                                            "****" +
+                                            item.transactionId.slice(-4)
+                                            : "-",
                                         inline: false
                                       },
 
@@ -1318,9 +1363,11 @@ function Admin() {
                                       {
                                         name: "Total",
                                         value:
-                                          `Rp ${Number(
-                                            item.totalPayment || 0
-                                          ).toLocaleString("id-ID")}`,
+                                          item.totalPayment
+                                            ? `Rp ${"*".repeat(
+                                              String(item.totalPayment).length - 4
+                                            )}${String(item.totalPayment).slice(-4)}`
+                                            : "-",
                                         inline: true
                                       },
 

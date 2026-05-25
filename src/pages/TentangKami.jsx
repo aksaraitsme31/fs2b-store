@@ -171,77 +171,89 @@ export default function TentangKami() {
 
         </section>
 
-        {/* MISSION */}
-        <section className="tentang-mission">
+        {/* VISI & MISI */}
+        <section className="tentang-visimisi">
 
-          <div className="mission-box">
+          <div className="visimisi-grid">
 
-            <div className="mission-item">
+            {/* VISI */}
+            <motion.div
+              className="vision-item"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
 
-              <Target size={55} />
-
-              <div>
-
-                <h3>Visi Kami</h3>
-
-                <p>
-                  Menjadi platform transaksi gaming digital
-                  yang aman, terpercaya, dan nyaman sehingga
-                  membantu para gamer terhindar dari penipuan
-                  dan scam dalam jual beli digital.
-                </p>
-
+              <div className="vision-icon">
+                <Target size={50} />
               </div>
 
-            </div>
+              <h3>
+                Visi Kami
+              </h3>
 
-            <div className="mission-divider"></div>
+              <p>
+                Menjadi platform transaksi gaming digital
+                yang aman, terpercaya, dan nyaman sehingga
+                membantu para gamer terhindar dari penipuan
+                dan scam dalam jual beli digital.
+              </p>
 
-            <div className="mission-item">
+            </motion.div>
 
-              <Rocket size={55} />
+            {/* MISI */}
+            <motion.div
+              className="mission-item"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+            >
 
-              <div>
-
-                <h3>Misi Kami</h3>
-
-                <ul className="mission-list">
-
-                  <li>
-                    Menghadirkan sistem transaksi yang aman,
-                    transparan, dan terpercaya.
-                  </li>
-
-                  <li>
-                    Menyediakan item game dan kebutuhan gaming
-                    dengan pelayanan terbaik dan terpercaya.
-                  </li>
-
-                  <li>
-                    Memberikan layanan rekber profesional
-                    untuk meningkatkan keamanan buyer dan seller.
-                  </li>
-
-                  <li>
-                    Membangun reputasi platform yang jujur,
-                    responsif, dan mengutamakan kepuasan customer.
-                  </li>
-
-                  <li>
-                    Membantu menciptakan lingkungan transaksi
-                    gaming yang lebih aman dan terhindar dari penipuan.
-                  </li>
-
-                  <li>
-                    Menjadi tempat transaksi digital yang nyaman
-                    bagi seluruh komunitas gamer di muka bumi.
-                  </li>
-
-                </ul>
-
+              <div className="mission-icon">
+                <Rocket size={50} />
               </div>
 
-            </div>
+              <h3>
+                Misi Kami
+              </h3>
+
+              <ul className="mission-list">
+
+                <li>
+                  Menghadirkan sistem transaksi yang aman,
+                  transparan, dan terpercaya.
+                </li>
+
+                <li>
+                  Menyediakan item game dan kebutuhan gaming
+                  dengan pelayanan terbaik dan terpercaya.
+                </li>
+
+                <li>
+                  Memberikan layanan rekber profesional
+                  untuk meningkatkan keamanan buyer dan seller.
+                </li>
+
+                <li>
+                  Membangun reputasi platform yang jujur,
+                  responsif, dan mengutamakan kepuasan customer.
+                </li>
+
+                <li>
+                  Membantu menciptakan lingkungan transaksi
+                  gaming yang lebih aman dan terhindar dari penipuan.
+                </li>
+
+                <li>
+                  Menjadi tempat transaksi digital yang nyaman
+                  bagi seluruh komunitas gamer di muka bumi.
+                </li>
+
+              </ul>
+
+            </motion.div>
 
           </div>
 

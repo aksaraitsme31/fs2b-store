@@ -190,6 +190,13 @@ function Orders() {
 
           if (orderData) {
 
+            const hiddenTransactionId =
+              orderData.transactionId
+                ? orderData.transactionId.slice(0, 10) +
+                "****" +
+                orderData.transactionId.slice(-4)
+                : "-";
+
             await fetch("/api/discord", {
               method: "POST",
 
@@ -210,7 +217,7 @@ function Orders() {
 ━━━━━━━━━━━━━━━
 
 🆔 **ID Transaksi**
-\`${orderData.transactionId}\`
+\`${hiddenTransactionId}\`
 
 📦 **Produk**
 ${orderData.product}
@@ -219,7 +226,9 @@ ${orderData.product}
 ${orderData.username}
 
 💰 **Total Pembayaran**
-Rp ${Number(orderData.totalPrice).toLocaleString("id-ID")}
+Rp ${"*".repeat(
+                      String(orderData.totalPrice).length - 4
+                    )}${String(orderData.totalPrice).slice(-4)}
 
 📅 **Tanggal**
 ${orderData.date}

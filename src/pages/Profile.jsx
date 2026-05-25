@@ -16,7 +16,8 @@ import {
   updateEmail,
   updatePassword,
   EmailAuthProvider,
-  reauthenticateWithCredential
+  reauthenticateWithCredential,
+  sendEmailVerification
 } from "firebase/auth";
 
 import {
@@ -33,6 +34,11 @@ import {
   db
 } from "../firebase/firebase";
 
+import {
+  BadgeCheck,
+  ShieldAlert
+} from "lucide-react";
+
 function Profile() {
 
   const navigate =
@@ -46,16 +52,12 @@ function Profile() {
   const [
     newUsername,
     setNewUsername
-  ] = useState(
-    currentUser?.username || ""
-  );
+  ] = useState("");
 
   const [
     newEmail,
     setNewEmail
-  ] = useState(
-    currentUser?.email || ""
-  );
+  ] = useState("");
 
   const [
     oldPassword,
@@ -114,10 +116,44 @@ function Profile() {
 
       try {
 
+        const cleanUsername =
+          newUsername
+            .trim()
+            .toLowerCase();
+
+        const allowedAdminEmails = [
+          "thirtyone.zerozero@gmail.com",
+          "aufahisyam79@gmail.com"
+        ];
+
+        if (
+          (
+            cleanUsername.includes("admin") ||
+            cleanUsername.includes("fs2b")
+          ) &&
+          !allowedAdminEmails.includes(
+            email.trim().toLowerCase()
+          )
+        ) {
+
+          alert(
+            "Username tersebut tidak diperbolehkan 😤"
+          );
+
+          return;
+
+        }
+
+        /* CHECK USERNAME */
+
         /* CHECK USERNAME */
         const usernameQuery = query(
           collection(db, "users"),
-          where("username", "==", newUsername)
+          where(
+            "username",
+            "==",
+            cleanUsername
+          )
         );
 
         const usernameSnapshot =
@@ -126,12 +162,17 @@ function Profile() {
         const usernameUsedByOtherUser =
           usernameSnapshot.docs.find(
             (doc) =>
-              doc.data().uid !== currentUser.uid
+              doc.data().uid !==
+              currentUser.uid
           );
 
-        if (usernameUsedByOtherUser) {
+        if (
+          usernameUsedByOtherUser
+        ) {
 
-          alert("Username sudah digunakan");
+          alert(
+            "Username sudah digunakan"
+          );
 
           return;
 
@@ -142,7 +183,7 @@ function Profile() {
           auth.currentUser,
           {
             displayName:
-              newUsername
+              cleanUsername
           }
         );
 
@@ -161,10 +202,16 @@ function Profile() {
 
         /* UPDATE FIRESTORE */
         await updateDoc(
-          doc(db, "users", currentUser.uid),
+          doc(
+            db,
+            "users",
+            currentUser.uid
+          ),
           {
-            username: newUsername,
-            email: newEmail
+            username:
+              cleanUsername,
+            email:
+              newEmail
           }
         );
 
@@ -259,6 +306,31 @@ function Profile() {
 
     };
 
+  const handleVerifyEmail =
+    async () => {
+
+      try {
+
+        await sendEmailVerification(
+          auth.currentUser
+        );
+
+        alert(
+          "Email verifikasi berhasil dikirim"
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal mengirim email verifikasi"
+        );
+
+      }
+
+    };
+
   return (
 
     <div className="store">
@@ -293,6 +365,50 @@ function Profile() {
             {currentUser?.email}
 
           </p>
+
+          {/* EMAIL VERIFICATION */}
+          <div className="email-status">
+
+            {currentUser?.emailVerified ? (
+
+              <div className="verified-badge">
+
+                <BadgeCheck size={18} />
+
+                <span>
+                  Email Sudah Terverifikasi
+                </span>
+
+              </div>
+
+            ) : (
+
+              <div className="unverified-box">
+
+                <div className="unverified-badge">
+
+                  <ShieldAlert size={18} />
+
+                  <span>
+                    Email Belum Diverifikasi
+                  </span>
+
+                </div>
+
+                <button
+                  className="verify-btn"
+                  onClick={
+                    handleVerifyEmail
+                  }
+                >
+                  Verifikasi Email
+                </button>
+
+              </div>
+
+            )}
+
+          </div>
 
         </div>
 

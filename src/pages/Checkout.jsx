@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 
 import { useState } from "react";
 
+import toast from "react-hot-toast";
+
 import {
   collection,
   addDoc,
@@ -103,10 +105,22 @@ function Checkout() {
       const currentUser =
         auth.currentUser;
 
+      /* CEK LOGIN */
       if (!currentUser) {
 
-        alert(
-          "Silakan login dulu"
+        toast.error(
+          "Silakan login terlebih dahulu 😀"
+        );
+
+        return;
+
+      }
+
+      /* CEK VERIFIKASI EMAIL */
+      if (!currentUser.emailVerified) {
+
+        toast.error(
+          "Verifikasi email terlebih dahulu 😉"
         );
 
         return;
@@ -118,8 +132,8 @@ function Checkout() {
         !proof
       ) {
 
-        alert(
-          "Lengkapi semua data"
+        toast.error(
+          "Lengkapi semua data 😠"
         );
 
         return;
@@ -195,8 +209,8 @@ function Checkout() {
           }
         );
 
-        alert(
-          "Pesanan berhasil dikirim"
+        toast.success(
+          "Pesanan berhasil dikirim 🚀"
         );
 
         setGameUsername("");
@@ -207,8 +221,8 @@ function Checkout() {
 
         console.log(error);
 
-        alert(
-          "Gagal membuat pesanan"
+        toast.error(
+          "Gagal membuat pesanan 😩"
         );
 
       }

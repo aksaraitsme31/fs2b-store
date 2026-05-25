@@ -6,10 +6,10 @@ import {
 
 import {
   signInWithEmailAndPassword,
-  sendEmailVerification,
-  reload,
-  signOut
+  reload
 } from "firebase/auth";
+
+import toast from "react-hot-toast";
 
 import {
   auth
@@ -34,8 +34,8 @@ function Login() {
         !password
       ) {
 
-        alert(
-          "Isi semua data"
+        toast.error(
+          "Isi semua data terlebih dahulu."
         );
 
         return;
@@ -60,35 +60,42 @@ function Login() {
         /* CEK VERIFIKASI EMAIL */
         if (!user.emailVerified) {
 
-          await sendEmailVerification(user);
-
-          alert(
-            "Email belum diverifikasi. Link verifikasi baru telah dikirim ke email Anda."
+          toast(
+            "Email belum di verifikasi! Segera verifikasi untuk menikmati layanan FS2B Store 😉",
+            {
+              icon: "⚠️"
+            }
           );
 
-          await signOut(auth);
+        } else {
 
-          return;
+          toast.success(
+            "Login berhasil 😉"
+          );
 
         }
 
-        alert(
-          "Login berhasil"
-        );
+        /* DELAY AGAR TOAST MUNCUL DULU */
+        setTimeout(() => {
 
-        navigate("/");
+          navigate("/");
+
+        }, 1800);
 
       } catch (error) {
 
         console.log(error);
 
-        alert(error.message);
+        toast.error(
+          "Email atau password salah."
+        );
 
       }
 
     };
 
   return (
+
     <div className="auth-page">
 
       <div className="auth-box">
@@ -148,7 +155,9 @@ function Login() {
       </div>
 
     </div>
+
   );
+
 }
 
 export default Login;

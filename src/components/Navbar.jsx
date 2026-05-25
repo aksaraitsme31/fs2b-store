@@ -13,6 +13,12 @@ import {
 } from "firebase/firestore";
 
 import {
+    getDatabase,
+    ref,
+    onValue,
+} from "firebase/database";
+
+import {
     auth,
     db
 } from "../firebase/firebase";
@@ -28,6 +34,11 @@ function Navbar() {
     const [currentUser, setCurrentUser] = useState(null);
 
     const [userRole, setUserRole] = useState("");
+
+    const [adminOnline, setAdminOnline] =
+        useState(false);
+
+    // AUTH USER
 
     useEffect(() => {
 
@@ -51,6 +62,35 @@ function Navbar() {
                         );
 
                     }
+
+                }
+
+            });
+
+        return () => unsubscribe();
+
+    }, []);
+
+    // ADMIN STATUS REALTIME
+
+    useEffect(() => {
+
+        const realtimeDb =
+            getDatabase();
+
+        const statusRef =
+            ref(realtimeDb, "status/admin");
+
+        const unsubscribe =
+            onValue(statusRef, (snapshot) => {
+
+                const data = snapshot.val();
+
+                if (data) {
+
+                    setAdminOnline(
+                        data.online
+                    );
 
                 }
 
@@ -92,6 +132,39 @@ function Navbar() {
 
             {/* MENU */}
             <div className="menu">
+
+                {/* ADMIN STATUS */}
+                <div className="premium-status">
+
+                    <div
+                        className={
+                            adminOnline
+                                ? "premium-dot online"
+                                : "premium-dot offline"
+                        }
+                    ></div>
+
+                    <div className="premium-text">
+
+                        <span className="premium-title">
+
+                            {adminOnline
+                                ? "ADMIN ACTIVE"
+                                : "ADMIN OFFLINE"}
+
+                        </span>
+
+                        <span className="premium-subtitle">
+
+                            {adminOnline
+                                ? "Biasanya membalas dalam beberapa menit"
+                                : "Mohon tunggu sebentar"}
+
+                        </span>
+
+                    </div>
+
+                </div>
 
                 {/* HOME */}
                 <button onClick={() => navigate("/")}>

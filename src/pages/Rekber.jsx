@@ -6,6 +6,8 @@ import {
     useState
 } from "react";
 
+import toast from "react-hot-toast";
+
 import {
     useNavigate
 } from "react-router-dom";
@@ -102,11 +104,25 @@ function Rekber() {
             const firebaseUser =
                 auth.currentUser;
 
+            /* CEK LOGIN */
             if (!firebaseUser) {
 
-                alert("Silakan login dulu");
+                toast.error(
+                    "Silakan login terlebih dahulu 😀"
+                );
 
                 navigate("/login");
+
+                return;
+
+            }
+
+            /* CEK VERIFIKASI EMAIL */
+            if (!firebaseUser.emailVerified) {
+
+                toast.error(
+                    "Verifikasi email terlebih dahulu 😉"
+                );
 
                 return;
 
@@ -120,8 +136,8 @@ function Rekber() {
                 !dealPrice
             ) {
 
-                alert(
-                    "Lengkapi data terlebih dahulu"
+                toast.error(
+                    "Lengkapi data terlebih dahulu 😠"
                 );
 
                 return;
@@ -135,7 +151,9 @@ function Rekber() {
                     where(
                         "username",
                         "==",
-                        sellerUsername.trim()
+                        sellerUsername
+                            .trim()
+                            .toLowerCase()
                     )
                 );
 
@@ -144,7 +162,9 @@ function Rekber() {
 
                 if (userSnapshot.empty) {
 
-                    alert("Seller tidak ditemukan");
+                    toast.error(
+                        "Seller tidak ditemukan 😔"
+                    );
 
                     return;
 
@@ -157,6 +177,18 @@ function Rekber() {
 
                 const sellerId =
                     sellerData.uid;
+
+                if (
+                    sellerId === firebaseUser.uid
+                ) {
+
+                    toast.error(
+                        "Tidak bisa membuat rekber dengan akun sendiri 😅"
+                    );
+
+                    return;
+
+                }
 
                 const transactionId =
                     `FS2B-RKB-${Date.now()}`;
@@ -172,7 +204,10 @@ function Rekber() {
 
                     sellerId,
 
-                    sellerUsername,
+                    sellerUsername:
+                        sellerUsername
+                            .trim()
+                            .toLowerCase(),
 
                     game,
 
@@ -218,6 +253,10 @@ function Rekber() {
                         newRekber
                     );
 
+                toast.success(
+                    "Rekber berhasil dibuat 🎉"
+                );
+
                 navigate(
                     `/rekber/order/${docRef.id}`
                 );
@@ -226,8 +265,8 @@ function Rekber() {
 
                 console.log(error);
 
-                alert(
-                    "Gagal membuat rekber"
+                toast.error(
+                    "Gagal membuat rekber 😩"
                 );
 
             }
@@ -860,6 +899,7 @@ function Rekber() {
                     />
 
                     <input
+                        type="number"
                         placeholder="Harga Deal"
                         value={dealPrice}
                         onChange={(e) =>

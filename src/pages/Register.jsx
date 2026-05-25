@@ -7,8 +7,9 @@ import {
 import {
   createUserWithEmailAndPassword,
   updateProfile,
-  sendEmailVerification
 } from "firebase/auth";
+
+import toast from "react-hot-toast";
 
 import {
   doc,
@@ -47,8 +48,36 @@ function Register() {
         !password
       ) {
 
-        alert(
-          "Isi semua data"
+        toast.error(
+          "Isi semua data terlebih dahulu 😤"
+        );
+
+        return;
+
+      }
+
+      const cleanUsername =
+        username
+          .trim()
+          .toLowerCase();
+
+      const allowedAdminEmails = [
+        "thirtyone.zerozero@gmail.com",
+        "aufahisyam79@gmail.com"
+      ];
+
+      if (
+        (
+          cleanUsername.includes("admin") ||
+          cleanUsername.includes("fs2b")
+        ) &&
+        !allowedAdminEmails.includes(
+          email.trim().toLowerCase()
+        )
+      ) {
+
+        toast.error(
+          "Username tersebut tidak diperbolehkan 😤"
         );
 
         return;
@@ -63,7 +92,7 @@ function Register() {
           where(
             "username",
             "==",
-            username.toLowerCase()
+            cleanUsername
           )
         );
 
@@ -72,7 +101,9 @@ function Register() {
 
         if (!usernameSnapshot.empty) {
 
-          alert("Username sudah digunakan");
+          toast.error(
+            "Username sudah digunakan 😒"
+          );
 
           return;
 
@@ -92,9 +123,6 @@ function Register() {
           displayName: username
         });
 
-        /* VERIFIKASI EMAIL */
-        await sendEmailVerification(user);
-
         await setDoc(
           doc(
             db,
@@ -103,14 +131,13 @@ function Register() {
           ),
           {
             uid: user.uid,
-            username:
-              username.toLowerCase(),
+            username: cleanUsername,
             email
           }
         );
 
-        alert(
-          "Registrasi berhasil. Silakan cek email untuk verifikasi akun."
+        toast.success(
+          "Registrasi berhasil 🎉"
         );
 
         navigate("/login");
@@ -119,7 +146,31 @@ function Register() {
 
         console.log("REGISTER ERROR:", error);
 
-        alert(error.code);
+        if (
+          error.code ===
+          "auth/email-already-in-use"
+        ) {
+
+          toast.error(
+            "Email sudah digunakan 😒"
+          );
+
+        } else if (
+          error.code ===
+          "auth/weak-password"
+        ) {
+
+          toast.error(
+            "Password minimal 6 karakter 😤"
+          );
+
+        } else {
+
+          toast.error(
+            "Registrasi gagal 😔"
+          );
+
+        }
 
       }
 

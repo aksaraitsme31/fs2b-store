@@ -22,6 +22,8 @@ import {
   Navigate
 } from "react-router-dom";
 
+import { Toaster } from "react-hot-toast";
+
 /* PAGES */
 import Store from "./pages/Store";
 import Login from "./pages/Login";
@@ -87,6 +89,44 @@ function App() {
   return (
 
     <BrowserRouter>
+
+      {/* PREMIUM TOASTER */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#0f0f0f",
+            color: "#ffffff",
+            border:
+              "1px solid rgba(255,215,0,0.18)",
+            borderRadius: "18px",
+            padding: "16px 18px",
+            fontWeight: "600",
+            boxShadow:
+              "0 10px 35px rgba(0,0,0,0.45)"
+          },
+
+          success: {
+            style: {
+              background: "#111111",
+              color: "#ffffff",
+              border:
+                "1px solid rgba(0,255,170,0.22)"
+            }
+          },
+
+          error: {
+            style: {
+              background: "#111111",
+              color: "#ffffff",
+              border:
+                "1px solid rgba(255,80,80,0.25)"
+            }
+          }
+
+        }}
+      />
 
       <Routes>
 
