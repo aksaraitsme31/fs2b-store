@@ -27,7 +27,6 @@ import {
 } from "firebase/firestore";
 
 import {
-  getDatabase,
   ref,
   set,
   onDisconnect,
@@ -36,7 +35,8 @@ import {
 
 import {
   db,
-  auth
+  auth,
+  realtimeDb
 } from "../firebase/firebase";
 
 function Admin() {
@@ -106,9 +106,6 @@ function Admin() {
       userRole !== "admin"
     ) return;
 
-    const realtimeDb =
-      getDatabase();
-
     const adminStatusRef =
       ref(
         realtimeDb,
@@ -124,21 +121,19 @@ function Admin() {
     const unsubscribe =
       onValue(
         connectedRef,
-        (snapshot) => {
+        async (snapshot) => {
 
           if (
             snapshot.val() === true
           ) {
 
-            // ADMIN ONLINE
-            set(adminStatusRef, {
-              online: true,
+            await onDisconnect(adminStatusRef).set({
+              online: false,
               lastSeen: Date.now(),
             });
 
-            // AUTO OFFLINE
-            onDisconnect(adminStatusRef).set({
-              online: false,
+            await set(adminStatusRef, {
+              online: true,
               lastSeen: Date.now(),
             });
 

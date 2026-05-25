@@ -13,14 +13,14 @@ import {
 } from "firebase/firestore";
 
 import {
-    getDatabase,
     ref,
     onValue,
 } from "firebase/database";
 
 import {
     auth,
-    db
+    db,
+    realtimeDb
 } from "../firebase/firebase";
 
 import iconicstore from "../assets/iconicstore.png";
@@ -74,9 +74,6 @@ function Navbar() {
     // ADMIN STATUS REALTIME
 
     useEffect(() => {
-
-        const realtimeDb =
-            getDatabase();
 
         const statusRef =
             ref(realtimeDb, "status/admin");
