@@ -84,15 +84,12 @@ function Navbar() {
         const unsubscribe =
             onValue(statusRef, (snapshot) => {
 
-                const data = snapshot.val();
+                const data =
+                    snapshot.val();
 
-                if (data) {
-
-                    setAdminOnline(
-                        data.online
-                    );
-
-                }
+                setAdminOnline(
+                    data?.online || false
+                );
 
             });
 

@@ -31,6 +31,7 @@ import {
   ref,
   set,
   onDisconnect,
+  onValue,
 } from "firebase/database";
 
 import {
@@ -114,17 +115,39 @@ function Admin() {
         "status/admin"
       );
 
-    // ADMIN ONLINE
-    set(adminStatusRef, {
-      online: true,
-      lastSeen: Date.now(),
-    });
+    const connectedRef =
+      ref(
+        realtimeDb,
+        ".info/connected"
+      );
 
-    // AUTO OFFLINE
-    onDisconnect(adminStatusRef).set({
-      online: false,
-      lastSeen: Date.now(),
-    });
+    const unsubscribe =
+      onValue(
+        connectedRef,
+        (snapshot) => {
+
+          if (
+            snapshot.val() === true
+          ) {
+
+            // ADMIN ONLINE
+            set(adminStatusRef, {
+              online: true,
+              lastSeen: Date.now(),
+            });
+
+            // AUTO OFFLINE
+            onDisconnect(adminStatusRef).set({
+              online: false,
+              lastSeen: Date.now(),
+            });
+
+          }
+
+        }
+      );
+
+    return () => unsubscribe();
 
   }, [
     firebaseUser,
