@@ -15,6 +15,8 @@ import {
   auth
 } from "../firebase/firebase";
 
+import bgAuth from "../assets/backgroundreglog.png";
+
 function Login() {
 
   const [email, setEmail] =
@@ -96,9 +98,18 @@ function Login() {
 
   return (
 
-    <div className="auth-page">
+    <div
+      className="auth-page"
+      style={{
+        backgroundImage: `url(${bgAuth})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh"
+      }}
+    >
 
-      <div className="auth-box">
+      <div className="auth-box premium-auth-box flip-login">
 
         <h1>
           Welcome Back

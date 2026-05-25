@@ -143,7 +143,7 @@ function Navbar() {
                         <span className="premium-title">
 
                             {adminOnline
-                                ? "ADMIN ACTIVE"
+                                ? "ADMIN ONLINE"
                                 : "ADMIN OFFLINE"}
 
                         </span>
@@ -151,8 +151,8 @@ function Navbar() {
                         <span className="premium-subtitle">
 
                             {adminOnline
-                                ? "Biasanya membalas dalam beberapa menit"
-                                : "Mohon tunggu sebentar"}
+                                ? "Admin siap untuk merespon"
+                                : "Mohon tunggu sampai Admin online kembali"}
 
                         </span>
 

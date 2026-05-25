@@ -25,6 +25,8 @@ import {
   db
 } from "../firebase/firebase";
 
+import bgAuth from "../assets/backgroundreglog.png";
+
 function Register() {
 
   const [username, setUsername] =
@@ -177,9 +179,18 @@ function Register() {
     };
 
   return (
-    <div className="auth-page">
+    <div
+      className="auth-page"
+      style={{
+        backgroundImage: `url(${bgAuth})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh"
+      }}
+    >
 
-      <div className="auth-box">
+      <div className="auth-box premium-auth-box flip-register">
 
         <h1>
           Create Account

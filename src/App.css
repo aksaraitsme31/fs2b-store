@@ -6185,3 +6185,602 @@ html,
     }
 
 }
+
+/* ===================================
+   PREMIUM AUTH UI
+=================================== */
+
+.auth-page{
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+}
+
+.auth-page::before{
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.35),
+      rgba(0,0,0,0.78)
+    );
+
+  z-index: 0;
+}
+
+/* =========================
+   PREMIUM CARD
+========================= */
+
+.premium-auth-box{
+  position: relative;
+  z-index: 2;
+
+  overflow: hidden;
+
+  width: 420px;
+
+  padding: 42px 34px;
+
+  border-radius: 32px;
+
+  background:
+    rgba(10,10,10,0.78);
+
+  backdrop-filter:
+    blur(16px);
+
+  border:
+    1px solid rgba(255,215,0,0.14);
+
+  box-shadow:
+    0 0 12px rgba(255,215,0,0.08),
+    0 0 60px rgba(0,0,0,0.65);
+
+  animation:
+    authFade 0.7s ease,
+    floatingCard 6s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+/* SOFT GOLD LIGHT */
+
+.premium-auth-box::before{
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255,215,0,0.02) 0%,
+      rgba(255,215,0,0.05) 18%,
+      transparent 40%,
+      transparent 60%,
+      rgba(255,215,0,0.04) 82%,
+      rgba(255,215,0,0.02) 100%
+    );
+
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+/* ANIMATED GOLD BORDER */
+
+.premium-auth-box::after{
+  content: "";
+
+  position: absolute;
+
+  inset: -1px;
+
+  border-radius: 32px;
+
+  padding: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,215,0,0.12) 20%,
+      #ffd700 35%,
+      #fff4b0 50%,
+      #ffd700 65%,
+      rgba(255,215,0,0.12) 80%,
+      transparent 100%
+    );
+
+  background-size:
+    300% 100%;
+
+  animation:
+    borderRun 4s linear infinite;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+
+  mask-composite: exclude;
+
+  opacity: 0.72;
+
+  pointer-events: none;
+}
+
+/* CONTENT ABOVE EFFECT */
+
+.premium-auth-box > *{
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes authFade{
+
+  from{
+    opacity:0;
+
+    transform:
+      translateY(20px)
+      scale(0.96);
+  }
+
+  to{
+    opacity:1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+@keyframes floatingCard{
+
+  0%{
+    transform:
+      translate3d(0, 0px, 0);
+  }
+
+  25%{
+    transform:
+      translate3d(0, -3px, 0);
+  }
+
+  50%{
+    transform:
+      translate3d(0, -6px, 0);
+  }
+
+  75%{
+    transform:
+      translate3d(0, -3px, 0);
+  }
+
+  100%{
+    transform:
+      translate3d(0, 0px, 0);
+  }
+
+}
+
+@keyframes borderRun{
+
+  0%{
+    background-position:
+      0% 50%;
+  }
+
+  100%{
+    background-position:
+      300% 50%;
+  }
+
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.premium-auth-box h1{
+  font-size: 42px;
+  font-weight: 800;
+
+  color: white;
+
+  margin-bottom: 10px;
+
+  letter-spacing: 1px;
+
+  text-shadow:
+    0 0 12px rgba(255,255,255,0.06);
+}
+
+.auth-subtitle{
+  color: #d0d0d0;
+
+  margin-bottom: 28px;
+
+  font-size: 15px;
+}
+
+/* =========================
+   INPUT
+========================= */
+
+.premium-auth-box input{
+  width: 100%;
+
+  height: 58px;
+
+  margin-bottom: 18px;
+
+  border-radius: 18px;
+
+  border:
+    1px solid rgba(255,215,0,0.12);
+
+  background:
+    rgba(255,255,255,0.04);
+
+  padding: 0 18px;
+
+  color: white;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.25s;
+}
+
+.premium-auth-box input::placeholder{
+  color: #9f9f9f;
+}
+
+.premium-auth-box input:focus{
+  border-color: #f5d061;
+
+  box-shadow:
+    0 0 12px rgba(255,215,0,0.12);
+
+  background:
+    rgba(255,255,255,0.06);
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.premium-auth-box button{
+  width: 100%;
+
+  height: 58px;
+
+  border: none;
+
+  border-radius: 18px;
+
+  margin-top: 8px;
+
+  cursor: pointer;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  color: black;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffdf4f,
+      #ffb700,
+      #ffd700
+    );
+
+  transition: 0.3s;
+
+  box-shadow:
+    0 6px 18px rgba(255,215,0,0.16);
+}
+
+.premium-auth-box button:hover{
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 24px rgba(255,215,0,0.20);
+}
+
+/* =========================
+   LINK
+========================= */
+
+.auth-link{
+  margin-top: 22px;
+
+  color: #d8d8d8;
+
+  font-size: 14px;
+}
+
+.auth-link span{
+  color: #f5d061;
+
+  margin-left: 6px;
+
+  cursor: pointer;
+
+  font-weight: 700;
+
+  transition: 0.2s;
+}
+
+.auth-link span:hover{
+  text-decoration: underline;
+
+  opacity: 0.9;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:500px){
+
+  .premium-auth-box{
+    width: 92%;
+
+    padding: 36px 24px;
+
+    border-radius: 24px;
+
+    backdrop-filter:
+      blur(12px);
+
+    box-shadow:
+      0 0 18px rgba(255,215,0,0.08),
+      0 0 50px rgba(0,0,0,0.45);
+  }
+
+  .premium-auth-box::before{
+    border-radius: 24px;
+  }
+
+  .premium-auth-box::after{
+    border-radius: 24px;
+
+    opacity: 0.68;
+  }
+
+  .premium-auth-box h1{
+    font-size: 34px;
+
+    line-height: 1.1;
+  }
+
+  .auth-subtitle{
+    font-size: 14px;
+
+    margin-bottom: 24px;
+  }
+
+  .premium-auth-box input{
+    height: 54px;
+
+    font-size: 14px;
+
+    border-radius: 16px;
+
+    margin-bottom: 16px;
+  }
+
+  .premium-auth-box button{
+    height: 54px;
+
+    font-size: 15px;
+
+    border-radius: 16px;
+  }
+
+  .auth-link{
+    font-size: 13px;
+
+    margin-top: 18px;
+  }
+
+}
+
+/* =========================
+   3D FLIP EFFECT
+========================= */
+
+.flip-register{
+  animation:
+    authFade 0.7s ease,
+    floatingCard 6s cubic-bezier(0.37, 0, 0.63, 1) infinite,
+    registerFlip 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.flip-login{
+  animation:
+    authFade 0.7s ease,
+    floatingCard 6s cubic-bezier(0.37, 0, 0.63, 1) infinite,
+    loginFlip 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* REGISTER FLIP */
+
+@keyframes registerFlip{
+
+  0%{
+    opacity: 0;
+
+    transform:
+      perspective(1800px)
+      rotateY(-900deg)
+      scale(0.78);
+  }
+
+  70%{
+    opacity: 1;
+
+    transform:
+      perspective(1800px)
+      rotateY(-40deg)
+      scale(1);
+  }
+
+  100%{
+    transform:
+      perspective(1800px)
+      rotateY(0deg)
+      scale(1);
+  }
+
+}
+
+/* LOGIN FLIP */
+
+@keyframes loginFlip{
+
+  0%{
+    opacity: 0;
+
+    transform:
+      perspective(1800px)
+      rotateY(900deg)
+      scale(0.78);
+  }
+
+  70%{
+    opacity: 1;
+
+    transform:
+      perspective(1800px)
+      rotateY(40deg)
+      scale(1);
+  }
+
+  100%{
+    transform:
+      perspective(1800px)
+      rotateY(0deg)
+      scale(1);
+  }
+
+}
+
+/* =========================
+   ANIMATED GOLD BORDER
+========================= */
+
+.premium-auth-box::after{
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 32px;
+
+  padding: 1.5px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,215,0,0.08) 15%,
+      rgba(255,215,0,0.95) 35%,
+      #fff4b0 50%,
+      rgba(255,215,0,0.95) 65%,
+      rgba(255,215,0,0.08) 85%,
+      transparent 100%
+    );
+
+  background-size:
+    250% 100%;
+
+  animation:
+    borderRun 3s linear infinite;
+
+  /* BORDER ONLY */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+
+  mask-composite: exclude;
+
+  opacity: 0.95;
+
+  filter:
+    drop-shadow(0 0 6px rgba(255,215,0,0.35));
+
+  pointer-events: none;
+}
+
+/* INNER GLASS LAYER */
+
+.premium-auth-box::before{
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255,215,0,0.02) 0%,
+      rgba(255,215,0,0.05) 18%,
+      transparent 40%,
+      transparent 60%,
+      rgba(255,215,0,0.04) 82%,
+      rgba(255,215,0,0.02) 100%
+    ),
+    rgba(10,10,10,0.78);
+
+  backdrop-filter:
+    blur(16px);
+
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+/* BORDER FLOW */
+
+@keyframes borderRun{
+
+  0%{
+    background-position:
+      0% 50%;
+  }
+
+  100%{
+    background-position:
+      300% 50%;
+  }
+
+}
