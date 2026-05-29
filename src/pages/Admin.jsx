@@ -23,20 +23,13 @@ import {
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  increment
 } from "firebase/firestore";
 
 import {
-  ref,
-  set,
-  onDisconnect,
-  onValue,
-} from "firebase/database";
-
-import {
   db,
-  auth,
-  realtimeDb
+  auth
 } from "../firebase/firebase";
 
 function Admin() {
@@ -98,56 +91,6 @@ function Admin() {
     return () => unsubscribe();
 
   }, []);
-
-  useEffect(() => {
-
-    if (
-      !firebaseUser ||
-      userRole !== "admin"
-    ) return;
-
-    const adminStatusRef =
-      ref(
-        realtimeDb,
-        "status/admin"
-      );
-
-    const connectedRef =
-      ref(
-        realtimeDb,
-        ".info/connected"
-      );
-
-    const unsubscribe =
-      onValue(
-        connectedRef,
-        async (snapshot) => {
-
-          if (
-            snapshot.val() === true
-          ) {
-
-            await onDisconnect(adminStatusRef).set({
-              online: false,
-              lastSeen: Date.now(),
-            });
-
-            await set(adminStatusRef, {
-              online: true,
-              lastSeen: Date.now(),
-            });
-
-          }
-
-        }
-      );
-
-    return () => unsubscribe();
-
-  }, [
-    firebaseUser,
-    userRole
-  ]);
 
   /* =========================
      PRODUCT STATE
@@ -963,6 +906,10 @@ function Admin() {
               Stuff
             </option>
 
+            <option value="Pet">
+              Pet
+            </option>
+
             <option value="Jasa Joki">
               Jasa Joki
             </option>
@@ -1311,8 +1258,65 @@ function Admin() {
                           }
                         );
 
+                        /* =====================================================
+                           MASUKKAN KE GLOBAL TRANSACTIONS
+                        ===================================================== */
+                        await addDoc(
+                          collection(
+                            db,
+                            "globalTransactions"
+                          ),
+                          {
+
+                            transactionId:
+                              item.transactionId,
+
+                            buyerUsername:
+                              item.buyerUsername,
+
+                            sellerUsername:
+                              item.sellerUsername,
+
+                            itemName:
+                              item.itemName,
+
+                            totalPayment:
+                              item.totalPayment,
+
+                            source: "rekber",
+
+                            status: "Done",
+
+                            createdAt:
+                              serverTimestamp()
+
+                          }
+                        );
+
+                        /* UPDATE TOTAL TRANSAKSI */
+                        await updateDoc(
+
+                          doc(
+                            db,
+                            "globalTransactions",
+                            "stats"
+                          ),
+
+                          {
+                            totalTransactions:
+                              increment(1)
+                          }
+
+                        );
+
                         /* DISCORD WEBHOOK */
                         try {
+
+                          const priceString =
+                            String(item.totalPayment || 0);
+
+                          const maskedPrice =
+                            `Rp \`**${priceString.slice(2)}\``;
 
                           await fetch(
                             "/api/discord",
@@ -1334,71 +1338,46 @@ function Admin() {
                                   {
 
                                     title:
-                                      "✅ Rekber Selesai",
+                                      "🛒 TRANSAKSI REKBER BARU FS2B STORE",
 
-                                    description:
-                                      `Transaksi rekber telah selesai.`,
+                                    description: `
+━━━━━━━━━━━━━━━
+
+🆔 **ID Transaksi**
+\`${item.transactionId
+                                        ? item.transactionId.slice(0, 10) +
+                                        "****" +
+                                        item.transactionId.slice(-4)
+                                        : "-"}\`
+
+👤 **Buyer**
+${item.buyerUsername || "-"}
+
+🛍️ **Seller**
+${item.sellerUsername || "-"}
+
+📦 **Item**
+${item.itemName || "-"}
+
+🎮 **Game**
+${item.game || "-"}
+
+💰 **Total Pembayaran**
+${maskedPrice}
+
+📅 **Tanggal**
+${new Date().toLocaleDateString("id-ID")}
+
+✅ **Status : TRANSAKSI SELESAI 😉**
+
+━━━━━━━━━━━━━━━
+`.trim(),
 
                                     color: 0x00ff9d,
 
-                                    fields: [
-
-                                      {
-                                        name: "ID Transaksi",
-                                        value:
-                                          item.transactionId
-                                            ? item.transactionId.slice(0, 10) +
-                                            "****" +
-                                            item.transactionId.slice(-4)
-                                            : "-",
-                                        inline: false
-                                      },
-
-                                      {
-                                        name: "Buyer",
-                                        value: item.buyerUsername || "-",
-                                        inline: true
-                                      },
-
-                                      {
-                                        name: "Seller",
-                                        value: item.sellerUsername || "-",
-                                        inline: true
-                                      },
-
-                                      {
-                                        name: "Item",
-                                        value: item.itemName || "-",
-                                        inline: false
-                                      },
-
-                                      {
-                                        name: "Game",
-                                        value: item.game || "-",
-                                        inline: true
-                                      },
-
-                                      {
-                                        name: "Total",
-                                        value:
-                                          item.totalPayment
-                                            ? `Rp ${"*".repeat(
-                                              String(item.totalPayment).length - 4
-                                            )}${String(item.totalPayment).slice(-4)}`
-                                            : "-",
-                                        inline: true
-                                      },
-
-                                      {
-                                        name: "Status",
-                                        value: "✅ TRANSAKSI SELESAI 😉",
-                                        inline: false
-                                      },
-
-                                    ],
-
                                     footer: {
-                                      text: "FS2B STORE • Automatic Rekber System"
+                                      text:
+                                        "FS2B STORE • Automatic Rekber System"
                                     },
 
                                     timestamp:
@@ -1412,9 +1391,12 @@ function Admin() {
                             }
                           );
 
-                        } catch (error) {
+                        } catch (err) {
 
-                          console.log(error);
+                          console.error(
+                            "Gagal kirim webhook:",
+                            err
+                          );
 
                         }
 

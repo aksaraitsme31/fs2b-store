@@ -2,7 +2,10 @@ import Navbar from "../components/Navbar";
 
 import { useLocation } from "react-router-dom";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect
+} from "react";
 
 import toast from "react-hot-toast";
 
@@ -14,8 +17,14 @@ import {
 
 import {
   db,
-  auth
+  auth,
+  realtimeDb
 } from "../firebase/firebase";
+
+import {
+  ref,
+  onValue
+} from "firebase/database";
 
 import qrisImage from "../assets/qris.jpeg";
 
@@ -42,6 +51,30 @@ function Checkout() {
 
   const [proof, setProof] =
     useState("");
+
+  const [adminOnline, setAdminOnline] =
+    useState(false);
+
+  useEffect(() => {
+
+    const statusRef =
+      ref(realtimeDb, "status/admin");
+
+    const unsubscribe =
+      onValue(statusRef, (snapshot) => {
+
+        const data =
+          snapshot.val();
+
+        setAdminOnline(
+          data?.online || false
+        );
+
+      });
+
+    return () => unsubscribe();
+
+  }, []);
 
   if (!product) {
 
@@ -409,9 +442,40 @@ function Checkout() {
 
           <button
             onClick={handleOrder}
+            disabled={!adminOnline}
+            style={{
+              opacity:
+                adminOnline ? 1 : 0.5,
+
+              cursor:
+                adminOnline
+                  ? "pointer"
+                  : "not-allowed"
+            }}
           >
-            Kirim Bukti Transfer
+
+            {adminOnline
+              ? "Kirim Bukti Transfer"
+              : "Admin Sedang Offline"}
+
           </button>
+
+          <p
+            style={{
+              marginTop: "12px",
+              fontSize: "14px",
+              color: adminOnline
+                ? "#22c55e"
+                : "#ef4444",
+              textAlign: "center"
+            }}
+          >
+
+            {adminOnline
+              ? "Admin sedang online dan siap memverifikasi pembayaran"
+              : "Transaksi sementara ditutup karena admin offline"}
+
+          </p>
 
         </div>
 

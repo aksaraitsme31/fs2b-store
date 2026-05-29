@@ -17,7 +17,9 @@ import { formatPrice } from "../utils/formatPrice";
 
 import {
   collection,
-  getDocs
+  getDocs,
+  onSnapshot,
+  doc
 } from "firebase/firestore";
 
 import {
@@ -29,6 +31,14 @@ function Store() {
 
   const [products, setProducts] =
     useState([]);
+
+  const [totalTransactions, setTotalTransactions] =
+    useState(0);
+
+  const [
+    verifiedUsers,
+    setVerifiedUsers
+  ] = useState(0);
 
   const currentUser =
     auth.currentUser;
@@ -95,6 +105,73 @@ function Store() {
       };
 
     fetchProducts();
+
+  }, []);
+
+  /* TOTAL TRANSAKSI REALTIME */
+  useEffect(() => {
+
+    const unsubscribe =
+      onSnapshot(
+
+        doc(
+          db,
+          "globalTransactions",
+          "stats"
+        ),
+
+        (snapshot) => {
+
+          if (snapshot.exists()) {
+
+            setTotalTransactions(
+              snapshot.data()
+                .totalTransactions || 0
+            );
+
+          }
+
+        }
+
+      );
+
+    return () => unsubscribe();
+
+  }, []);
+
+  /* VERIFIED USERS */
+  useEffect(() => {
+
+    const fetchVerifiedUsers =
+      async () => {
+
+        try {
+
+          const snapshot =
+            await getDocs(
+              collection(db, "users")
+            );
+
+          const verified =
+            snapshot.docs.filter(
+              (doc) =>
+                doc.data()
+                  .emailVerified === true
+            );
+
+          setVerifiedUsers(
+            verified.length
+          );
+
+        } catch (error) {
+
+          console.log(error);
+
+        }
+
+      };
+
+    fetchVerifiedUsers();
 
   }, []);
 
@@ -166,24 +243,28 @@ function Store() {
 
   /* FILTER PRODUCTS */
   const filteredProducts =
-    products.filter((item) => {
+    products
+      .filter((item) => {
 
-      const gameMatch =
-        selectedGame &&
-        item.category ===
-        selectedGame;
+        const gameMatch =
+          selectedGame &&
+          item.category ===
+          selectedGame;
 
-      const subCategoryMatch =
-        selectedSubCategory &&
-        item.subCategory ===
-        selectedSubCategory;
+        const subCategoryMatch =
+          selectedSubCategory &&
+          item.subCategory ===
+          selectedSubCategory;
 
-      return (
-        gameMatch &&
-        subCategoryMatch
-      );
+        return (
+          gameMatch &&
+          subCategoryMatch
+        );
 
-    });
+      })
+
+      // SORT HARGA TERMAHAL → TERMURAH
+      .sort((a, b) => b.price - a.price);
 
   /* LOGOUT */
 
@@ -231,6 +312,48 @@ function Store() {
               BELI ITEM GAME
               FAVORITMU
             </p>
+
+            {/* Badge Verified */}
+            <div className="verified-badge">
+
+              <div className="verified-check">
+                ✓
+              </div>
+
+              <div className="verified-text">
+
+                <span className="verified-count">
+                  {verifiedUsers}+
+                </span>
+
+                <span>
+                  Pengguna Terverifikasi
+                </span>
+
+              </div>
+
+            </div>
+
+            {/* Badge Total Transactions */}
+            <div className="transaction-badge">
+
+              <div className="transaction-icon">
+                💸
+              </div>
+
+              <div className="transaction-text">
+
+                <span className="transaction-count">
+                  {totalTransactions}+
+                </span>
+
+                <span>
+                  Total Transaksi
+                </span>
+
+              </div>
+
+            </div>
 
           </div>
 
@@ -359,6 +482,16 @@ function Store() {
                   }
                 >
                   Stuff
+                </button>
+
+                <button
+                  onClick={() =>
+                    setSelectedSubCategory(
+                      "Pet"
+                    )
+                  }
+                >
+                  Pet
                 </button>
 
                 <button

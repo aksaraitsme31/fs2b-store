@@ -1011,6 +1011,9 @@ button:hover {
   width: 100%;
   max-width: 460px;
 
+  position: relative;
+  z-index: 1;
+
   padding: 50px 40px;
 
   border-radius: 28px;
@@ -6214,6 +6217,8 @@ html,
     );
 
   z-index: 0;
+
+  pointer-events: none;
 }
 
 /* =========================
@@ -6781,6 +6786,1038 @@ html,
   100%{
     background-position:
       300% 50%;
+  }
+
+}
+
+/* =====================================================
+   GLOBAL TRANSACTIONS
+===================================================== */
+
+.global-page {
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255,215,0,0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      #050505,
+      #090909
+    );
+
+  color: white;
+
+}
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.global-container {
+
+  width: 100%;
+
+  max-width: 1450px;
+
+  margin: auto;
+
+  padding:
+    145px 24px
+    100px;
+
+}
+
+/* =====================================================
+   HEADING
+===================================================== */
+
+.global-heading {
+
+  text-align: center;
+
+  margin-bottom: 85px;
+
+}
+
+.global-heading span {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    10px 24px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,215,0,0.08);
+
+  border:
+    1px solid
+    rgba(255,215,0,0.16);
+
+  color: #ffd700;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+  margin-bottom: 24px;
+
+  backdrop-filter: blur(12px);
+
+}
+
+.global-heading h1 {
+
+  font-size:
+    clamp(54px, 8vw, 95px);
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  margin-bottom: 22px;
+
+  letter-spacing: -3px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffd700,
+      #ffffff
+    );
+
+  -webkit-background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+
+}
+
+.global-heading p {
+
+  max-width: 760px;
+
+  margin: auto;
+
+  font-size: 17px;
+
+  line-height: 1.9;
+
+  color: #9ca3af;
+
+}
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.global-section {
+
+  margin-bottom: 95px;
+
+}
+
+.section-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 36px;
+
+}
+
+.section-left {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+}
+
+.section-left svg {
+
+  color: #ffd700;
+
+}
+
+.section-left h2 {
+
+  font-size: 34px;
+
+  font-weight: 800;
+
+  color: white;
+
+  margin-bottom: 4px;
+
+}
+
+.section-left p {
+
+  color: #9ca3af;
+
+  font-size: 15px;
+
+}
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.transactions-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(340px, 1fr)
+    );
+
+  gap: 28px;
+
+}
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.transaction-card {
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 30px;
+
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18,18,18,0.96),
+      rgba(10,10,10,0.98)
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,0.06);
+
+  box-shadow:
+    0 18px 50px
+    rgba(0,0,0,0.45);
+
+  transition:
+    transform 0.35s ease,
+    border 0.35s ease,
+    box-shadow 0.35s ease;
+
+  backdrop-filter: blur(18px);
+
+}
+
+/* GOLD EFFECT */
+
+.transaction-card::before {
+
+  content: "";
+
+  position: absolute;
+
+  top: -120px;
+  right: -120px;
+
+  width: 260px;
+  height: 260px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,215,0,0.14),
+      transparent 70%
+    );
+
+  pointer-events: none;
+
+}
+
+/* LIVE BADGE */
+
+.transaction-card::after {
+
+  content: "LIVE";
+
+  position: absolute;
+
+  top: 22px;
+  right: 22px;
+
+  padding:
+    6px 12px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  background:
+    rgba(34,197,94,0.12);
+
+  border:
+    1px solid
+    rgba(34,197,94,0.22);
+
+  color: #22c55e;
+
+}
+
+/* HOVER */
+
+.transaction-card:hover {
+
+  transform:
+    translateY(-8px);
+
+  border:
+    1px solid
+    rgba(255,215,0,0.22);
+
+  box-shadow:
+    0 25px 70px
+    rgba(255,215,0,0.08);
+
+}
+
+/* =====================================================
+   NEWEST CARD
+===================================================== */
+
+.newest-card {
+
+  border:
+    1px solid
+    rgba(255,215,0,0.24);
+
+  box-shadow:
+    0 0 45px
+    rgba(255,215,0,0.12);
+
+}
+
+/* =====================================================
+   TOP
+===================================================== */
+
+.transaction-top {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  margin-bottom: 30px;
+
+}
+
+.transaction-top span {
+
+  color: #ffd700;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+}
+
+.transaction-icon {
+
+  width: 54px;
+  height: 54px;
+
+  border-radius: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background:
+    rgba(255,215,0,0.08);
+
+  border:
+    1px solid
+    rgba(255,215,0,0.18);
+
+}
+
+.transaction-icon svg {
+
+  color: #ffd700;
+
+}
+
+/* =====================================================
+   INFO
+===================================================== */
+
+.transaction-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+
+}
+
+.info-row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding-bottom: 14px;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,0.05);
+
+}
+
+.info-row span {
+
+  color: #9ca3af;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+
+}
+
+.info-row strong {
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  text-align: right;
+
+  word-break: break-word;
+
+  line-height: 1.5;
+
+}
+
+/* PRICE */
+
+.price-text {
+
+  color: #22c55e !important;
+
+  font-size: 22px !important;
+
+  font-weight: 900 !important;
+
+}
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.transaction-status {
+
+  margin-top: 28px;
+
+  width: 100%;
+
+  padding: 16px;
+
+  border-radius: 18px;
+
+  text-align: center;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  background:
+    rgba(34,197,94,0.10);
+
+  border:
+    1px solid
+    rgba(34,197,94,0.25);
+
+  color: #22c55e;
+
+}
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.empty-transactions {
+
+  padding: 55px;
+
+  border-radius: 28px;
+
+  text-align: center;
+
+  background:
+    rgba(255,255,255,0.03);
+
+  border:
+    1px solid
+    rgba(255,255,255,0.05);
+
+  color: #9ca3af;
+
+  font-size: 16px;
+
+}
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+::-webkit-scrollbar {
+
+  width: 10px;
+
+}
+
+::-webkit-scrollbar-track {
+
+  background: #080808;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffd700,
+      #b8860b
+    );
+
+  border-radius: 999px;
+
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .global-container {
+
+    padding:
+      125px 18px
+      90px;
+
+  }
+
+  .global-heading {
+
+    margin-bottom: 70px;
+
+  }
+
+  .global-heading h1 {
+
+    letter-spacing: -1px;
+
+  }
+
+  .global-heading p {
+
+    font-size: 15px;
+
+  }
+
+  .section-left h2 {
+
+    font-size: 28px;
+
+  }
+
+  .transaction-card {
+
+    padding: 24px;
+
+    border-radius: 28px;
+
+  }
+
+  .transaction-card::after {
+
+    top: 18px;
+    right: 18px;
+
+  }
+
+  .transaction-icon {
+
+    width: 48px;
+    height: 48px;
+
+  }
+
+  .info-row {
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+  }
+
+  .info-row strong {
+
+    text-align: left;
+
+  }
+
+  .price-text {
+
+    font-size: 20px !important;
+
+  }
+
+}
+
+/* =====================================================
+   Badge Verified User
+===================================================== */
+
+.verified-badge {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-top: 28px;
+
+  padding: 16px 30px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0,255,140,0.18),
+      rgba(0,255,140,0.05)
+    );
+
+  border:
+    1px solid rgba(0,255,140,0.25);
+
+  backdrop-filter: blur(20px);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 0 50px rgba(0,255,140,0.14),
+    inset 0 0 30px rgba(255,255,255,0.02);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  animation:
+    floatingBadge 4s ease-in-out infinite;
+}
+
+/* HOVER */
+.verified-badge:hover {
+  transform:
+    translateY(-4px)
+    scale(1.02);
+
+  box-shadow:
+    0 0 65px rgba(0,255,140,0.22);
+}
+
+/* ICON */
+.verified-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(0,255,140,0.12);
+
+  border:
+    1px solid rgba(0,255,140,0.25);
+
+  color: #00ff9d;
+
+  font-size: 22px;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 20px rgba(0,255,140,0.28);
+
+  text-shadow:
+    0 0 12px rgba(0,255,140,0.7);
+}
+
+/* TEXT */
+.verified-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #00ff9d;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  text-shadow:
+    0 0 12px rgba(0,255,140,0.25);
+}
+
+/* NUMBER */
+.verified-count {
+  font-size: 30px;
+  font-weight: 900;
+
+  color: #00ff9d;
+
+  text-shadow:
+    0 0 18px rgba(0,255,140,0.55);
+}
+
+/* SHINE */
+.verified-badge::before {
+  content: "";
+
+  position: absolute;
+
+  top: -50%;
+  left: -30%;
+
+  width: 140px;
+  height: 220%;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      rgba(255,255,255,0.14),
+      transparent
+    );
+
+  transform: rotate(18deg);
+
+  animation:
+    verifiedShine 5s linear infinite;
+}
+
+/* FLOAT */
+@keyframes floatingBadge {
+
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+
+}
+
+/* SHINE */
+@keyframes verifiedShine {
+
+  0% {
+    transform:
+      translateX(-260px)
+      rotate(18deg);
+  }
+
+  100% {
+    transform:
+      translateX(520px)
+      rotate(18deg);
+  }
+
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .verified-badge {
+    width: 100%;
+
+    justify-content: center;
+
+    padding: 14px 18px;
+  }
+
+  .verified-check {
+    width: 38px;
+    height: 38px;
+
+    font-size: 18px;
+  }
+
+  .verified-text {
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  .verified-count {
+    font-size: 24px;
+  }
+
+}
+
+/* =====================================================
+   BADGE TOTAL TRANSACTIONS
+===================================================== */
+
+.transaction-badge {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  min-width: 340px;
+
+  margin-top: 28px;
+
+  padding: 16px 30px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,180,0,0.18),
+      rgba(255,120,0,0.05)
+    );
+
+  border:
+    1px solid rgba(255,180,0,0.25);
+
+  backdrop-filter: blur(20px);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 0 50px rgba(255,180,0,0.14),
+    inset 0 0 30px rgba(255,255,255,0.02);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  animation:
+    floatingBadge 4s ease-in-out infinite;
+}
+
+/* HOVER */
+.transaction-badge:hover {
+  transform:
+    translateY(-4px)
+    scale(1.02);
+
+  box-shadow:
+    0 0 65px rgba(255,180,0,0.22);
+}
+
+/* ICON */
+.transaction-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,180,0,0.12);
+
+  border:
+    1px solid rgba(255,180,0,0.25);
+
+  color: #ffd700;
+
+  font-size: 22px;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 20px rgba(255,180,0,0.28);
+
+  text-shadow:
+    0 0 12px rgba(255,215,0,0.7);
+}
+
+/* TEXT */
+.transaction-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffcc45;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  text-shadow:
+    0 0 12px rgba(255,215,0,0.25);
+}
+
+/* NUMBER */
+.transaction-count {
+  font-size: 30px;
+  font-weight: 900;
+
+  color: #ffd700;
+
+  text-shadow:
+    0 0 18px rgba(255,215,0,0.55);
+}
+
+/* SHINE */
+.transaction-badge::before {
+  content: "";
+
+  position: absolute;
+
+  top: -50%;
+  left: -30%;
+
+  width: 140px;
+  height: 220%;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      rgba(255,255,255,0.14),
+      transparent
+    );
+
+  transform: rotate(18deg);
+
+  animation:
+    transactionShine 5s linear infinite;
+}
+
+/* FLOAT */
+@keyframes floatingBadge {
+
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+
+}
+
+/* SHINE */
+@keyframes transactionShine {
+
+  0% {
+    transform:
+      translateX(-260px)
+      rotate(18deg);
+  }
+
+  100% {
+    transform:
+      translateX(520px)
+      rotate(18deg);
+  }
+
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .transaction-badge {
+    width: 100%;
+
+    min-width: unset;
+
+    justify-content: center;
+
+    padding: 14px 18px;
+  }
+
+  .transaction-icon {
+    width: 38px;
+    height: 38px;
+
+    font-size: 18px;
+  }
+
+  .transaction-text {
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  .transaction-count {
+    font-size: 24px;
   }
 
 }

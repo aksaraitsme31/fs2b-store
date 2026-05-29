@@ -15,7 +15,9 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  getDoc
+  getDoc,
+  addDoc,
+  serverTimestamp
 } from "firebase/firestore";
 
 import {
@@ -189,6 +191,34 @@ function Orders() {
             );
 
           if (orderData) {
+
+            await addDoc(
+              collection(db, "globalTransactions"),
+              {
+
+                source: "store",
+
+                type: "order",
+
+                transactionId:
+                  orderData.transactionId,
+
+                buyerUsername:
+                  orderData.username,
+
+                itemName:
+                  orderData.product,
+
+                totalPayment:
+                  orderData.totalPrice,
+
+                status: "completed",
+
+                createdAt:
+                  serverTimestamp()
+
+              }
+            );
 
             const hiddenTransactionId =
               orderData.transactionId

@@ -15,7 +15,13 @@ import {
 } from "firebase/firestore";
 
 import {
-    db
+    ref,
+    onValue
+} from "firebase/database";
+
+import {
+    db,
+    realtimeDb
 } from "../firebase/firebase";
 
 function RekberOrderDetail() {
@@ -35,6 +41,11 @@ function RekberOrderDetail() {
         paymentProof,
         setPaymentProof
     ] = useState(null);
+
+    const [
+        adminOnline,
+        setAdminOnline
+    ] = useState(false);
 
     /* LOAD ORDER REALTIME */
     useEffect(() => {
@@ -68,6 +79,28 @@ function RekberOrderDetail() {
         return () => unsubscribe();
 
     }, [id]);
+
+    /* ADMIN STATUS */
+    useEffect(() => {
+
+        const statusRef =
+            ref(realtimeDb, "status/admin");
+
+        const unsubscribe =
+            onValue(statusRef, (snapshot) => {
+
+                const data =
+                    snapshot.val();
+
+                setAdminOnline(
+                    data?.online || false
+                );
+
+            });
+
+        return () => unsubscribe();
+
+    }, []);
 
     /* UPLOAD PAYMENT */
     const uploadPaymentProof =
@@ -544,7 +577,11 @@ function RekberOrderDetail() {
                 {/* UPLOAD PAYMENT */}
                 <div
                     style={{
-                        marginTop: "30px"
+                        marginTop: "30px",
+
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start"
                     }}
                 >
 
@@ -560,14 +597,47 @@ function RekberOrderDetail() {
 
                     <button
                         style={{
-                            marginTop: "15px"
+                            marginTop: "15px",
+
+                            opacity:
+                                adminOnline ? 1 : 0.5,
+
+                            cursor:
+                                adminOnline
+                                    ? "pointer"
+                                    : "not-allowed"
                         }}
+
+                        disabled={!adminOnline}
+
                         onClick={
                             uploadPaymentProof
                         }
                     >
-                        Upload Bukti Transfer
+
+                        {adminOnline
+                            ? "Upload Bukti Transfer"
+                            : "Admin Sedang Offline"}
+
                     </button>
+
+                    <p
+                        style={{
+                            marginTop: "12px",
+                            fontSize: "14px",
+
+                            color:
+                                adminOnline
+                                    ? "#22c55e"
+                                    : "#ef4444"
+                        }}
+                    >
+
+                        {adminOnline
+                            ? "Admin sedang online dan siap memverifikasi pembayaran"
+                            : "Rekber sementara ditutup karena admin offline"}
+
+                    </p>
 
                 </div>
 

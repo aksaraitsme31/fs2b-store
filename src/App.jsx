@@ -7,7 +7,8 @@ import {
 
 import {
   doc,
-  getDoc
+  getDoc,
+  setDoc
 } from "firebase/firestore";
 
 import {
@@ -41,6 +42,7 @@ import TentangKami from "./pages/TentangKami";
 import TrackOrder from "./pages/TrackOrder";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import FAQ from "./pages/FAQ";
+import GlobalTransactions from "./pages/GlobalTransactions";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -59,6 +61,23 @@ function App() {
         setCurrentUser(user);
 
         if (user) {
+
+          await setDoc(
+            doc(db, "users", user.uid),
+            {
+              email:
+                user.email,
+
+              username:
+                user.displayName || "",
+
+              emailVerified:
+                user.emailVerified
+            },
+            {
+              merge: true
+            }
+          );
 
           const userRef =
             doc(db, "users", user.uid);
@@ -182,6 +201,11 @@ function App() {
         <Route
           path="/faq"
           element={<FAQ />}
+        />
+
+        <Route
+          path="/global-transactions"
+          element={<GlobalTransactions />}
         />
 
         {/* ADMIN */}

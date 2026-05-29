@@ -14,6 +14,8 @@ import {
 
 import {
     ref,
+    set,
+    onDisconnect,
     onValue,
 } from "firebase/database";
 
@@ -75,6 +77,45 @@ function Navbar() {
 
     useEffect(() => {
 
+        if (
+            !currentUser ||
+            userRole !== "admin"
+        ) return;
+
+        const adminStatusRef =
+            ref(realtimeDb, "status/admin");
+
+        const connectedRef =
+            ref(realtimeDb, ".info/connected");
+
+        const unsubscribe =
+            onValue(connectedRef, async (snapshot) => {
+
+                if (snapshot.val() === true) {
+
+                    await onDisconnect(adminStatusRef).set({
+                        online: false,
+                        lastSeen: Date.now(),
+                    });
+
+                    await set(adminStatusRef, {
+                        online: true,
+                        lastSeen: Date.now(),
+                    });
+
+                }
+
+            });
+
+        return () => unsubscribe();
+
+    }, [
+        currentUser,
+        userRole
+    ]);
+
+    useEffect(() => {
+
         const statusRef =
             ref(realtimeDb, "status/admin");
 
@@ -98,6 +139,18 @@ function Navbar() {
         userRole === "admin";
 
     const logout = async () => {
+
+        if (userRole === "admin") {
+
+            const adminStatusRef =
+                ref(realtimeDb, "status/admin");
+
+            await set(adminStatusRef, {
+                online: false,
+                lastSeen: Date.now(),
+            });
+
+        }
 
         await signOut(auth);
 
@@ -191,6 +244,14 @@ function Navbar() {
                             Rekber Saya
                         </button>
 
+                        <button
+                            onClick={() =>
+                                navigate("/global-transactions")
+                            }
+                        >
+                            Global Transactions
+                        </button>
+
                     </>
 
                 )}
@@ -216,6 +277,14 @@ function Navbar() {
                             onClick={() => navigate("/rekber-orders")}
                         >
                             Rekber Orders
+                        </button>
+
+                        <button
+                            onClick={() =>
+                                navigate("/global-transactions")
+                            }
+                        >
+                            Global Transactions
                         </button>
 
                     </>
