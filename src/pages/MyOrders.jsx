@@ -1,5 +1,9 @@
 import Navbar from "../components/Navbar";
 
+import { FiCopy } from "react-icons/fi";
+
+import toast from "react-hot-toast";
+
 import {
   useEffect,
   useState
@@ -9,13 +13,23 @@ import {
   collection,
   query,
   where,
-  onSnapshot
+  onSnapshot,
+  doc,
+  updateDoc,
+  addDoc,
+  serverTimestamp,
+  increment,
+  getDoc
 } from "firebase/firestore";
 
 import {
   db,
   auth
 } from "../firebase/firebase";
+
+import {
+  onAuthStateChanged
+} from "firebase/auth";
 
 function MyOrders() {
 
@@ -27,65 +41,206 @@ function MyOrders() {
     setSelectedOrder
   ] = useState(null);
 
+  const [rating, setRating] =
+    useState(0);
+
+  const [feedback, setFeedback] =
+    useState("");
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const submitFeedback =
+    async () => {
+
+      if (submitting) return;
+
+      setSubmitting(true);
+
+      if (!selectedOrder) {
+        setSubmitting(false);
+        return;
+      }
+
+      if (rating === 0) {
+        toast("Pilih rating terlebih dahulu ⭐");
+        return;
+      }
+
+      try {
+
+        const orderRef = doc(
+          db,
+          "orders",
+          selectedOrder.id
+        );
+
+        const latestOrder =
+          await getDoc(orderRef);
+
+        if (!latestOrder.exists()) {
+          toast.error("Order tidak ditemukan");
+          return;
+        }
+
+        const orderData =
+          latestOrder.data();
+
+        // sudah pernah feedback
+        if (orderData.feedbackSubmitted) {
+          toast.error(
+            "Feedback sudah pernah dikirim"
+          );
+          return;
+        }
+
+        // simpan testimonial
+        await addDoc(
+          collection(db, "testimonials"),
+          {
+            buyerUid:
+              orderData.buyerUid,
+
+            buyerUsername:
+              orderData.buyerUsername,
+
+            product:
+              orderData.product,
+
+            rating,
+
+            feedback,
+
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+        // update order DULU
+        await updateDoc(
+          orderRef,
+          {
+            rating,
+            feedback,
+            feedbackSubmitted: true,
+            coinRewarded: true
+          }
+        );
+
+        // baru kasih coin
+        await updateDoc(
+          doc(
+            db,
+            "users",
+            orderData.buyerUid
+          ),
+          {
+            coin: increment(
+              orderData.rewardCoin || 0
+            )
+          }
+        );
+
+        toast.success(
+          `Feedback berhasil dikirim ❤️ +${orderData.rewardCoin || 0} Coin`
+        );
+
+        setSelectedOrder({
+          ...selectedOrder,
+          rating,
+          feedback,
+          feedbackSubmitted: true,
+          coinRewarded: true
+        });
+
+        setRating(0);
+        setFeedback("");
+
+      } catch (error) {
+
+        console.log(error);
+
+        toast.error(
+          "Gagal mengirim feedback 😔💔"
+        );
+
+      } finally {
+
+        setSubmitting(false);
+
+      }
+
+    };
+
   /* LOAD USER ORDERS REALTIME */
   useEffect(() => {
 
-    const currentUser =
-      auth.currentUser;
+    const unsubscribeAuth =
+      onAuthStateChanged(
+        auth,
+        (currentUser) => {
 
-    if (!currentUser)
-      return;
+          if (!currentUser) {
 
-    const q = query(
-      collection(db, "orders"),
-      where(
-        "email",
-        "==",
-        currentUser.email
-      )
-    );
+            setOrders([]);
 
-    const unsubscribe =
-      onSnapshot(
-        q,
-        (snapshot) => {
+            return;
 
-          const userOrders =
-            snapshot.docs.map(
-              (item) => ({
-                id: item.id,
-                ...item.data()
-              })
-            );
+          }
 
-          /* TERBARU DI ATAS */
-          userOrders.sort((a, b) => {
-
-            const timeA =
-              a.createdAt?.seconds || 0;
-
-            const timeB =
-              b.createdAt?.seconds || 0;
-
-            return timeB - timeA;
-
-          });
-
-          setOrders(userOrders);
-
-        },
-        (error) => {
-
-          console.log(error);
-
-          alert(
-            "Gagal mengambil transaksi"
+          const q = query(
+            collection(db, "orders"),
+            where(
+              "buyerUid",
+              "==",
+              currentUser.uid
+            )
           );
+
+          const unsubscribeOrders =
+            onSnapshot(
+              q,
+              (snapshot) => {
+
+                const userOrders =
+                  snapshot.docs.map(
+                    (item) => ({
+                      id: item.id,
+                      ...item.data()
+                    })
+                  );
+
+                userOrders.sort(
+                  (a, b) => {
+
+                    const timeA =
+                      a.createdAt?.seconds || 0;
+
+                    const timeB =
+                      b.createdAt?.seconds || 0;
+
+                    return timeB - timeA;
+
+                  }
+                );
+
+                setOrders(
+                  userOrders
+                );
+
+              },
+              (error) => {
+
+                console.log(error);
+
+              }
+            );
 
         }
       );
 
-    return () => unsubscribe();
+    return () =>
+      unsubscribeAuth();
 
   }, []);
 
@@ -129,109 +284,143 @@ function MyOrders() {
                     {order.product}
                   </h3>
 
-                  <p
-                    style={{
-                      color: "#ffd700",
-                      fontWeight: "700",
-                      marginTop: "5px"
-                    }}
-                  >
-                    ID:
-                    {" "}
-                    {order.transactionId}
-                  </p>
+                  <div className="order-info-box">
 
-                  <p>
+                    <div className="order-info-row">
+                      <span className="label">
+                        ID Transaksi
+                      </span>
 
-                    Harga:
-                    {" "}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px"
+                        }}
+                      >
 
-                    Rp{" "}
+                        <span className="value">
+                          {order.transactionId}
+                        </span>
 
-                    {Number(
-                      order.price
-                    ).toLocaleString(
-                      "id-ID"
-                    )}
+                        <button
+                          className="copy-btn"
+                          onClick={async () => {
 
-                  </p>
+                            try {
 
-                  <p>
+                              await navigator.clipboard.writeText(
+                                order.transactionId
+                              );
 
-                    Jumlah:
-                    {" "}
+                              toast.success(
+                                "ID transaksi berhasil disalin 😉"
+                              );
 
-                    {order.quantity || 1}
+                            } catch {
 
-                  </p>
+                              toast.error(
+                                "Gagal menyalin ID 😔"
+                              );
 
-                  <p>
+                            }
 
-                    Total:
-                    {" "}
+                          }}
+                        >
+                          <FiCopy />
+                        </button>
 
-                    Rp{" "}
+                      </div>
+                    </div>
 
-                    {Number(
-                      order.totalPrice ||
-                      (
-                        order.price *
-                        (order.quantity || 1)
-                      )
-                    ).toLocaleString(
-                      "id-ID"
-                    )}
+                    <div className="order-info-row">
+                      <span className="label">
+                        Harga
+                      </span>
 
-                  </p>
+                      <span className="value">
+                        Rp {Number(order.price).toLocaleString("id-ID")}
+                      </span>
+                    </div>
 
-                  <p>
+                    <div className="order-info-row">
+                      <span className="label">
+                        Jumlah
+                      </span>
 
-                    Username Game:
-                    {" "}
+                      <span className="value">
+                        {order.quantity || 1}
+                      </span>
+                    </div>
 
-                    {
-                      order.gameUsername
-                    }
+                    <div className="order-info-row">
+                      <span className="label">
+                        Total
+                      </span>
 
-                  </p>
+                      <span className="value">
+                        Rp {Number(
+                          order.totalPrice ||
+                          order.price * (order.quantity || 1)
+                        ).toLocaleString("id-ID")}
+                      </span>
+                    </div>
 
-                  <p>
+                    <div className="order-info-row">
+                      <span className="label">
+                        Username Game
+                      </span>
 
-                    Tanggal:
-                    {" "}
+                      <span className="value">
+                        {order.gameUsername}
+                      </span>
+                    </div>
 
-                    {order.date}
+                    <div className="order-info-row">
+                      <span className="label">
+                        Tanggal
+                      </span>
 
-                  </p>
+                      <span className="value">
+                        {order.date}
+                      </span>
+                    </div>
 
-                  <p>
+                    <div className="order-info-row">
+                      <span className="label">
+                        Status
+                      </span>
 
-                    Status:
-                    {" "}
+                      <span
+                        className={`value status-value ${order.status === "Selesai"
+                          ? "success"
+                          : order.status === "Diproses"
+                            ? "process"
+                            : "pending"
+                          }`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
 
-                    <span
-                      className={`status-text ${order.status ===
-                        "Selesai"
-                        ? "success"
-                        : order.status ===
-                          "Diproses"
-                          ? "process"
-                          : "pending"
-                        }`}
-                    >
-
-                      {order.status}
-
-                    </span>
-
-                  </p>
+                  </div>
 
                   <button
-                    onClick={() =>
+                    onClick={() => {
+
                       setSelectedOrder(
                         order
-                      )
-                    }
+                      );
+
+                      setRating(
+                        order.rating || 0
+                      );
+
+                      setFeedback(
+                        order.feedback || ""
+                      );
+
+                    }}
                   >
                     Lihat Detail
                   </button>
@@ -282,19 +471,64 @@ function MyOrders() {
 
             </p>
 
-            <p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "10px"
+              }}
+            >
 
               <strong>
                 ID Transaksi:
               </strong>
 
-              {" "}
+              <span>
 
-              {
-                selectedOrder.transactionId
-              }
+                {
+                  selectedOrder.transactionId
+                }
 
-            </p>
+              </span>
+
+              <button
+                className="copy-btn"
+                onClick={async () => {
+
+                  try {
+
+                    console.log(
+                      "ID:",
+                      selectedOrder.transactionId
+                    );
+
+                    await navigator.clipboard.writeText(
+                      selectedOrder.transactionId
+                    );
+
+                    toast.success(
+                      "ID transaksi berhasil disalin 😉"
+                    );
+
+                  } catch (error) {
+
+                    console.log(error);
+
+                    toast.error(
+                      "Gagal menyalin ID 😔"
+                    );
+
+                  }
+
+                }}
+              >
+
+                <FiCopy />
+
+              </button>
+
+            </div>
 
             <p>
 
@@ -389,6 +623,135 @@ function MyOrders() {
               }
 
             </p>
+
+            {
+              selectedOrder.status ===
+              "Selesai" &&
+              !selectedOrder.feedbackSubmitted && (
+
+                <div
+                  style={{
+                    marginTop: "20px",
+                    padding: "15px",
+                    borderRadius: "12px",
+                    border: "1px solid #374151"
+                  }}
+                >
+
+                  <h3>
+                    Beri Rating
+                  </h3>
+
+                  <div
+                    style={{
+                      fontSize: "32px",
+                      marginBottom: "10px"
+                    }}
+                  >
+
+                    {[1, 2, 3, 4, 5].map(
+                      (star) => (
+
+                        <span
+                          key={star}
+                          onClick={() =>
+                            setRating(star)
+                          }
+                          style={{
+                            cursor: "pointer",
+                            color:
+                              star <= rating
+                                ? "#FFD700"
+                                : "#6b7280",
+                            textShadow:
+                              star <= rating
+                                ? "0 0 10px rgba(255,215,0,0.8)"
+                                : "none",
+                            transition:
+                              "all .2s ease"
+                          }}
+                        >
+                          ★
+                        </span>
+
+                      )
+                    )}
+
+                  </div>
+
+                  <textarea
+                    value={feedback}
+                    onChange={(e) =>
+                      setFeedback(
+                        e.target.value
+                      )
+                    }
+                    placeholder="Tulis feedback..."
+                    style={{
+                      width: "100%",
+                      minHeight: "100px",
+                      borderRadius: "10px",
+                      padding: "10px"
+                    }}
+                  />
+
+                  <button
+                    disabled={submitting}
+                    onClick={submitFeedback}
+                    style={{
+                      marginTop: "10px",
+                      opacity: submitting ? 0.7 : 1,
+                      cursor: submitting
+                        ? "not-allowed"
+                        : "pointer"
+                    }}
+                  >
+                    {submitting
+                      ? "Mengirim..."
+                      : "Kirim Feedback"}
+                  </button>
+
+                </div>
+
+              )
+            }
+
+            {
+              selectedOrder.feedbackSubmitted && (
+
+                <div
+                  style={{
+                    marginTop: "20px",
+                    padding: "15px",
+                    borderRadius: "12px",
+                    border: "1px solid #374151"
+                  }}
+                >
+
+                  <h3>
+                    Feedback Anda
+                  </h3>
+
+                  <p>
+
+                    {"★".repeat(
+                      selectedOrder.rating
+                    )}
+
+                  </p>
+
+                  <p>
+
+                    {
+                      selectedOrder.feedback
+                    }
+
+                  </p>
+
+                </div>
+
+              )
+            }
 
             {/* PESAN KHUSUS */}
             {selectedOrder.status ===

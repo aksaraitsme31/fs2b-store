@@ -13,8 +13,16 @@ import {
 
 import {
   auth,
-  db
+  db,
+  realtimeDb
 } from "./firebase/firebase";
+
+import {
+  ref,
+  set,
+  onDisconnect,
+  onValue
+} from "firebase/database";
 
 import {
   BrowserRouter,
@@ -43,6 +51,7 @@ import TrackOrder from "./pages/TrackOrder";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import FAQ from "./pages/FAQ";
 import GlobalTransactions from "./pages/GlobalTransactions";
+import MyCoin from "./pages/MyCoin";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -65,14 +74,10 @@ function App() {
           await setDoc(
             doc(db, "users", user.uid),
             {
-              email:
-                user.email,
-
-              username:
-                user.displayName || "",
-
-              emailVerified:
-                user.emailVerified
+              uid: user.uid,
+              email: user.email,
+              username: user.displayName || "",
+              emailVerified: user.emailVerified
             },
             {
               merge: true
@@ -104,6 +109,46 @@ function App() {
     return () => unsubscribe();
 
   }, []);
+
+  // STATUS ADMIN REALTIME
+  useEffect(() => {
+
+    if (
+      !currentUser ||
+      userRole !== "admin"
+    ) return;
+
+    const adminStatusRef =
+      ref(realtimeDb, "status/admin");
+
+    const connectedRef =
+      ref(realtimeDb, ".info/connected");
+
+    const unsubscribe =
+      onValue(connectedRef, async (snapshot) => {
+
+        if (snapshot.val() === true) {
+
+          await onDisconnect(adminStatusRef).set({
+            online: false,
+            lastSeen: Date.now(),
+          });
+
+          await set(adminStatusRef, {
+            online: true,
+            lastSeen: Date.now(),
+          });
+
+        }
+
+      });
+
+    return () => unsubscribe();
+
+  }, [
+    currentUser,
+    userRole
+  ]);
 
   return (
 
@@ -246,6 +291,11 @@ function App() {
         <Route
           path="/rekber-saya"
           element={<RekberSaya />}
+        />
+
+        <Route
+          path="/my-coin"
+          element={<MyCoin />}
         />
 
       </Routes>

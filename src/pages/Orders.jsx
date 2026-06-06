@@ -17,7 +17,8 @@ import {
   doc,
   getDoc,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  increment
 } from "firebase/firestore";
 
 import {
@@ -217,6 +218,13 @@ function Orders() {
                 createdAt:
                   serverTimestamp()
 
+              }
+            );
+
+            await updateDoc(
+              doc(db, "globalTransactions", "stats"),
+              {
+                totalTransactions: increment(1)
               }
             );
 

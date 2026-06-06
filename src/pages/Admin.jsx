@@ -116,6 +116,11 @@ function Admin() {
     setSubCategory
   ] = useState("");
 
+  const [
+    stockStatus,
+    setStockStatus
+  ] = useState("available");
+
   const [editId, setEditId] =
     useState(null);
 
@@ -285,6 +290,10 @@ function Admin() {
       item.subCategory
     );
 
+    setStockStatus(
+      item.stockStatus || "available"
+    );
+
     window.scrollTo({
       top: 0,
       behavior: "smooth"
@@ -333,7 +342,8 @@ function Admin() {
               price,
               image,
               category,
-              subCategory
+              subCategory,
+              stockStatus
             }
           );
 
@@ -355,7 +365,8 @@ function Admin() {
               price,
               image,
               category,
-              subCategory
+              subCategory,
+              stockStatus
             }
           );
 
@@ -370,6 +381,7 @@ function Admin() {
         setImage("");
         setCategory("");
         setSubCategory("");
+        setStockStatus("available");
 
       } catch (error) {
 
@@ -418,6 +430,38 @@ function Admin() {
 
         alert(
           "Gagal menghapus produk"
+        );
+
+      }
+
+    };
+
+  const toggleStockStatus =
+    async (item) => {
+
+      try {
+
+        await updateDoc(
+          doc(
+            db,
+            "products",
+            item.id
+          ),
+          {
+            stockStatus:
+              item.stockStatus ===
+                "soldout"
+                ? "available"
+                : "soldout"
+          }
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Gagal mengubah status produk"
         );
 
       }
@@ -916,6 +960,23 @@ function Admin() {
 
           </select>
 
+          <select
+            value={stockStatus}
+            onChange={(e) =>
+              setStockStatus(
+                e.target.value
+              )
+            }
+          >
+            <option value="available">
+              Tersedia
+            </option>
+
+            <option value="soldout">
+              Sold Out
+            </option>
+          </select>
+
           <input
             type="file"
             onChange={
@@ -988,6 +1049,22 @@ function Admin() {
                 {item.subCategory}
               </p>
 
+              <p
+                style={{
+                  color:
+                    item.stockStatus ===
+                      "soldout"
+                      ? "#ff5a5a"
+                      : "#00ff88",
+                  fontWeight: "bold"
+                }}
+              >
+                {item.stockStatus ===
+                  "soldout"
+                  ? "🔴 Sold Out"
+                  : "🟢 Tersedia"}
+              </p>
+
               <div
                 style={{
                   display: "flex",
@@ -999,9 +1076,7 @@ function Admin() {
 
                 <button
                   onClick={() =>
-                    editProduct(
-                      item
-                    )
+                    editProduct(item)
                   }
                 >
                   Edit
@@ -1009,9 +1084,18 @@ function Admin() {
 
                 <button
                   onClick={() =>
-                    deleteProduct(
-                      item.id
-                    )
+                    toggleStockStatus(item)
+                  }
+                >
+                  {item.stockStatus ===
+                    "soldout"
+                    ? "Tersedia"
+                    : "Sold Out"}
+                </button>
+
+                <button
+                  onClick={() =>
+                    deleteProduct(item.id)
                   }
                 >
                   Hapus

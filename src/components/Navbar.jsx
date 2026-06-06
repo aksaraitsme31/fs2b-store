@@ -1,3 +1,5 @@
+import "./Navbar.css";
+
 import { useNavigate } from "react-router-dom";
 
 import { useState, useEffect } from "react";
@@ -27,6 +29,22 @@ import {
 
 import iconicstore from "../assets/iconicstore.png";
 
+import {
+    FaHome,
+    FaSearch,
+    FaHistory,
+    FaHandshake,
+    FaGlobe,
+    FaCrown,
+    FaClipboardList,
+    FaShieldAlt,
+    FaUser,
+    FaSignOutAlt,
+    FaSignInAlt,
+    FaUserPlus,
+    FaCoins
+} from "react-icons/fa";
+
 function Navbar() {
 
     const navigate = useNavigate();
@@ -34,6 +52,9 @@ function Navbar() {
     const [showDropdown, setShowDropdown] = useState(false);
 
     const [currentUser, setCurrentUser] = useState(null);
+
+    const [menuOpen, setMenuOpen] =
+        useState(false);
 
     const [userRole, setUserRole] = useState("");
 
@@ -72,47 +93,6 @@ function Navbar() {
         return () => unsubscribe();
 
     }, []);
-
-    // ADMIN STATUS REALTIME
-
-    useEffect(() => {
-
-        if (
-            !currentUser ||
-            userRole !== "admin"
-        ) return;
-
-        const adminStatusRef =
-            ref(realtimeDb, "status/admin");
-
-        const connectedRef =
-            ref(realtimeDb, ".info/connected");
-
-        const unsubscribe =
-            onValue(connectedRef, async (snapshot) => {
-
-                if (snapshot.val() === true) {
-
-                    await onDisconnect(adminStatusRef).set({
-                        online: false,
-                        lastSeen: Date.now(),
-                    });
-
-                    await set(adminStatusRef, {
-                        online: true,
-                        lastSeen: Date.now(),
-                    });
-
-                }
-
-            });
-
-        return () => unsubscribe();
-
-    }, [
-        currentUser,
-        userRole
-    ]);
 
     useEffect(() => {
 
@@ -160,196 +140,368 @@ function Navbar() {
 
     return (
 
-        <nav className="navbar">
+        <>
 
-            {/* LOGO */}
-            <div
-                className="logo"
-                onClick={() => navigate("/")}
-                style={{ cursor: "pointer" }}
-            >
-
-                <img
-                    src={iconicstore}
-                    alt="FS2B STORE"
-                    className="logo-image"
-                />
-
-            </div>
-
-            {/* MENU */}
-            <div className="menu">
-
-                {/* ADMIN STATUS */}
-                <div className="premium-status">
+            {
+                menuOpen && (
 
                     <div
-                        className={
-                            adminOnline
-                                ? "premium-dot online"
-                                : "premium-dot offline"
+                        className="menu-overlay"
+                        onClick={() =>
+                            setMenuOpen(false)
                         }
-                    ></div>
+                    />
 
-                    <div className="premium-text">
+                )
+            }
 
-                        <span className="premium-title">
+            <nav className="navbar">
 
-                            {adminOnline
-                                ? "ADMIN ONLINE"
-                                : "ADMIN OFFLINE"}
+                {/* LOGO */}
+                <div
+                    className="logo"
+                    onClick={() => navigate("/")}
+                    style={{ cursor: "pointer" }}
+                >
 
-                        </span>
-
-                        <span className="premium-subtitle">
-
-                            {adminOnline
-                                ? "Admin siap untuk merespon"
-                                : "Mohon tunggu sampai Admin online kembali"}
-
-                        </span>
-
-                    </div>
+                    <img
+                        src={iconicstore}
+                        alt="FS2B STORE"
+                        className="logo-image"
+                    />
 
                 </div>
 
-                {/* HOME */}
-                <button onClick={() => navigate("/")}>
-                    Home
-                </button>
-
-                {/* TRACK ORDER */}
                 <button
+                    className="hamburger"
                     onClick={() =>
-                        navigate("/track-order")
+                        setMenuOpen(!menuOpen)
                     }
                 >
-                    Pelacak Transaksi
+                    {menuOpen ? "✕" : "☰"}
                 </button>
 
-                {/* BUYER */}
-                {currentUser && !isAdmin && (
+                {/* MENU */}
+                <div
+                    className={
+                        menuOpen
+                            ? "menu menu-open"
+                            : "menu"
+                    }
+                >
 
-                    <>
+                    {menuOpen && (
 
-                        <button
-                            onClick={() => navigate("/my-orders")}
-                        >
-                            Riwayat
-                        </button>
+                        <div className="drawer-header">
 
-                        <button
-                            onClick={() => navigate("/rekber-saya")}
-                        >
-                            Rekber Saya
-                        </button>
+                            <img
+                                src={iconicstore}
+                                alt="FS2B STORE"
+                                className="drawer-logo"
+                            />
 
-                        <button
-                            onClick={() =>
-                                navigate("/global-transactions")
+                            <h3>FS2B STORE</h3>
+
+                            <span>
+                                Platform Digital Pilihanmu
+                            </span>
+
+                        </div>
+
+                    )}
+
+                    {/* ADMIN STATUS */}
+                    <div className="premium-status">
+
+                        <div
+                            className={
+                                adminOnline
+                                    ? "premium-dot online"
+                                    : "premium-dot offline"
                             }
-                        >
-                            Global Transactions
-                        </button>
+                        ></div>
 
-                    </>
+                        <div className="premium-text">
 
-                )}
+                            <span className="premium-title">
 
-                {/* ADMIN */}
-                {isAdmin && (
+                                {adminOnline
+                                    ? "ADMIN ONLINE"
+                                    : "ADMIN OFFLINE"}
 
-                    <>
+                            </span>
 
-                        <button
-                            onClick={() => navigate("/admin")}
-                        >
-                            Admin Panel
-                        </button>
+                            <span className="premium-subtitle">
 
-                        <button
-                            onClick={() => navigate("/orders")}
-                        >
-                            Semua Orders
-                        </button>
+                                {adminOnline
+                                    ? "Admin siap untuk merespon"
+                                    : "Mohon tunggu sampai Admin online kembali"}
 
-                        <button
-                            onClick={() => navigate("/rekber-orders")}
-                        >
-                            Rekber Orders
-                        </button>
+                            </span>
 
-                        <button
-                            onClick={() =>
-                                navigate("/global-transactions")
-                            }
-                        >
-                            Global Transactions
-                        </button>
-
-                    </>
-
-                )}
-
-                {/* USER DROPDOWN */}
-                {currentUser ? (
-
-                    <div className="profile-dropdown">
-
-                        <button
-                            className="profile-btn"
-                            onClick={() =>
-                                setShowDropdown(!showDropdown)
-                            }
-                        >
-                            👤 {currentUser.displayName || currentUser.email} ▼
-                        </button>
-
-                        {showDropdown && (
-
-                            <div className="dropdown-content">
-
-                                <button
-                                    onClick={() =>
-                                        navigate("/profile")
-                                    }
-                                >
-                                    Profile
-                                </button>
-
-                                <button onClick={logout}>
-                                    Logout
-                                </button>
-
-                            </div>
-
-                        )}
+                        </div>
 
                     </div>
 
-                ) : (
+                    {/* HOME */}
+                    <button
+                        onClick={() => {
 
-                    <>
+                            navigate("/");
 
-                        <button
-                            onClick={() => navigate("/login")}
-                        >
-                            Login
-                        </button>
+                            setMenuOpen(false);
 
-                        <button
-                            onClick={() => navigate("/register")}
-                        >
-                            Register
-                        </button>
+                        }}
+                    >
+                        <FaHome />
+                        <span>Home</span>
+                    </button>
 
-                    </>
+                    {/* TRACK ORDER */}
+                    <button
+                        onClick={() => {
 
-                )}
+                            navigate("/track-order");
 
-            </div>
+                            setMenuOpen(false);
 
-        </nav>
+                        }}
+                    >
+                        <FaSearch />
+                        <span>Pelacak Transaksi</span>
+                    </button>
+
+                    {/* BUYER */}
+                    {currentUser && !isAdmin && (
+
+                        <>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/my-orders");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaHistory />
+                                <span>Riwayat Order</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/rekber-saya");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaHandshake />
+                                <span>Rekber Saya</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/global-transactions");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaGlobe />
+                                <span>Global Transactions</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/my-coin");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaCoins />
+                                <span>My Coin</span>
+                            </button>
+
+                        </>
+
+                    )}
+
+                    {/* ADMIN */}
+                    {isAdmin && (
+
+                        <>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/admin");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaCrown />
+                                <span>Admin Panel</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/orders");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaClipboardList />
+                                <span>Semua Orders</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/rekber-orders");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaShieldAlt />
+                                <span>Rekber Orders</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/global-transactions");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaGlobe />
+                                <span>Global Transactions</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/my-coin");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaCoins />
+                                <span>My Coin</span>
+                            </button>
+
+                        </>
+
+                    )}
+
+                    {/* USER DROPDOWN */}
+                    {currentUser ? (
+
+                        <div className="profile-dropdown">
+
+                            <button
+                                className="profile-btn"
+                                onClick={() =>
+                                    setShowDropdown(!showDropdown)
+                                }
+                            >
+                                <FaUser />
+                                <span>
+                                    {currentUser.displayName || currentUser.email}
+                                </span>
+                            </button>
+
+                            {showDropdown && (
+
+                                <div className="dropdown-content">
+
+                                    <button
+                                        onClick={() => {
+
+                                            navigate("/profile");
+
+                                            setShowDropdown(false);
+
+                                            setMenuOpen(false);
+
+                                        }}
+                                    >
+                                        <FaUser />
+                                        <span>Profile</span>
+                                    </button>
+
+                                    <button
+                                        onClick={async () => {
+
+                                            setShowDropdown(false);
+
+                                            setMenuOpen(false);
+
+                                            await logout();
+
+                                        }}
+                                    >
+                                        <FaSignOutAlt />
+                                        <span>Logout</span>
+                                    </button>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    ) : (
+
+                        <>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/login");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaSignInAlt />
+                                <span>Login</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/register");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaUserPlus />
+                                <span>Register</span>
+                            </button>
+
+                        </>
+
+                    )}
+
+                </div>
+
+            </nav>
+
+        </>
 
     );
 

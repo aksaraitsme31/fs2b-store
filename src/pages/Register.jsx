@@ -134,7 +134,10 @@ function Register() {
           {
             uid: user.uid,
             username: cleanUsername,
-            email
+            email,
+
+            // COIN
+            coin: 0
           }
         );
 
@@ -146,7 +149,20 @@ function Register() {
 
       } catch (error) {
 
-        console.log("REGISTER ERROR:", error);
+        console.log(
+          "REGISTER ERROR CODE:",
+          error.code
+        );
+
+        console.log(
+          "REGISTER ERROR MESSAGE:",
+          error.message
+        );
+
+        console.log(
+          "REGISTER ERROR FULL:",
+          error
+        );
 
         if (
           error.code ===

@@ -19,7 +19,8 @@ import {
   collection,
   getDocs,
   onSnapshot,
-  doc
+  doc,
+  query
 } from "firebase/firestore";
 
 import {
@@ -39,6 +40,16 @@ function Store() {
     verifiedUsers,
     setVerifiedUsers
   ] = useState(0);
+
+  const [
+    testimonials,
+    setTestimonials
+  ] = useState([]);
+
+  const [currentPage, setCurrentPage] =
+    useState(1);
+
+  const testimonialsPerPage = 4;
 
   const currentUser =
     auth.currentUser;
@@ -175,6 +186,41 @@ function Store() {
 
   }, []);
 
+  /* TESTIMONIALS */
+  useEffect(() => {
+
+    const q = query(
+      collection(db, "testimonials")
+    );
+
+    const unsubscribe =
+      onSnapshot(
+        q,
+        (snapshot) => {
+
+          const data =
+            snapshot.docs.map(
+              (doc) => ({
+                id: doc.id,
+                ...doc.data()
+              })
+            );
+
+          setTestimonials(
+            data.sort(
+              (a, b) =>
+                (b.createdAt?.seconds || 0) -
+                (a.createdAt?.seconds || 0)
+            )
+          );
+
+        }
+      );
+
+    return () => unsubscribe();
+
+  }, []);
+
   /* MOBILE VIEWPORT */
   useEffect(() => {
 
@@ -196,6 +242,15 @@ function Store() {
 
   /* CHECKOUT */
   const checkout = (item) => {
+
+    if (
+      item.stockStatus === "soldout"
+    ) {
+      alert(
+        "Produk sedang tidak tersedia"
+      );
+      return;
+    }
 
     if (!currentUser) {
 
@@ -265,6 +320,25 @@ function Store() {
 
       // SORT HARGA TERMAHAL → TERMURAH
       .sort((a, b) => b.price - a.price);
+
+  /* TESTIMONIAL PAGINATION */
+
+  const totalPages =
+    Math.ceil(
+      testimonials.length /
+      testimonialsPerPage
+    );
+
+  const startIndex =
+    (currentPage - 1) *
+    testimonialsPerPage;
+
+  const currentTestimonials =
+    testimonials.slice(
+      startIndex,
+      startIndex +
+      testimonialsPerPage
+    );
 
   /* LOGOUT */
 
@@ -549,6 +623,17 @@ function Store() {
                     {item.name}
                   </h3>
 
+                  <div
+                    className={`stock-badge ${item.stockStatus === "soldout"
+                      ? "soldout"
+                      : "available"
+                      }`}
+                  >
+                    {item.stockStatus === "soldout"
+                      ? "Sold Out"
+                      : "Tersedia"}
+                  </div>
+
                   <p>
                     {item.subCategory}
                   </p>
@@ -564,6 +649,9 @@ function Store() {
 
                     <button
                       className="qty-btn"
+                      disabled={
+                        item.stockStatus === "soldout"
+                      }
                       onClick={() =>
                         decreaseQty(item.id)
                       }
@@ -577,6 +665,9 @@ function Store() {
 
                     <button
                       className="qty-btn"
+                      disabled={
+                        item.stockStatus === "soldout"
+                      }
                       onClick={() =>
                         increaseQty(item.id)
                       }
@@ -600,11 +691,21 @@ function Store() {
                   </p>
 
                   <button
+                    disabled={
+                      item.stockStatus === "soldout"
+                    }
                     onClick={() =>
                       checkout(item)
                     }
+                    className={
+                      item.stockStatus === "soldout"
+                        ? "checkout-disabled"
+                        : ""
+                    }
                   >
-                    Checkout
+                    {item.stockStatus === "soldout"
+                      ? "Sold Out"
+                      : "Checkout"}
                   </button>
 
                 </div>
@@ -613,6 +714,177 @@ function Store() {
             )
 
           )}
+
+        </div>
+
+      </section>
+
+      <section className="testimonials-section">
+
+        <div className="testimonial-wrapper">
+
+          <div className="testimonial-header">
+
+            <h2>
+              ⭐ Ulasan Pembeli
+            </h2>
+
+            <p className="testimonial-count">
+
+              Menampilkan
+
+              {" "}
+
+              <strong>
+                {testimonials.length === 0
+                  ? 0
+                  : startIndex + 1}
+              </strong>
+
+              -
+
+              <strong>
+                {Math.min(
+                  startIndex +
+                  testimonialsPerPage,
+                  testimonials.length
+                )}
+              </strong>
+
+              {" "}dari{" "}
+
+              <strong>
+                {testimonials.length}
+              </strong>
+
+              {" "}ulasan pelanggan terverifikasi
+
+            </p>
+
+          </div>
+
+          <div className="testimonial-list">
+
+            {currentTestimonials.map(
+              (item) => (
+
+                <div
+                  key={item.id}
+                  className="testimonial-item"
+                >
+
+                  <div className="testimonial-top">
+
+                    <div className="testimonial-user">
+
+                      <div className="testimonial-avatar">
+
+                        {item.buyerUsername
+                          ?.charAt(0)
+                          ?.toUpperCase()}
+
+                      </div>
+
+                      <div>
+
+                        <h4>
+                          {item.buyerUsername ||
+                            "Anonymous"}
+                        </h4>
+
+                        <span>
+                          Pembeli Terverifikasi
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                    <div className="testimonial-rating">
+
+                      {"★".repeat(
+                        item.rating || 5
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  <p className="testimonial-feedback">
+
+                    "{item.feedback}"
+
+                  </p>
+
+                  <div className="testimonial-product-wrapper">
+                    <div className="testimonial-product">
+                      {item.product}
+                    </div>
+                  </div>
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+          <div className="pagination-footer">
+
+            <div className="pagination">
+
+              <button
+                className="arrow-btn"
+                disabled={currentPage === 1}
+                onClick={() =>
+                  setCurrentPage(
+                    currentPage - 1
+                  )
+                }
+              >
+                ‹
+              </button>
+
+              {[...Array(totalPages)].map(
+                (_, index) => (
+
+                  <button
+                    key={index}
+                    className={
+                      currentPage ===
+                        index + 1
+                        ? "active-page"
+                        : ""
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        index + 1
+                      )
+                    }
+                  >
+                    {index + 1}
+                  </button>
+
+                )
+              )}
+
+              <button
+                className="arrow-btn"
+                disabled={
+                  currentPage === totalPages
+                }
+                onClick={() =>
+                  setCurrentPage(
+                    currentPage + 1
+                  )
+                }
+              >
+                ›
+              </button>
+
+            </div>
+
+          </div>
 
         </div>
 

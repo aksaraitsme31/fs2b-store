@@ -1,6 +1,9 @@
 import Navbar from "../components/Navbar";
 
-import { useLocation } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate
+} from "react-router-dom";
 
 import {
   useState,
@@ -30,6 +33,9 @@ import qrisImage from "../assets/qris.jpeg";
 
 function Checkout() {
 
+  const navigate =
+    useNavigate();
+
   const { state } =
     useLocation();
 
@@ -43,6 +49,9 @@ function Checkout() {
     product
       ? product.price * quantity
       : 0;
+
+  const rewardCoin =
+    Math.floor(totalPrice / 100);
 
   const [
     gameUsername,
@@ -198,6 +207,9 @@ function Checkout() {
 
             totalPrice,
 
+            rewardCoin,
+            coinRewarded: false,
+
             image:
               product.image,
 
@@ -210,12 +222,24 @@ function Checkout() {
             email:
               currentUser.email,
 
+            buyerUid:
+              currentUser.uid,
+
             gameUsername,
 
             proof,
 
             status:
               "Menunggu Verifikasi",
+
+            buyerUsername:
+              currentUser.displayName || "Anonymous",
+
+            rating: 0,
+
+            feedback: "",
+
+            feedbackSubmitted: false,
 
             createdAt:
               serverTimestamp(),
@@ -246,9 +270,11 @@ function Checkout() {
           "Pesanan berhasil dikirim 🚀"
         );
 
-        setGameUsername("");
+        setTimeout(() => {
 
-        setProof("");
+          navigate("/my-orders");
+
+        }, 800);
 
       } catch (error) {
 
