@@ -127,7 +127,10 @@ function MyOrders() {
           }
         );
 
-        // baru kasih coin
+        const rewardCoin =
+          orderData.rewardCoin || 0;
+
+        // tambah saldo coin
         await updateDoc(
           doc(
             db,
@@ -136,8 +139,35 @@ function MyOrders() {
           ),
           {
             coin: increment(
-              orderData.rewardCoin || 0
+              rewardCoin
             )
+          }
+        );
+
+        // simpan riwayat coin
+        await addDoc(
+          collection(
+            db,
+            "users",
+            orderData.buyerUid,
+            "coinHistory"
+          ),
+          {
+            type: "feedback_reward",
+
+            amount: rewardCoin,
+
+            description:
+              "Reward Feedback",
+
+            orderId:
+              selectedOrder.id,
+
+            product:
+              orderData.product,
+
+            createdAt:
+              serverTimestamp()
           }
         );
 

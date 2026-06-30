@@ -21,7 +21,8 @@ import {
 
 import aboutBanner from "../assets/about-banner.jpg";
 import founderImage from "../assets/founder.jpg";
-import adminImage from "../assets/admin.jpg";
+import adminImage from "../assets/adminpey.jpg";
+import admin2Image from "../assets/admindap.jpg";
 
 export default function TentangKami() {
 
@@ -283,7 +284,7 @@ export default function TentangKami() {
 
           <div className="founder-grid">
 
-            {/* FOUNDER CARD*/}
+            {/* FOUNDER CARD */}
 
             <motion.div
               className="founder-card"
@@ -378,33 +379,58 @@ export default function TentangKami() {
 
             </motion.div>
 
-            {/* CONNECTOR */}
-            <div className="founder-connector">
+          </div>
 
-              <div className="connector-line"></div>
+          {/* CONNECTOR */}
+          <div className="founder-connector">
 
-              <div className="connector-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="8.5" cy="7" r="4" />
-                  <path d="M20 8v6" />
-                  <path d="M23 11h-6" />
-                </svg>
-              </div>
+            <div className="connector-line"></div>
 
-              <div className="connector-line"></div>
-
+            <div className="connector-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <path d="M20 8v6" />
+                <path d="M23 11h-6" />
+              </svg>
             </div>
+
+            <div className="connector-line"></div>
+
+          </div>
+
+          {/* ADMIN HEADER */}
+          <div className="admin-header">
+
+            <span className="admin-badge">
+              TIM ADMIN
+            </span>
+
+            <h2>
+              Customer Support
+            </h2>
+
+            <p>
+              Tim Admin FS2B STORE siap membantu proses transaksi,
+              menjawab pertanyaan customer,
+              serta memastikan setiap transaksi berjalan aman,
+              cepat, dan nyaman.
+            </p>
+
+          </div>
+
+          {/* ADMIN GRID */}
+          <div className="admin-grid">
 
             {/* ADMIN CARD */}
             <motion.div
@@ -493,11 +519,96 @@ export default function TentangKami() {
 
             </motion.div>
 
-          </div>
+            {/* ADMIN 2 */}
+            <motion.div
+              className="founder-card"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+            >
 
-        </section>
+              <div className="founder-image-wrap">
 
-      </div>
+                <img
+                  src={admin2Image}
+                  alt="Admin FS2B"
+                  className="founder-image"
+                />
+
+                <div className="founder-online"></div>
+
+              </div>
+
+              <div className="founder-info">
+
+                <span className="founder-role">
+                  Admin FS2B STORE
+                </span>
+
+                <h3>
+                  Dafa Ariangga (Dapp)
+                </h3>
+
+                <p>
+                  Bertanggung jawab melayani customer,
+                  membantu proses transaksi,
+                  serta menjaga kualitas pelayanan
+                  agar setiap transaksi berjalan dengan aman dan nyaman.
+                </p>
+
+                <div className="profile-location">
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+
+                  <span>
+                    Batu Aji, Kota Batam, Kepulauan Riau
+                  </span>
+
+                </div>
+
+                <div className="founder-social">
+
+                  <a
+                    href="https://tiktok.com/@daapp13"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaTiktok />
+                  </a>
+
+                  <a
+                    href="https://instagram.com/daaapp13"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaInstagram />
+                  </a>
+
+                </div>
+
+              </div>
+
+                        </motion.div>
+
+          </div> {/* END admin-grid */}
+
+        </section> {/* END tentang-founder */}
+
+      </div> {/* END tentang-page */}
 
       <LiveChat />
 

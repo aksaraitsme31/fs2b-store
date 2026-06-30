@@ -52,6 +52,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import FAQ from "./pages/FAQ";
 import GlobalTransactions from "./pages/GlobalTransactions";
 import MyCoin from "./pages/MyCoin";
+import ForgotPassword from "./pages/ForgotPassword";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -251,6 +252,13 @@ function App() {
         <Route
           path="/global-transactions"
           element={<GlobalTransactions />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={
+            <ForgotPassword />
+          }
         />
 
         {/* ADMIN */}

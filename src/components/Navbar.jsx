@@ -11,7 +11,8 @@ import {
 
 import {
     doc,
-    getDoc
+    getDoc,
+    onSnapshot
 } from "firebase/firestore";
 
 import {
@@ -60,6 +61,12 @@ function Navbar() {
 
     const [adminOnline, setAdminOnline] =
         useState(false);
+
+    const [unreadOrders, setUnreadOrders] =
+        useState(0);
+
+    const isAdmin =
+        userRole === "admin";
 
     // AUTH USER
 
@@ -115,8 +122,32 @@ function Navbar() {
 
     }, []);
 
-    const isAdmin =
-        userRole === "admin";
+    useEffect(() => {
+
+        if (!isAdmin) return;
+
+        const unsubscribe = onSnapshot(
+            doc(
+                db,
+                "globalNotifications",
+                "admin"
+            ),
+            (snapshot) => {
+
+                if (snapshot.exists()) {
+
+                    setUnreadOrders(
+                        snapshot.data().unreadOrders || 0
+                    );
+
+                }
+
+            }
+        );
+
+        return () => unsubscribe();
+
+    }, [isAdmin]);
 
     const logout = async () => {
 
@@ -351,6 +382,7 @@ function Navbar() {
                             </button>
 
                             <button
+                                className="orders-btn"
                                 onClick={() => {
 
                                     navigate("/orders");
@@ -360,7 +392,17 @@ function Navbar() {
                                 }}
                             >
                                 <FaClipboardList />
-                                <span>Semua Orders</span>
+
+                                <span>
+                                    Semua Orders
+                                </span>
+
+                                {unreadOrders > 0 && (
+                                    <span className="orders-badge">
+                                        {unreadOrders > 99 ? "99+" : unreadOrders}
+                                    </span>
+                                )}
+
                             </button>
 
                             <button

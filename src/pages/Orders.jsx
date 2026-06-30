@@ -18,7 +18,8 @@ import {
   getDoc,
   addDoc,
   serverTimestamp,
-  increment
+  increment,
+  setDoc
 } from "firebase/firestore";
 
 import {
@@ -143,6 +144,49 @@ function Orders() {
     userRole,
     authLoading,
     navigate
+  ]);
+
+  /* RESET NOTIFIKASI ORDER */
+  useEffect(() => {
+
+    if (
+      authLoading ||
+      !currentUser ||
+      userRole !== "admin"
+    ) return;
+
+    const resetNotifications = async () => {
+
+      try {
+
+        await setDoc(
+          doc(
+            db,
+            "globalNotifications",
+            "admin"
+          ),
+          {
+            unreadOrders: 0
+          },
+          {
+            merge: true
+          }
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    };
+
+    resetNotifications();
+
+  }, [
+    currentUser,
+    userRole,
+    authLoading
   ]);
 
   /* UPDATE STATUS */

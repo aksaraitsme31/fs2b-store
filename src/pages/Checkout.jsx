@@ -15,7 +15,10 @@ import toast from "react-hot-toast";
 import {
   collection,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  updateDoc,
+  increment
 } from "firebase/firestore";
 
 import {
@@ -263,6 +266,17 @@ function Checkout() {
                 }
               )
 
+          }
+        );
+
+        await updateDoc(
+          doc(
+            db,
+            "globalNotifications",
+            "admin"
+          ),
+          {
+            unreadOrders: increment(1)
           }
         );
 

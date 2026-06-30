@@ -7,7 +7,10 @@ import {
 
 import {
     doc,
-    onSnapshot
+    onSnapshot,
+    collection,
+    query,
+    orderBy
 } from "firebase/firestore";
 
 import {
@@ -26,6 +29,8 @@ function MyCoin() {
     const [username, setUsername] = useState("");
 
     const [isFlipped, setIsFlipped] = useState(false);
+
+    const [coinHistory, setCoinHistory] = useState([]);
 
     useEffect(() => {
 
@@ -65,6 +70,35 @@ function MyCoin() {
                                     setUsername(
                                         userData.username?.trim() ||
                                         "User"
+                                    );
+
+                                    const historyQuery = query(
+                                        collection(
+                                            db,
+                                            "users",
+                                            user.uid,
+                                            "coinHistory"
+                                        ),
+                                        orderBy("createdAt", "desc")
+                                    );
+
+                                    onSnapshot(
+                                        historyQuery,
+                                        (historySnap) => {
+
+                                            const historyData =
+                                                historySnap.docs.map(
+                                                    (doc) => ({
+                                                        id: doc.id,
+                                                        ...doc.data()
+                                                    })
+                                                );
+
+                                            setCoinHistory(
+                                                historyData
+                                            );
+
+                                        }
                                     );
 
                                 } else {
@@ -239,6 +273,114 @@ function MyCoin() {
                         </li>
 
                     </ul>
+
+                </div>
+
+                <div className="coin-history">
+
+                    <div className="coin-history-header">
+
+                        <h3>
+                            Riwayat Coin
+                        </h3>
+
+                        <span className="coin-history-count">
+                            {coinHistory.length} Aktivitas
+                        </span>
+
+                    </div>
+
+                    <div className="coin-history-list">
+
+                        {
+                            coinHistory.length === 0 ? (
+
+                                <div className="coin-history-empty">
+
+                                    <span>
+                                        🪙
+                                    </span>
+
+                                    <p>
+                                        Belum ada riwayat coin
+                                    </p>
+
+                                </div>
+
+                            ) : (
+
+                                coinHistory.map(
+                                    (item) => (
+
+                                        <div
+                                            key={item.id}
+                                            className="coin-history-item"
+                                        >
+
+                                            <div className="coin-history-left">
+
+                                                <strong>
+                                                    {item.description}
+                                                </strong>
+
+                                                <p>
+                                                    {item.product || "FS2B Store"}
+                                                </p>
+
+                                                <small>
+
+                                                    {
+                                                        item.createdAt?.toDate?.().toLocaleDateString(
+                                                            "id-ID",
+                                                            {
+                                                                day: "numeric",
+                                                                month: "long",
+                                                                year: "numeric"
+                                                            }
+                                                        )
+                                                    }
+
+                                                </small>
+
+                                            </div>
+
+                                            <div className="coin-history-right">
+
+                                                <span
+                                                    className={
+                                                        item.amount > 0
+                                                            ? "coin-plus"
+                                                            : "coin-minus"
+                                                    }
+                                                >
+
+                                                    {
+                                                        item.amount > 0
+                                                            ? "+"
+                                                            : ""
+                                                    }
+
+                                                    {
+                                                        item.amount.toLocaleString("id-ID")
+                                                    }
+
+                                                </span>
+
+                                                <small>
+                                                    Coin
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    )
+                                )
+
+                            )
+                        }
+
+                    </div>
 
                 </div>
 

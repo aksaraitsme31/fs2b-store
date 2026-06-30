@@ -141,6 +141,17 @@ function Login() {
           }
         />
 
+        <p
+          className="forgot-password"
+          onClick={() =>
+            navigate(
+              "/forgot-password"
+            )
+          }
+        >
+          Lupa Password?
+        </p>
+
         <button
           onClick={handleLogin}
         >
