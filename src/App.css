@@ -64,12 +64,18 @@ a {
   overflow-x: hidden;
 
   background:
-    radial-gradient(
-      circle at top,
-      rgba(212,175,55,0.08),
-      transparent 30%
-    ),
-    #050505;
+  radial-gradient(
+    circle at center,
+    rgba(255,255,255,0.04),
+    transparent 60%
+  ),
+  linear-gradient(
+    180deg,
+    #333333 0%,
+    #2d2d2d 35%,
+    #262626 70%,
+    #202020 100%
+  );
 
   display: flex;
   flex-direction: column;
@@ -85,19 +91,19 @@ a {
   background:
     radial-gradient(
       circle at center,
-      rgba(235, 181, 6, 0.952),
-      transparent 50%
+      rgba(255, 255, 255, 0.28),
+      transparent 55%
     ),
     linear-gradient(
       135deg,
-      #050505 0%,
-      #0f0f0f 40%,
-      #1a1200 70%,
-      #050505 100%
+      #ffffff 0%,
+      #f8f8f8 35%,
+      #efefef 70%,
+      #e7e7e7 100%
     );
 
-  border-bottom:
-    1px solid rgba(212,175,55,0.2);
+  border-top: 1px solid rgba(212, 175, 55, 0.45);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.45);
 
   overflow: hidden;
 
@@ -113,7 +119,7 @@ a {
   background:
     radial-gradient(
       circle at top,
-      rgba(230, 196, 4, 0.08),
+      rgba(255, 255, 255, 0.18),
       transparent 60%
     );
 
@@ -833,34 +839,62 @@ button:hover {
   min-height: 70px;
 }
 
-/* AUTH */
-.auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
+/* ===================================
+   AUTH PAGE
+=================================== */
+
+.auth-page{
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:30px;
+
+    position:relative;
+    overflow:hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,.12),
+            transparent 55%
+        ),
+        linear-gradient(
+            135deg,
+            #4b4b4b 0%,
+            #3f3f3f 35%,
+            #343434 70%,
+            #2b2b2b 100%
+        );
+}
+.auth-page::before {
+
+  content: "";
+
+  position: absolute;
+  inset: 0;
 
   background:
     radial-gradient(
       circle at top,
-      rgba(212,175,55,0.08),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #050505,
-      #0f0f0f,
-      #1a1200
+      rgba(255,255,255,0.18),
+      transparent 60%
     );
+
+  pointer-events: none;
+
+  z-index: 0;
 }
 
 .auth-box {
-  width: 100%;
-  max-width: 460px;
 
   position: relative;
   z-index: 1;
+
+  width: 100%;
+  max-width: 460px;
 
   padding: 50px 40px;
 
@@ -873,11 +907,11 @@ button:hover {
       rgba(10,10,10,0.96)
     );
 
-  border:
-    1px solid rgba(212,175,55,0.18);
+  border: 1px solid rgba(212,175,55,0.18);
 
   box-shadow:
-    0 20px 60px rgba(0,0,0,0.45);
+    0 20px 60px rgba(0,0,0,0.45),
+    0 0 30px rgba(212,175,55,0.08);
 
   text-align: center;
 }
@@ -952,18 +986,7 @@ button:hover {
 
   padding: 60px 20px;
 
-  background:
-    radial-gradient(
-      circle at top,
-      rgba(212,175,55,0.08),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #050505,
-      #0f0f0f,
-      #1a1200
-    );
+  background: transparent;
 
   color: white;
 }
@@ -5874,34 +5897,58 @@ button:hover {
    PREMIUM AUTH UI
 =================================== */
 
-.auth-page{
-  position: relative;
+.auth-page {
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: relative;
 
-  overflow: hidden;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.04),
+            transparent 60%
+        ),
+        linear-gradient(
+            180deg,
+            #363636 0%,
+            #313131 45%,
+            #2b2b2b 100%
+        );
 }
 
-.auth-page::before{
-  content: "";
+.auth-page::before {
 
-  position: absolute;
-  inset: 0;
+    content: "";
 
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(0,0,0,0.35),
-      rgba(0,0,0,0.78)
-    );
+    position: absolute;
+    inset: 0;
 
-  z-index: 0;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.02),
+            rgba(0,0,0,0.18)
+        );
 
-  pointer-events: none;
+    pointer-events: none;
+
+    z-index: 0;
 }
 
+.auth-box {
+
+    position: relative;
+    z-index: 1;
+}
 /* =========================
    PREMIUM CARD
 ========================= */
@@ -6481,20 +6528,26 @@ button:hover {
 
   overflow-x: hidden;
 
-  background:
-    radial-gradient(
-      circle at top,
-      rgba(255,215,0,0.08),
-      transparent 30%
-    ),
-    linear-gradient(
-      180deg,
-      #050505,
-      #090909
-    );
+  background:transparent;
 
   color: white;
 
+}
+
+.global-page::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(255,255,255,0.18),
+            transparent 60%
+        );
+
+    pointer-events: none;
 }
 
 /* =====================================================
@@ -7626,30 +7679,113 @@ button:hover {
    TESTIMONIALS PREMIUM
 ===================================================== */
 
-.testimonials-section {
-  max-width: 1400px;
-  margin: 80px auto;
+.testimonials-section{
 
-  padding: 40px;
+    position:relative;
 
-  background: #0b0f19;
+    width:min(95%,1200px);
 
-  border: 1px solid rgba(
-    255,
-    255,
-    255,
-    0.05
-  );
+    margin:90px auto;
 
-  border-radius: 24px;
+    padding:55px;
+
+    background:
+    radial-gradient(circle at top, rgba(216,183,77,.06), transparent 35%),
+    linear-gradient(
+        180deg,
+        #363636 0%,
+        #2f2f2f 100%
+    );
+
+    border:1px solid rgba(216,183,77,.22);
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 35px 80px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.05);
+
 }
 
-.testimonials-section h2 {
-  text-align: center;
-  margin-bottom: 18px;
-  color: #fff;
-  font-size: 32px;
-  font-weight: 700;
+.testimonials-section::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:28px;
+
+    padding:1px;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(216,183,77,.45),
+        rgba(255,255,255,.05),
+        rgba(216,183,77,.20)
+    );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite:xor;
+
+    mask-composite:exclude;
+
+    pointer-events:none;
+
+}
+
+.testimonials-section::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:700px;
+
+    height:700px;
+
+    left:50%;
+
+    top:-350px;
+
+    transform:translateX(-50%);
+
+    background:radial-gradient(
+        rgba(216,183,77,.08),
+        transparent 70%
+    );
+
+    border-radius:50%;
+
+    pointer-events:none;
+
+}
+
+.testimonials-section h2{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:14px;
+
+    color:#fff;
+
+    font-size:42px;
+
+    font-weight:800;
+
+    margin-bottom:15px;
+
 }
 
 .testimonial-top {
@@ -7664,17 +7800,22 @@ button:hover {
 
 /* TOTAL ULASAN */
 
-.testimonial-count {
-  text-align: center;
-  color: #9ca3af;
-  margin-bottom: 35px;
-  font-size: 14px;
-  letter-spacing: .5px;
+.testimonial-count{
+
+    text-align:center;
+
+    color:#cfcfcf;
+
+    font-size:15px;
+
+    margin-bottom:45px;
+
 }
 
-.testimonial-count strong {
-  color: #FFD700;
-  font-weight: 700;
+.testimonial-count strong{
+
+    color:#F4D56C;
+
 }
 
 /* LIST */
@@ -7685,7 +7826,6 @@ button:hover {
   gap: 16px;
 }
 
-/* WRAPPER SEMUA ULASAN */
 .testimonial-list {
   max-width: 1300px;
   margin: 0 auto;
@@ -7694,275 +7834,399 @@ button:hover {
   gap: 22px;
 }
 
-/* CARD ULASAN */
-.testimonial-card.premium {
-  width: 100%;
+/* CARD */
 
-  background: linear-gradient(
-    145deg,
-    #111827,
-    #0f172a
-  );
+.testimonial-card.premium{
 
-  border: 1px solid rgba(
-    255,
-    255,
-    255,
-    0.08
-  );
+    position:relative;
 
-  border-radius: 20px;
+    width:100%;
 
-  padding: 28px;
+    padding:30px;
 
-  box-shadow:
-    0 10px 35px rgba(
-      0,
-      0,
-      0,
-      0.35
+    border-radius:22px;
+
+    background:
+    linear-gradient(
+        180deg,
+        #454545,
+        #3d3d3d
     );
 
-  transition: .25s ease;
+    border:1px solid rgba(255,255,255,.07);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.04),
+        0 12px 28px rgba(0,0,0,.30);
+
+    transition:.35s;
+
 }
 
-.testimonial-card.premium:hover {
-  transform: translateY(-3px);
+.testimonial-card.premium:hover{
 
-  border-color: rgba(
-    255,
-    215,
-    0,
-    0.25
-  );
+    transform:translateY(-5px);
 
-  box-shadow:
-    0 15px 45px rgba(
-      255,
-      215,
-      0,
-      0.08
+    background:
+    linear-gradient(
+        180deg,
+        #4c4c4c,
+        #434343
     );
+
+    border-color:rgba(216,183,77,.45);
+
+    box-shadow:
+
+        0 22px 45px rgba(0,0,0,.40),
+
+        0 0 35px rgba(216,183,77,.10);
+
 }
 
 /* RATING */
 
 .testimonial-rating {
-  color: #FFD700;
-  font-size: 18px;
-  margin-bottom: 12px;
+  color:#D8B74D;
+  font-size:18px;
+  margin-bottom:12px;
 }
 
 /* FEEDBACK */
 
 .testimonial-card p {
-  margin: 15px 0 22px;
-  color: #e5e7eb;
-  font-size: 15px;
-  line-height: 1.8;
+  margin:15px 0 22px;
+
+  color:#e7e7e7;
+
+  font-size:15px;
+
+  line-height:1.8;
 }
 
 /* FOOTER */
 
 .testimonial-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end; /* sebelumnya center */
-  gap: 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:20px;
 }
 
 /* USER */
 
 .testimonial-user {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
-.testimonial-avatar {
-  width: 56px;
-  height: 56px;
+.testimonial-avatar{
 
-  border-radius: 50%;
+    position:relative;
 
-  background: linear-gradient(
-    135deg,
-    #FFD700,
-    #F59E0B
-  );
+    width:64px;
+    height:64px;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex-shrink:0;
 
-  font-size: 22px;
-  font-weight: 700;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-  color: #111827;
+    border-radius:50%;
 
-  flex-shrink: 0;
+    font-size:24px;
+    font-weight:800;
+
+    color:#2A2A2A;
+
+    background:
+        linear-gradient(
+            145deg,
+            #F8E18A 0%,
+            #E5C45A 45%,
+            #C89520 100%
+        );
+
+    border:2px solid rgba(255,255,255,.18);
+
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,.35),
+        inset 0 -3px 6px rgba(0,0,0,.18),
+        0 10px 25px rgba(0,0,0,.35),
+        0 0 20px rgba(216,183,77,.28);
+
+    overflow:hidden;
+
+    transition:.35s ease;
+}
+
+.testimonial-avatar::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:70%;
+    height:38%;
+
+    top:10%;
+    left:15%;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.28);
+
+    filter:blur(6px);
+
+}
+
+.testimonial-avatar:hover{
+
+    transform:scale(1.06);
+
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,.4),
+        inset 0 -3px 6px rgba(0,0,0,.15),
+        0 14px 30px rgba(0,0,0,.4),
+        0 0 28px rgba(216,183,77,.45);
+
 }
 
 .testimonial-user h4 {
-  color: #fff;
-  margin: 0;
-  font-size: 16px;
+  color:#fafafa;
+  margin:0;
+  font-size:16px;
 }
 
 .testimonial-user span {
-  color: #9ca3af;
-  font-size: 13px;
+  color:#a5a5a5;
+  font-size:13px;
 }
 
 /* PRODUCT */
 
-.testimonial-product {
-  display: inline-block;
+.testimonial-product{
 
-  margin-top: 8px;
+    padding:8px 18px;
 
-  padding: 8px 16px;
+    border-radius:999px;
 
-  border-radius: 999px;
+    background:rgba(216,183,77,.10);
 
-  background: rgba(
-    255,
-    215,
-    0,
-    0.12
-  );
+    border:1px solid rgba(216,183,77,.28);
 
-  border: 1px solid rgba(
-    255,
-    215,
-    0,
-    0.25
-  );
+    color:#F5D76E;
 
-  color: #FFD700;
+    font-weight:700;
 
-  font-size: 12px;
-  font-weight: 700;
+    transition:.3s;
+
+}
+
+.testimonial-product:hover{
+
+    background:rgba(216,183,77,.18);
+
 }
 
 .testimonial-item {
-  background: linear-gradient(
-    145deg,
-    #111827,
-    #0f172a
+
+  background:
+
+  linear-gradient(
+      180deg,
+      #393939,
+      #303030
   );
 
-  border: 1px solid rgba(
-    255,
-    215,
-    0,
-    0.25
+  border:1px solid rgba(
+      255,
+      255,
+      255,
+      .05
   );
 
-  border-radius: 18px;
+  border-radius:18px;
 
-  padding: 24px;
+  padding:24px;
 
-  transition: .3s ease;
+  transition:.3s ease;
 }
 
 .testimonial-item:hover {
-  border-color: #FFD700;
+
+  border-color:#D8B74D;
 
   box-shadow:
-    0 0 25px rgba(
-      255,
-      215,
+
+      0 15px 35px rgba(
       0,
-      0.12
-    );
+      0,
+      0,
+      .35
+      ),
+
+      0 0 25px rgba(
+      216,
+      183,
+      77,
+      .08
+      );
 }
 
 .testimonial-product-wrapper {
-  display: flex;
-  justify-content: flex-end;
+  display:flex;
+  justify-content:flex-end;
 }
 
-/* PAGINATION */
+/* =====================================================
+   PREMIUM PAGINATION
+===================================================== */
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.pagination{
 
-  gap: 10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
 
-  margin-top: 35px;
+    margin-top:50px;
 
-  flex-wrap: wrap;
+    flex-wrap:wrap;
 }
 
-.pagination button {
-  width: 46px;
-  height: 46px;
+.pagination button{
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position:relative;
 
-  border: none;
+    width:52px;
+    height:52px;
 
-  border-radius: 12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-  background: #111827;
+    border-radius:16px;
 
-  color: #d1d5db;
+    border:1px solid rgba(255,255,255,.08);
 
-  font-size: 15px;
-  font-weight: 600;
+    background:
+        linear-gradient(
+            180deg,
+            #454545,
+            #3B3B3B
+        );
 
-  cursor: pointer;
+    color:#ECECEC;
 
-  transition: .25s ease;
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    overflow:hidden;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease,
+        background .25s ease;
 }
 
-.pagination button:hover:not(:disabled) {
-  transform:
-    translateY(-2px);
+/* Highlight di atas tombol */
 
-  box-shadow:
-    0 0 20px rgba(
-      255,
-      215,
-      0,
-      .15
+.pagination button::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:45%;
+
+    background:linear-gradient(
+        rgba(255,255,255,.10),
+        transparent
     );
+
+    pointer-events:none;
 }
 
-.pagination .active-page {
-  background:
-    linear-gradient(
-      135deg,
-      #FFD700,
-      #d4af37
+/* Hover */
+
+.pagination button:hover:not(:disabled){
+
+    transform:translateY(-4px);
+
+    border-color:rgba(216,183,77,.40);
+
+    background:
+        linear-gradient(
+            180deg,
+            #4D4D4D,
+            #424242
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.35),
+        0 0 20px rgba(216,183,77,.12);
+}
+
+/* Active */
+
+.pagination .active-page{
+
+    background:linear-gradient(
+        180deg,
+        #4A4A4A,
+        #3D3D3D
     );
 
-  color: #111827;
+    color:#D8B74D;
 
-  font-weight: 800;
+    border:1px solid rgba(216,183,77,.45);
 
-  box-shadow:
-    0 0 25px rgba(
-      255,
-      215,
-      0,
-      .35
-    );
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 0 18px rgba(216,183,77,.25);
+
 }
 
-.pagination .arrow-btn {
-  font-size: 18px;
-  font-weight: 700;
+/* Hover pada active */
+
+.pagination .active-page:hover{
+
+    transform:translateY(-4px) scale(1.05);
+
+    box-shadow:
+        0 0 25px rgba(216,183,77,.45),
+        0 12px 28px rgba(216,183,77,.30);
 }
 
-.pagination button:disabled {
-  opacity: .35;
-  cursor: not-allowed;
+/* Arrow */
+
+.pagination .arrow-btn{
+
+    font-size:20px;
+    font-weight:800;
+}
+
+/* Disabled */
+
+.pagination button:disabled{
+
+    opacity:.35;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+    box-shadow:none;
 }
 
 /* MOBILE */

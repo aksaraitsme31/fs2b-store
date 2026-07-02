@@ -464,10 +464,10 @@ export default function TentangKami() {
                 </h3>
 
                 <p>
-                  Membantu mengelola transaksi customer,
-                  memberikan pelayanan terbaik,
-                  serta menjaga kenyamanan dan keamanan
-                  selama proses transaksi berlangsung.
+                  Bertanggung jawab melayani customer,
+                  membantu proses transaksi,
+                  serta menjaga kualitas pelayanan
+                  agar setiap transaksi berjalan dengan aman dan nyaman.
                 </p>
 
                 {/* LOCATION */}

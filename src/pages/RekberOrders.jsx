@@ -1,3 +1,5 @@
+import Navbar from "../components/Navbar";
+
 import {
     useEffect,
     useState
@@ -200,155 +202,161 @@ function RekberOrders() {
 
     return (
 
-        <div className="profile-page">
+        <div className="store">
 
-            <h1>
-                Rekber Orders
-            </h1>
+            <Navbar />
 
-            <div className="profile-section">
+            <div className="profile-page">
 
-                {rekberOrders.length === 0 ? (
+                <h1>
+                    Rekber Orders
+                </h1>
 
-                    <div className="empty-products">
-                        Belum ada rekber
-                    </div>
+                <div className="profile-section">
 
-                ) : (
+                    {rekberOrders.length === 0 ? (
 
-                    rekberOrders.map(
-                        (item) => (
+                        <div className="empty-products">
+                            Belum ada rekber
+                        </div>
 
-                            <div
-                                className="history-card"
-                                key={item.id}
-                            >
+                    ) : (
 
-                                <div className="history-info">
+                        rekberOrders.map(
+                            (item) => (
 
-                                    <h3>
-                                        {item.itemName}
-                                    </h3>
+                                <div
+                                    className="history-card"
+                                    key={item.id}
+                                >
 
-                                    <p>
-                                        Buyer:
-                                        {" "}
-                                        {item.buyerUsername}
-                                    </p>
+                                    <div className="history-info">
 
-                                    <p>
-                                        Seller:
-                                        {" "}
-                                        {item.sellerUsername}
-                                    </p>
+                                        <h3>
+                                            {item.itemName}
+                                        </h3>
 
-                                    <p>
-                                        Game:
-                                        {" "}
-                                        {item.game}
-                                    </p>
+                                        <p>
+                                            Buyer:
+                                            {" "}
+                                            {item.buyerUsername}
+                                        </p>
 
-                                    <p>
-                                        Harga:
-                                        {" "}
-                                        Rp{" "}
-                                        {Number(
-                                            item.dealPrice
-                                        ).toLocaleString(
-                                            "id-ID"
+                                        <p>
+                                            Seller:
+                                            {" "}
+                                            {item.sellerUsername}
+                                        </p>
+
+                                        <p>
+                                            Game:
+                                            {" "}
+                                            {item.game}
+                                        </p>
+
+                                        <p>
+                                            Harga:
+                                            {" "}
+                                            Rp{" "}
+                                            {Number(
+                                                item.dealPrice
+                                            ).toLocaleString(
+                                                "id-ID"
+                                            )}
+                                        </p>
+
+                                        <p>
+                                            Catatan:
+                                            {" "}
+                                            {item.notes}
+                                        </p>
+
+                                        {/* BUKTI TRANSFER */}
+                                        {item.paymentProof && (
+
+                                            <div
+                                                style={{
+                                                    marginTop: "15px"
+                                                }}
+                                            >
+
+                                                <p>
+                                                    Bukti Transfer:
+                                                </p>
+
+                                                <img
+                                                    src={item.paymentProof}
+                                                    alt="Bukti Transfer"
+                                                    style={{
+                                                        width: "250px",
+                                                        borderRadius: "10px",
+                                                        marginTop: "10px"
+                                                    }}
+                                                />
+
+                                            </div>
+
                                         )}
-                                    </p>
 
-                                    <p>
-                                        Catatan:
-                                        {" "}
-                                        {item.notes}
-                                    </p>
-
-                                    {/* BUKTI TRANSFER */}
-                                    {item.paymentProof && (
-
-                                        <div
+                                        <p
                                             style={{
                                                 marginTop: "15px"
                                             }}
                                         >
+                                            Status:
+                                            {" "}
 
-                                            <p>
-                                                Bukti Transfer:
-                                            </p>
-
-                                            <img
-                                                src={item.paymentProof}
-                                                alt="Bukti Transfer"
-                                                style={{
-                                                    width: "250px",
-                                                    borderRadius: "10px",
-                                                    marginTop: "10px"
-                                                }}
-                                            />
-
-                                        </div>
-
-                                    )}
-
-                                    <p
-                                        style={{
-                                            marginTop: "15px"
-                                        }}
-                                    >
-                                        Status:
-                                        {" "}
-
-                                        <span
-                                            className={`status-text ${item.status ===
-                                                "Barang Sudah Diterima Buyer" ||
-
-                                                item.status ===
-                                                "Done"
-                                                ? "success"
-
-                                                : item.status ===
-                                                    "Menunggu Seller Mengirim Barang" ||
+                                            <span
+                                                className={`status-text ${item.status ===
+                                                    "Barang Sudah Diterima Buyer" ||
 
                                                     item.status ===
-                                                    "Seller Sudah Mengirim Barang"
-                                                    ? "process"
+                                                    "Done"
+                                                    ? "success"
 
-                                                    : "pending"
-                                                }`}
-                                        >
-                                            {item.status}
-                                        </span>
+                                                    : item.status ===
+                                                        "Menunggu Seller Mengirim Barang" ||
 
-                                    </p>
+                                                        item.status ===
+                                                        "Seller Sudah Mengirim Barang"
+                                                        ? "process"
 
-                                    {item.status ===
-                                        "Menunggu Verifikasi Pembayaran" && (
-
-                                            <button
-                                                style={{
-                                                    marginTop: "15px"
-                                                }}
-                                                onClick={() =>
-                                                    approveRekber(
-                                                        item.id
-                                                    )
-                                                }
+                                                        : "pending"
+                                                    }`}
                                             >
-                                                Verifikasi Pembayaran
-                                            </button>
+                                                {item.status}
+                                            </span>
 
-                                        )}
+                                        </p>
+
+                                        {item.status ===
+                                            "Menunggu Verifikasi Pembayaran" && (
+
+                                                <button
+                                                    style={{
+                                                        marginTop: "15px"
+                                                    }}
+                                                    onClick={() =>
+                                                        approveRekber(
+                                                            item.id
+                                                        )
+                                                    }
+                                                >
+                                                    Verifikasi Pembayaran
+                                                </button>
+
+                                            )}
+
+                                    </div>
 
                                 </div>
 
-                            </div>
-
+                            )
                         )
-                    )
 
-                )}
+                    )}
+
+                </div>
 
             </div>
 

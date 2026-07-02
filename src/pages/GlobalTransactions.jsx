@@ -150,424 +150,426 @@ function GlobalTransactions() {
 
   return (
 
-    <div className="global-page">
+    <div className="store">
 
       <Navbar />
 
-      <div className="global-container">
+      <div className="global-page">
 
-        {/* =====================================================
+        <div className="global-container">
+
+          {/* =====================================================
            TITLE
         ===================================================== */}
-        <div className="global-heading">
+          <div className="global-heading">
 
-          <span>
-            REALTIME TRANSACTION
-          </span>
+            <span>
+              REALTIME TRANSACTION
+            </span>
 
-          <h1>
-            GLOBAL TRANSAKSI
-          </h1>
+            <h1>
+              GLOBAL TRANSAKSI
+            </h1>
 
-          <p>
-            Seluruh transaksi terbaru
-            dari Order Item dan Rekber
-            akan tampil otomatis secara realtime.
-          </p>
+            <p>
+              Seluruh transaksi terbaru
+              dari Order Item dan Rekber
+              akan tampil otomatis secara realtime.
+            </p>
 
-        </div>
+          </div>
 
-        {/* =====================================================
+          {/* =====================================================
            ORDER ITEM
         ===================================================== */}
-        <section className="global-section">
+          <section className="global-section">
 
-          <div className="section-header">
+            <div className="section-header">
 
-            <div className="section-left">
+              <div className="section-left">
 
-              <ShoppingBag size={34} />
+                <ShoppingBag size={34} />
 
-              <div>
+                <div>
 
-                <h2>
-                  Order Item
-                </h2>
+                  <h2>
+                    Order Item
+                  </h2>
 
-                <p>
-                  Transaksi pembelian item game
-                </p>
+                  <p>
+                    Transaksi pembelian item game
+                  </p>
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
+            <div className="transactions-grid">
 
-          <div className="transactions-grid">
+              {storeTransactions.length === 0 ? (
 
-            {storeTransactions.length === 0 ? (
+                <div className="empty-transactions">
 
-              <div className="empty-transactions">
+                  Belum ada transaksi item
 
-                Belum ada transaksi item
+                </div>
 
-              </div>
+              ) : (
 
-            ) : (
+                storeTransactions.map(
+                  (item, index) => (
 
-              storeTransactions.map(
-                (item, index) => (
+                    <div
+                      key={item.id}
+                      className={`transaction-card ${index === 0
+                          ? "newest-card"
+                          : ""
+                        }`}
+                    >
 
-                  <div
-                    key={item.id}
-                    className={`transaction-card ${
-                      index === 0
-                        ? "newest-card"
-                        : ""
-                    }`}
-                  >
-
-                    {/* =====================================================
+                      {/* =====================================================
                        TOP
                     ===================================================== */}
-                    <div className="transaction-top">
+                      <div className="transaction-top">
 
-                      <div className="transaction-icon">
+                        <div className="transaction-icon">
 
-                        <Sparkles size={22} />
+                          <Sparkles size={22} />
+
+                        </div>
+
+                        <span>
+                          TRANSAKSI ITEM
+                        </span>
 
                       </div>
 
-                      <span>
-                        TRANSAKSI ITEM
-                      </span>
-
-                    </div>
-
-                    {/* =====================================================
+                      {/* =====================================================
                        INFO
                     ===================================================== */}
-                    <div className="transaction-info">
+                      <div className="transaction-info">
 
-                      <div className="info-row">
+                        <div className="info-row">
 
-                        <span>
-                          ID TRANSAKSI
-                        </span>
+                          <span>
+                            ID TRANSAKSI
+                          </span>
 
-                        <strong>
-                          {
-                            hiddenTransactionId(
-                              item.transactionId
-                            )
-                          }
-                        </strong>
+                          <strong>
+                            {
+                              hiddenTransactionId(
+                                item.transactionId
+                              )
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            PEMBELI
+                          </span>
+
+                          <strong>
+                            {
+                              item.buyerUsername
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            PRODUK
+                          </span>
+
+                          <strong>
+                            {
+                              item.itemName
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            TOTAL PEMBAYARAN
+                          </span>
+
+                          <strong className="price-text">
+
+                            Rp {
+                              hiddenPrice(
+                                item.totalPayment
+                              )
+                            }
+
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            DATE
+                          </span>
+
+                          <strong>
+                            {
+                              formatDate(
+                                item.createdAt
+                              )
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            TIME
+                          </span>
+
+                          <strong>
+                            {
+                              formatTime(
+                                item.createdAt
+                              )
+                            }
+                          </strong>
+
+                        </div>
 
                       </div>
 
-                      <div className="info-row">
-
-                        <span>
-                          PEMBELI
-                        </span>
-
-                        <strong>
-                          {
-                            item.buyerUsername
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          PRODUK
-                        </span>
-
-                        <strong>
-                          {
-                            item.itemName
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          TOTAL PEMBAYARAN
-                        </span>
-
-                        <strong className="price-text">
-
-                          Rp {
-                            hiddenPrice(
-                              item.totalPayment
-                            )
-                          }
-
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          DATE
-                        </span>
-
-                        <strong>
-                          {
-                            formatDate(
-                              item.createdAt
-                            )
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          TIME
-                        </span>
-
-                        <strong>
-                          {
-                            formatTime(
-                              item.createdAt
-                            )
-                          }
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                    {/* =====================================================
+                      {/* =====================================================
                        STATUS
                     ===================================================== */}
-                    <div className="transaction-status">
+                      <div className="transaction-status">
 
-                      TRANSAKSI SELESAI
+                        TRANSAKSI SELESAI
+
+                      </div>
 
                     </div>
 
-                  </div>
-
+                  )
                 )
-              )
 
-            )}
+              )}
 
-          </div>
+            </div>
 
-        </section>
+          </section>
 
-        {/* =====================================================
+          {/* =====================================================
            ORDER REKBER
         ===================================================== */}
-        <section className="global-section">
+          <section className="global-section">
 
-          <div className="section-header">
+            <div className="section-header">
 
-            <div className="section-left">
+              <div className="section-left">
 
-              <ShieldCheck size={34} />
+                <ShieldCheck size={34} />
 
-              <div>
+                <div>
 
-                <h2>
-                  Order Rekber
-                </h2>
+                  <h2>
+                    Order Rekber
+                  </h2>
 
-                <p>
-                  Transaksi rekber buyer & seller
-                </p>
+                  <p>
+                    Transaksi rekber buyer & seller
+                  </p>
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
+            <div className="transactions-grid">
 
-          <div className="transactions-grid">
+              {rekberTransactions.length === 0 ? (
 
-            {rekberTransactions.length === 0 ? (
+                <div className="empty-transactions">
 
-              <div className="empty-transactions">
+                  Belum ada transaksi rekber
 
-                Belum ada transaksi rekber
+                </div>
 
-              </div>
+              ) : (
 
-            ) : (
+                rekberTransactions.map(
+                  (item, index) => (
 
-              rekberTransactions.map(
-                (item, index) => (
+                    <div
+                      key={item.id}
+                      className={`transaction-card ${index === 0
+                          ? "newest-card"
+                          : ""
+                        }`}
+                    >
 
-                  <div
-                    key={item.id}
-                    className={`transaction-card ${
-                      index === 0
-                        ? "newest-card"
-                        : ""
-                    }`}
-                  >
-
-                    {/* =====================================================
+                      {/* =====================================================
                        TOP
                     ===================================================== */}
-                    <div className="transaction-top">
+                      <div className="transaction-top">
 
-                      <div className="transaction-icon">
+                        <div className="transaction-icon">
 
-                        <ShieldCheck size={22} />
+                          <ShieldCheck size={22} />
+
+                        </div>
+
+                        <span>
+                          TRANSAKSI REKBER
+                        </span>
 
                       </div>
 
-                      <span>
-                        TRANSAKSI REKBER
-                      </span>
-
-                    </div>
-
-                    {/* =====================================================
+                      {/* =====================================================
                        INFO
                     ===================================================== */}
-                    <div className="transaction-info">
+                      <div className="transaction-info">
 
-                      <div className="info-row">
+                        <div className="info-row">
 
-                        <span>
-                          ID TRANSAKSI
-                        </span>
+                          <span>
+                            ID TRANSAKSI
+                          </span>
 
-                        <strong>
-                          {
-                            hiddenTransactionId(
-                              item.transactionId
-                            )
-                          }
-                        </strong>
+                          <strong>
+                            {
+                              hiddenTransactionId(
+                                item.transactionId
+                              )
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            BUYER
+                          </span>
+
+                          <strong>
+                            {
+                              item.buyerUsername
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            SELLER
+                          </span>
+
+                          <strong>
+                            {
+                              item.sellerUsername
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            BARANG / JASA
+                          </span>
+
+                          <strong>
+                            {
+                              item.itemName
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            TOTAL PEMBAYARAN
+                          </span>
+
+                          <strong className="price-text">
+
+                            Rp {
+                              hiddenPrice(
+                                item.totalPayment
+                              )
+                            }
+
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            DATE
+                          </span>
+
+                          <strong>
+                            {
+                              formatDate(
+                                item.createdAt
+                              )
+                            }
+                          </strong>
+
+                        </div>
+
+                        <div className="info-row">
+
+                          <span>
+                            TIME
+                          </span>
+
+                          <strong>
+                            {
+                              formatTime(
+                                item.createdAt
+                              )
+                            }
+                          </strong>
+
+                        </div>
 
                       </div>
 
-                      <div className="info-row">
-
-                        <span>
-                          BUYER
-                        </span>
-
-                        <strong>
-                          {
-                            item.buyerUsername
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          SELLER
-                        </span>
-
-                        <strong>
-                          {
-                            item.sellerUsername
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          BARANG / JASA
-                        </span>
-
-                        <strong>
-                          {
-                            item.itemName
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          TOTAL PEMBAYARAN
-                        </span>
-
-                        <strong className="price-text">
-
-                          Rp {
-                            hiddenPrice(
-                              item.totalPayment
-                            )
-                          }
-
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          DATE
-                        </span>
-
-                        <strong>
-                          {
-                            formatDate(
-                              item.createdAt
-                            )
-                          }
-                        </strong>
-
-                      </div>
-
-                      <div className="info-row">
-
-                        <span>
-                          TIME
-                        </span>
-
-                        <strong>
-                          {
-                            formatTime(
-                              item.createdAt
-                            )
-                          }
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                    {/* =====================================================
+                      {/* =====================================================
                        STATUS
                     ===================================================== */}
-                    <div className="transaction-status">
+                      <div className="transaction-status">
 
-                      TRANSAKSI SELESAI
+                        TRANSAKSI SELESAI
+
+                      </div>
 
                     </div>
 
-                  </div>
-
+                  )
                 )
-              )
 
-            )}
+              )}
 
-          </div>
+            </div>
 
-        </section>
+          </section>
+
+        </div>
 
       </div>
 
