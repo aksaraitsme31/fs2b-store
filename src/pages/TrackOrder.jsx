@@ -125,6 +125,52 @@ function TrackOrder() {
                 }
 
                 /* =========================
+                          CEK PT PT X8
+                   ========================= */
+
+                if (transactionId.startsWith("FS2B-PTPTX8-")) {
+
+                    const ptQuery = query(
+                        collection(db, "ptptx8Orders"),
+                        where("transactionId", "==", transactionId)
+                    );
+
+                    const unsubscribePT = onSnapshot(ptQuery, (snapshot) => {
+
+                        if (snapshot.empty) {
+
+                            alert("Transaksi PT PT X8 tidak ditemukan");
+
+                            setOrder(null);
+
+                            setLoading(false);
+
+                            return;
+                        }
+
+                        const data = snapshot.docs[0].data();
+
+                        setOrder({
+                            type: "ptptx8",
+                            ...data
+                        });
+
+                        setLoading(false);
+
+                    });
+
+                    if (unsubscribeListener) {
+
+                        unsubscribeListener();
+
+                    }
+
+                    setUnsubscribeListener(() => unsubscribePT);
+
+                    return;
+                }
+
+                /* =========================
                    ORDER BIASA
                 ========================= */
 
@@ -265,8 +311,8 @@ function TrackOrder() {
                             </h2>
 
                             {/* =========================
-            TAMPILAN REKBER
-        ========================= */}
+                                       TAMPILAN REKBER
+                                ========================= */}
                             {order.type === "rekber" ? (
 
                                 <div
@@ -454,7 +500,65 @@ function TrackOrder() {
 
                                 </div>
 
+                            ) : order.type === "ptptx8" ? (
+
+                                /* =========================
+                                        TAMPILAN PT PT X8
+                                   ========================= */
+
+                                <div className="ptptx8-container">
+
+                                    <div className="ptptx8-id-card">
+                                        <p>🆔 Transaction ID</p>
+                                        <h3>{order.transactionId}</h3>
+                                    </div>
+
+                                    <div className="ptptx8-card">
+                                        <span>🎣 Event</span>
+                                        <strong>{order.eventTitle}</strong>
+                                    </div>
+
+                                    <div className="ptptx8-card">
+                                        <span>👤 Nama Peserta</span>
+                                        <strong>{order.buyerUsername}</strong>
+                                    </div>
+
+                                    <div className="ptptx8-card">
+                                        <span>🎮 Username Roblox</span>
+                                        <strong>{order.usernameRoblox}</strong>
+                                    </div>
+
+                                    <div className="ptptx8-card money">
+                                        <span>💰 Total Pembayaran</span>
+                                        <strong>
+                                            Rp {Number(order.totalPrice || 0).toLocaleString("id-ID")}
+                                        </strong>
+                                    </div>
+
+                                    <div className="ptptx8-card">
+                                        <span>📅 Tanggal</span>
+                                        <strong>{order.date || "-"}</strong>
+
+                                        <span style={{ marginTop: 12 }}>⏰ Jam</span>
+                                        <strong>{order.time || "-"}</strong>
+                                    </div>
+
+                                    <div
+                                        className={`ptptx8-card status ${order.status === "Confirmed"
+                                                ? "confirmed"
+                                                : order.status === "Rejected"
+                                                    ? "rejected"
+                                                    : "pending"
+                                            }`}
+                                    >
+                                        <span>📌 Status</span>
+                                        <strong>{order.status}</strong>
+                                    </div>
+
+                                </div>
+
                             ) : (
+
 
                                 /* =========================
                                     TAMPILAN ORDER ITEM
@@ -566,14 +670,7 @@ function TrackOrder() {
                                         </div>
 
                                         {/* GRID INFO */}
-                                        <div
-                                            style={{
-                                                display: "grid",
-                                                gridTemplateColumns:
-                                                    "1fr 1fr",
-                                                gap: "14px"
-                                            }}
-                                        >
+                                        <div className="track-info-grid">
 
                                             {/* PRODUK */}
                                             <div
@@ -719,14 +816,7 @@ function TrackOrder() {
                                                 Progress Transaksi
                                             </h3>
 
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                    gap: "12px"
-                                                }}
-                                            >
+                                            <div className="track-progress">
 
                                                 {/* STEP 1 */}
                                                 <div
@@ -779,11 +869,8 @@ function TrackOrder() {
 
                                                 {/* LINE */}
                                                 <div
+                                                    className="track-progress-line"
                                                     style={{
-                                                        flex: 1,
-                                                        height: "5px",
-                                                        borderRadius: "999px",
-
                                                         background:
                                                             order.status === "Diproses" ||
                                                                 order.status === "Selesai"
@@ -842,11 +929,8 @@ function TrackOrder() {
 
                                                 {/* LINE */}
                                                 <div
+                                                    className="track-progress-line"
                                                     style={{
-                                                        flex: 1,
-                                                        height: "5px",
-                                                        borderRadius: "999px",
-
                                                         background:
                                                             order.status === "Selesai"
                                                                 ? "linear-gradient(90deg,#22c55e,#16a34a)"

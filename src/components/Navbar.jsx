@@ -43,7 +43,8 @@ import {
     FaSignOutAlt,
     FaSignInAlt,
     FaUserPlus,
-    FaCoins
+    FaCoins,
+    FaFish
 } from "react-icons/fa";
 
 function Navbar() {
@@ -359,6 +360,19 @@ function Navbar() {
                                 <span>My Coin</span>
                             </button>
 
+                            <button
+                                onClick={() => {
+
+                                    navigate("/riwayat-ptptku");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaFish />
+                                <span>Riwayat PT PT X8</span>
+                            </button>
+
                         </>
 
                     )}
@@ -442,6 +456,32 @@ function Navbar() {
                             >
                                 <FaCoins />
                                 <span>My Coin</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/admin-ptptx8");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaFish />
+                                <span>PT PT X8</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+
+                                    navigate("/admin-ptptx8-orders");
+
+                                    setMenuOpen(false);
+
+                                }}
+                            >
+                                <FaClipboardList />
+                                <span>PT PT X8 Payments</span>
                             </button>
 
                         </>

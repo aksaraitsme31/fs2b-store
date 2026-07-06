@@ -20,7 +20,9 @@ import {
   getDocs,
   onSnapshot,
   doc,
-  query
+  query,
+  orderBy,
+  where
 } from "firebase/firestore";
 
 import {
@@ -50,6 +52,18 @@ function Store() {
     useState(1);
 
   const testimonialsPerPage = 4;
+
+  const [events, setEvents] = useState([]);
+
+  const [participants, setParticipants] =
+    useState({});
+
+  /* EVENT PAGINATION */
+
+  const [eventPage, setEventPage] =
+    useState(1);
+
+  const eventsPerPage = 1;
 
   const currentUser =
     auth.currentUser;
@@ -221,6 +235,65 @@ function Store() {
 
   }, []);
 
+  /* PT PT X8 EVENT */
+  useEffect(() => {
+
+    const q = query(
+      collection(db, "ptptx8Events"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setEvents(data);
+
+    });
+
+    return () => unsubscribe();
+
+  }, []);
+
+  /* PT PT X8 PARTICIPANTS */
+
+  useEffect(() => {
+
+    const q = query(
+      collection(db, "ptptx8Participants"),
+      orderBy("createdAt")
+    )
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+
+      const grouped = {};
+
+      snapshot.docs.forEach((doc) => {
+
+        const participant = {
+          id: doc.id,
+          ...doc.data()
+        };
+
+        if (!grouped[participant.eventId]) {
+          grouped[participant.eventId] = [];
+        }
+
+        grouped[participant.eventId].push(participant);
+
+      });
+
+      setParticipants(grouped);
+
+    });
+
+    return () => unsubscribe();
+
+  }, []);
+
   /* MOBILE VIEWPORT */
   useEffect(() => {
 
@@ -320,6 +393,26 @@ function Store() {
 
       // SORT HARGA TERMAHAL → TERMURAH
       .sort((a, b) => b.price - a.price);
+
+
+  /* EVENT PAGINATION */
+
+  const totalEventPages =
+    Math.ceil(
+      events.length /
+      eventsPerPage
+    );
+
+  const eventStartIndex =
+    (eventPage - 1) *
+    eventsPerPage;
+
+  const currentEvents =
+    events.slice(
+      eventStartIndex,
+      eventStartIndex +
+      eventsPerPage
+    );
 
   /* TESTIMONIAL PAGINATION */
 
@@ -578,6 +671,16 @@ function Store() {
                   Jasa Joki
                 </button>
 
+                <button
+                  onClick={() =>
+                    setSelectedSubCategory(
+                      "PT PT X8"
+                    )
+                  }
+                >
+                  PT PT X8
+                </button>
+
               </div>
 
             </div>
@@ -585,19 +688,429 @@ function Store() {
           )}
 
         {/* PRODUCT LIST */}
-        <div className="product-grid">
+        <div
+          className={
+            selectedSubCategory === "PT PT X8"
+              ? "product-grid event-grid"
+              : "product-grid"
+          }
+        >
 
           {!selectedSubCategory ? (
 
             <div className="empty-products">
-
-              Pilih kategori item
-              terlebih dahulu
-
+              Pilih kategori item terlebih dahulu
             </div>
 
-          ) : filteredProducts.length ===
-            0 ? (
+          ) : selectedSubCategory === "PT PT X8" ? (
+
+            <>
+              {currentEvents.map((event) => {
+
+                const eventParticipants =
+                  participants[event.id] || [];
+
+                const participantCount =
+                  eventParticipants.length + 1; // +1 untuk Host
+
+                return (
+
+                  <div
+                    className="ptx8-event-card"
+                    key={event.id}
+                  >
+
+                    {/* HEADER */}
+
+                    <div className="ptx8-header">
+
+                      <h2>
+                        🎣 {event.title}
+                      </h2>
+
+                      <span
+                        className={
+                          event.registrationOpen
+                            ? "event-open"
+                            : "event-close"
+                        }
+                      >
+                        {event.registrationOpen
+                          ? "🟢 REGISTRATION OPEN"
+                          : "🔴 REGISTRATION CLOSED"}
+                      </span>
+
+                    </div>
+
+                    <div className="ptx8-divider"></div>
+
+                    {/* STATUS */}
+
+                    <div className="ptx8-status-banner">
+
+                      <span className="status-dot"></span>
+
+                      <span>
+
+                        {event.registrationOpen
+                          ? "REGISTRATION OPEN"
+                          : "REGISTRATION CLOSED"}
+
+                      </span>
+
+                    </div>
+
+                    {/* INFO */}
+
+                    <div className="ptx8-info-grid">
+
+                      <div className="ptx8-info-card">
+
+                        <span>📅 Jadwal Event</span>
+
+                        <strong>
+                          {event.eventDate}
+                        </strong>
+
+                      </div>
+
+                      <div className="ptx8-info-card">
+
+                        <span>🕗 Jam Mulai</span>
+
+                        <strong>
+                          {event.startTime}
+                        </strong>
+
+                      </div>
+
+                      <div className="ptx8-info-card">
+
+                        <span>👥 Slot Peserta</span>
+
+                        <strong>
+
+                          {participantCount}
+
+                          {" / "}
+
+                          {event.maxParticipants}
+
+                        </strong>
+
+                      </div>
+
+                      <div className="ptx8-info-card">
+
+                        <span>👑 Host</span>
+
+                        <strong>
+
+                          {event.host}
+
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                    <div className="ptx8-divider"></div>
+
+                    {/* DAFTAR PESERTA */}
+
+                    <div className="ptx8-participant-box">
+
+                      <h3>
+                        📋 DAFTAR PESERTA
+                      </h3>
+
+                      {[...Array(event.maxParticipants)].map((_, index) => {
+
+                        // Slot pertama = Host
+                        if (index === 0) {
+                          return (
+                            <div
+                              className="participant-row host-row"
+                              key={index}
+                            >
+                              <span>01.</span>
+
+                              <span className="host-name">
+                                👑 {event.host} (HOST)
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        // Peserta mulai dari slot kedua
+                        const player = eventParticipants[index - 1];
+
+                        return (
+
+                          <div
+                            className="participant-row"
+                            key={index}
+                          >
+
+                            <span>
+                              {(index + 1)
+                                .toString()
+                                .padStart(2, "0")}.
+                            </span>
+
+                            {player ? (
+
+                              <>
+                                <span>✅</span>
+                                <span>{player.username}</span>
+                              </>
+
+                            ) : (
+
+                              <>
+                                <span>⬜</span>
+                                <span>Slot Tersedia</span>
+                              </>
+
+                            )}
+
+                          </div>
+
+                        );
+
+                      })}
+
+                    </div>
+
+                    <div className="ptx8-divider"></div>
+
+                    {/* PROGRESS */}
+
+                    <h3 className="progress-title">
+
+                      📊 Progress Pendaftaran
+
+                    </h3>
+
+                    <div className="progress-bar">
+
+                      <div
+
+                        className="progress-fill"
+
+                        style={{
+                          width: `${Math.min(
+                            (participantCount /
+                              (event.maxParticipants || 20)) * 100,
+                            100
+                          )}%`
+                        }}
+
+                      />
+
+                    </div>
+
+                    <p className="progress-text">
+
+                      {Math.round(
+                        (
+                          participantCount /
+                          (event.maxParticipants || 20)
+                        ) * 100
+                      )}
+
+                      %
+
+                      {" • "}
+
+                      {participantCount}
+
+                      {" dari "}
+
+                      {event.maxParticipants}
+
+                      {" Slot Terisi"}
+
+                    </p>
+
+                    <div className="ptx8-divider"></div>
+
+                    {/* DETAIL EVENT */}
+
+                    <div className="ptx8-detail-grid">
+
+                      <div>
+
+                        💰 Harga
+
+                        <strong>
+
+                          Rp{" "}
+
+                          {Number(
+
+                            event.price || 0
+
+                          ).toLocaleString("id-ID")}
+
+                        </strong>
+
+                      </div>
+
+                      <div>
+
+                        📌 Status
+
+                        <strong>
+
+                          {event.status}
+
+                        </strong>
+
+                      </div>
+
+                      <div>
+
+                        👥 Total Slot
+
+                        <strong>
+
+                          1 Host + {event.maxParticipants - 1} Peserta
+
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                    <div className="ptx8-divider"></div>
+
+                    {/* BUTTON */}
+
+                    <button
+                      className="ptx8-register-btn"
+                      disabled={
+                        !event.registrationOpen ||
+                        participantCount >= event.maxParticipants
+                      }
+                      onClick={() =>
+                        navigate("/checkout-ptptx8", {
+                          state: { event }
+                        })
+                      }
+                    >
+                      {
+                        !event.registrationOpen
+                          ? "🔒 PENDAFTARAN DITUTUP"
+                          : participantCount >= event.maxParticipants
+                            ? "🔴 SLOT PENUH"
+                            : "🟢 DAFTAR SEKARANG"
+                      }
+                    </button>
+
+                    <div className="ptx8-divider"></div>
+
+                    {/* INFORMASI */}
+
+                    <div className="ptx8-notice">
+
+                      <h3>
+
+                        ⚠ INFORMASI
+
+                      </h3>
+
+                      <ul>
+
+                        <li>
+
+                          Nama peserta akan muncul setelah pembayaran dikonfirmasi Admin.
+
+                        </li>
+
+                        <li>
+
+                          Setelah di konfirmasi Admin, Peserta harap add usn Host di Roblox
+
+                        </li>
+
+                        <li>
+
+                          Harap hadir 10 menit sebelum event dimulai.
+
+                        </li>
+
+                        <li>
+
+                          Pendaftaran otomatis ditutup apabila seluruh slot telah terisi.
+
+                        </li>
+
+                      </ul>
+
+                    </div>
+
+                  </div>
+
+                );
+
+              })}
+
+              {totalEventPages > 1 && (
+
+                <div className="pagination-footer">
+
+                  <div className="pagination">
+
+                    <button
+                      className="arrow-btn"
+                      disabled={eventPage === 1}
+                      onClick={() =>
+                        setEventPage(eventPage - 1)
+                      }
+                    >
+                      ‹
+                    </button>
+
+                    {[...Array(totalEventPages)].map(
+                      (_, index) => (
+
+                        <button
+                          key={index}
+                          className={
+                            eventPage === index + 1
+                              ? "active-page"
+                              : ""
+                          }
+                          onClick={() =>
+                            setEventPage(index + 1)
+                          }
+                        >
+                          {index + 1}
+                        </button>
+
+                      )
+                    )}
+
+                    <button
+                      className="arrow-btn"
+                      disabled={eventPage === totalEventPages}
+                      onClick={() =>
+                        setEventPage(eventPage + 1)
+                      }
+                    >
+                      ›
+                    </button>
+
+                  </div>
+
+                </div>
+
+              )}
+
+            </>
+
+          ) : filteredProducts.length === 0 ? (
 
             <div className="empty-products">
               Belum ada item

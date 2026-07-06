@@ -53,6 +53,11 @@ import FAQ from "./pages/FAQ";
 import GlobalTransactions from "./pages/GlobalTransactions";
 import MyCoin from "./pages/MyCoin";
 import ForgotPassword from "./pages/ForgotPassword";
+import AdminPtPtX8 from "./pages/AdminPtPtX8";
+import CheckoutPTPTX8 from "./pages/CheckoutPTPTX8";
+import PaymentPTPTX8 from "./pages/PaymentPTPTX8";
+import AdminPTPTX8Orders from "./pages/AdminPTPTX8Orders";
+import RiwayatPtptku from "./pages/RiwayatPtptku";
 
 /* COMPONENTS */
 import Footer from "./components/Footer";
@@ -261,12 +266,45 @@ function App() {
           }
         />
 
+        <Route
+          path="/checkout-ptptx8"
+          element={<CheckoutPTPTX8 />}
+        />
+
+        <Route
+          path="/payment-ptptx8"
+          element={<PaymentPTPTX8 />}
+        />
+
+        <Route
+          path="/riwayat-ptptku"
+          element={<RiwayatPtptku />}
+        />
+
         {/* ADMIN */}
         <Route
           path="/admin"
           element={
             userRole === "admin"
               ? <Admin />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/admin-ptptx8"
+          element={
+            userRole === "admin"
+              ? <AdminPtPtX8 />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/admin-ptptx8-orders"
+          element={
+            userRole === "admin"
+              ? <AdminPTPTX8Orders />
               : <Navigate to="/" />
           }
         />
