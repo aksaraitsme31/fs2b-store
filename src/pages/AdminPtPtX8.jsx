@@ -524,7 +524,7 @@ function AdminPtPtX8() {
                                     name="maxParticipants"
                                     value={form.maxParticipants}
                                     onChange={handleChange}
-                                    placeholder="20"
+                                    placeholder="22"
                                 />
 
                             </div>

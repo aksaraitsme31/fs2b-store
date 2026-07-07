@@ -260,98 +260,100 @@ function AdminPTPTX8Orders() {
             );
 
             /* ===========================
-        DISCORD WEBHOOK
-=========================== */
+                     DISCORD WEBHOOK
+               =========================== */
 
-            const webhook = import.meta.env.VITE_DISCORD_WEBHOOK_PTPTX8;
+            try {
 
-            if (webhook) {
+                console.log(
+                    "PTPT WEBHOOK:",
+                    import.meta.env.VITE_DISCORD_WEBHOOK_PTPTX8
+                );
 
-                try {
+                await fetch("/api/discord", {
 
-                    await fetch(webhook, {
+                    method: "POST",
 
-                        method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
+                    body: JSON.stringify({
 
-                        body: JSON.stringify({
+                        webhookUrl:
+                            import.meta.env.VITE_DISCORD_WEBHOOK_PTPTX8,
 
-                            embeds: [
+                        embeds: [
 
-                                {
+                            {
 
-                                    color: 0xFACC15,
+                                color: 0xFACC15,
 
-                                    author: {
-                                        name: "FS2B STORE • PT PT X8",
-                                        icon_url: "https://res.cloudinary.com/mybhd82c/image/upload/v1783343642/1779368992008_olxbzv.png"
+                                author: {
+                                    name: "FS2B STORE • PT PT X8",
+                                    icon_url: "https://res.cloudinary.com/mybhd82c/image/upload/v1783343642/1779368992008_olxbzv.png"
+                                },
+
+                                title: "✅ Pembayaran Berhasil Dikonfirmasi",
+
+                                description:
+                                    "Peserta berhasil masuk ke dalam **PT PT X8 Event**.",
+
+                                thumbnail: {
+                                    url: "https://res.cloudinary.com/mybhd82c/image/upload/v1783340984/ChatGPT_Image_6_Jul_2026_19.29.12_ejxa9b.png"
+                                },
+
+                                fields: [
+
+                                    {
+                                        name: "👤 Peserta",
+                                        value: `**${order.buyerUsername}**`,
+                                        inline: true
                                     },
 
-                                    title: "✅ Pembayaran Berhasil Dikonfirmasi",
-
-                                    description:
-                                        "Peserta berhasil masuk ke dalam **PT PT X8 Event**.",
-
-                                    thumbnail: {
-                                        url: "https://res.cloudinary.com/mybhd82c/image/upload/v1783340984/ChatGPT_Image_6_Jul_2026_19.29.12_ejxa9b.png"
+                                    {
+                                        name: "🎮 Roblox",
+                                        value: `**${order.usernameRoblox}**`,
+                                        inline: true
                                     },
 
-                                    fields: [
-
-                                        {
-                                            name: "👤 Peserta",
-                                            value: `**${order.buyerUsername}**`,
-                                            inline: true
-                                        },
-
-                                        {
-                                            name: "🎮 Roblox",
-                                            value: `**${order.usernameRoblox}**`,
-                                            inline: true
-                                        },
-
-                                        {
-                                            name: "💰 Harga",
-                                            value: `**Rp ${Number(order.totalPrice).toLocaleString("id-ID")}**`,
-                                            inline: true
-                                        },
-
-                                        {
-                                            name: "🎣 Event",
-                                            value: order.eventTitle,
-                                            inline: false
-                                        },
-
-                                        {
-                                            name: "🆔 Transaction ID",
-                                            value: `\`${order.transactionId}\``,
-                                            inline: false
-                                        }
-
-                                    ],
-
-                                    footer: {
-                                        text: "FS2B STORE • Automatic Payment System"
+                                    {
+                                        name: "💰 Harga",
+                                        value: `**Rp ${Number(order.totalPrice).toLocaleString("id-ID")}**`,
+                                        inline: true
                                     },
 
-                                    timestamp: new Date().toISOString()
+                                    {
+                                        name: "🎣 Event",
+                                        value: order.eventTitle,
+                                        inline: false
+                                    },
 
-                                }
+                                    {
+                                        name: "🆔 Transaction ID",
+                                        value: `\`${order.transactionId}\``,
+                                        inline: false
+                                    }
 
-                            ]
+                                ],
 
-                        })
+                                footer: {
+                                    text: "FS2B STORE • Automatic Payment System"
+                                },
 
-                    });
+                                timestamp: new Date().toISOString()
 
-                } catch (err) {
+                            }
 
-                    console.log(err);
+                        ]
 
-                }
+                    })
+
+                });
+
+            } catch (err) {
+
+                console.log("Discord Error:", err);
 
             }
 

@@ -901,7 +901,7 @@ function Store() {
                         style={{
                           width: `${Math.min(
                             (participantCount /
-                              (event.maxParticipants || 20)) * 100,
+                              (event.maxParticipants || 22)) * 100,
                             100
                           )}%`
                         }}
@@ -915,7 +915,7 @@ function Store() {
                       {Math.round(
                         (
                           participantCount /
-                          (event.maxParticipants || 20)
+                          (event.maxParticipants || 22)
                         ) * 100
                       )}
 
